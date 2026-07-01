@@ -1,0 +1,118 @@
+body {
+    background-color: #FAF6F0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+/* CONTENEDOR PRINCIPAL DOS COLUMNAS */
+.login-container {
+    max-width: 1000px;
+    width: 100%;
+    padding: 20px;
+}
+
+/* COLUMNA IZQUIERDA: TEXTO MUA */
+.brand-title {
+    font-family: 'Georgia', 'Times New Roman', Times, serif;
+    color: #8B0000; /* Color guinda/rojo oscuro medieval */
+    line-height: 1.1;
+}
+/* Iniciales gigantes */
+.brand-title span {
+    font-size: 5.5rem;
+    display: inline-block;
+    font-weight: normal;
+}
+/* Resto del texto */
+.brand-title p {
+    font-size: 2.2rem;
+    display: inline;
+    margin: 0;
+}
+
+/* COLUMNA DERECHA: TARJETA DE LOGIN */
+.login-card {
+    background-color: #FAF6F0; /* Fondo igual al del body */
+    border: 1.5px solid #F0A515; /* Borde naranja/dorado delgado */
+    border-radius: 16px;
+    padding: 40px 35px;
+    max-width: 440px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Icono de usuario de avatar */
+.avatar-icon {
+    font-size: 100px;
+    color: #000000;
+    line-height: 1;
+}
+
+/* CAMPOS DE ENTRADA (INPUTS) */
+.custom-input-group {
+    background: #FFFFFF;
+    border: 1px solid #D1CFCB;
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    height: 48px;
+}
+/* Bloque izquierdo del input donde va el icono */
+.input-addon {
+    background-color: #E2960C; /* Naranja/marrón claro */
+    color: #000000;
+    width: 55px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+/* Caja de texto interna */
+.custom-input {
+    border: none;
+    outline: none;
+    padding: 10px 15px;
+    width: 100%;
+    font-size: 14px;
+    background: transparent;
+}
+.custom-input::placeholder {
+    color: #B1AFA9;
+}
+
+/* BOTÓN INICIAR */
+.btn-iniciar {
+    background-color: #8B0000; /* Rojo guinda */
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 8px 50px;
+    font-weight: bold;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+.btn-iniciar:hover {
+    background-color: #660000;
+    color: white;
+}
+
+/* TEXTO INFERIOR */
+.footer-text {
+    font-size: 13px;
+    color: #555555;
+    font-weight: 500;
+}
+.footer-text a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+.footer-text a:hover {
+    text-decoration: underline;
+}

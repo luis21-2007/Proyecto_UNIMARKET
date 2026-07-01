@@ -1,0 +1,230 @@
+
+.custom-header {
+    background-color: #FFBA08;
+    min-height: 80px;
+    position: relative;
+    overflow: hidden;
+}
+body {
+    background-color: #FFFCF5; /* Código hexadecimal aproximado de tu imagen */
+}
+
+
+/* CAPA DE FONDO 1: La diagonal naranja oscuro */
+.custom-header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 250px; /* Un poco más ancha que la negra para que sobresalga */
+    background-color: #d47600; /* Naranja oscuro */
+    clip-path: polygon(0 0, 100% 0, 78% 100%, 0 100%);
+    z-index: 1;
+}
+
+/* CAPA DE FONDO 2: La diagonal negra */
+.custom-header::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 220px; /* Al ser más angosta, deja ver el borde naranja oscuro */
+    background-color: #000000;
+    clip-path: polygon(0 0, 100% 0, 78% 100%, 0 100%);
+    z-index: 2;
+}
+
+/* CONTENEDOR DEL LOGO: Forzamos a que se posicione encima de las capas negra y naranja */
+.logo-container {
+    position: relative;
+    z-index: 3; /* Mayor que las capas anteriores para que no lo tapen */
+    width: 170px; /* Ajustado para quedar centrado dentro de la diagonal */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.logo-img {
+    width: 85px;
+    height: 85px;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* Estilo de la barra de búsqueda redondeada */
+.search-container .form-control {
+    border-radius: 50px 0 0 50px;
+    border: none;
+    padding-left: 20px;
+}
+.search-container .btn-search {
+    background-color: #ffc107; /* Amarillo del botón */
+    border-radius: 0 50px 50px 0;
+    border: none;
+    padding: 0 25px;
+    font-size: 1.2rem;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Botones circulares de la derecha */
+.icon-btn {
+    background-color: #ffc107;
+    color: #ffffff;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    text-decoration: none;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.15);
+    position: relative;
+}
+.icon-btn:hover {
+    background-color: #e0a800;
+    color: #ffffff;
+}
+.icon-label {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    margin-top: 4px;
+    line-height: 1.1;
+}
+/* Fondo oscuro del contenedor principal de categorías */
+.sidebar-categories {
+    background-color: #03081e; /* Azul oscuro/negro profundo de tu imagen */
+    min-width: 200px;
+}
+
+/* Texto del título "Categorías" */
+.categories-title {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* Estilo de los botones individuales */
+.category-btn {
+    background-color: #1b203a; /* Azul grisáceo de los botones */
+    color: #ffffff !important;
+    border: none;
+    border-radius: 15px; /* Bordes suaves y redondeados */
+    font-size: 1rem;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Efecto al pasar el mouse por encima (Hover) */
+.category-btn:hover {
+    background-color: #292f54; /* Se aclara ligeramente */
+    transform: translateX(4px); /* Pequeño desplazamiento interactivo hacia la derecha */
+}
+.sidebar-categories {
+    background-color: #03081e;
+    min-height: 580px;
+}
+
+.categories-title {
+    color: #ffffff;
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+.category-btn {
+    background-color: #1b203a;
+    color: #ffffff !important;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.category-btn:hover {
+    background-color: #252b4e;
+}
+
+/* Tarjetas de Producto Blancas con Bordes Suaves */
+.product-card {
+    background-color: #ffffff;
+    border-radius: 18px !important;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.product-img {
+    height: 170px;
+    object-fit: cover;
+    border-radius: 18px 18px 0 0 !important;
+}
+
+.style-price {
+    color: #e67e22;
+    font-size: 1rem;
+}
+
+.style-rating {
+    color: #db9a1a;
+    font-weight: bold;
+}
+
+
+.product-card {
+    background-color: #ffffff;
+    border-radius: 18px !important;
+    overflow: hidden;
+    max-width: 240px; /* Evita que la tarjeta crezca más de lo necesario */
+    margin: 0 auto;
+}
+
+.product-img {
+    width: 100%;
+    height: 180px; /* Altura fija para que todas las imágenes queden uniformes */
+    object-fit: cover;
+}
+
+
+/* Estilo compacto de las tarjetas blancas */
+.product-card {
+    background-color: #ffffff;
+    border-radius: 18px !important;
+    overflow: hidden;
+    max-width: 250px; /* Tamaño máximo idéntico al mockup */
+    margin: 0 auto;
+}
+
+.product-img {
+    width: 100%;
+    height: 170px;
+    object-fit: cover;
+    border-radius: 18px 18px 0 0 !important;
+}
+
+
+
+.main-market-container {
+    background-color: #FAF9F5;
+    min-height: 100vh;
+}
+
+
+.product-card {
+    background-color: #ffffff;
+    border-radius: 18px !important;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    margin-bottom: 10px;
+}
+.product-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 18px 18px 0 0 !important;
+}
+.style-price {
+    color: #e67e22;
+}
+
