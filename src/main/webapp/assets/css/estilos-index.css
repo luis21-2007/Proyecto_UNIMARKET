@@ -1,0 +1,126 @@
+.main-market-container {
+    background-color: #FFFCF5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding-top: 10px !important; /* Pega el contenido hacia arriba */
+}
+
+/* Ajusta el banner para eliminar los espacios sobrantes */
+.welcome-banner {
+    color: #F48C06;
+    font-weight: 700;
+    text-align: center;
+    font-size: 1.1rem;
+    width: 100%;
+    max-width: 100%;
+    margin: 5px 0 0 0; /* Margen superior mínimo para pegarlo al header */
+    padding: 0 15px;
+}
+/* Contenedor horizontal de categorías (carrusel) */
+.category-scroll-container {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding: 10px 5px;
+    scroll-behavior: smooth;
+    justify-content: center; /* Centra las categorías si caben en pantalla */
+}
+
+/* Ocultar barra de scroll o hacerla estética */
+.category-scroll-container::-webkit-scrollbar {
+    height: 6px;
+}
+.category-scroll-container::-webkit-scrollbar-thumb {
+    background-color: #D1CFCB;
+    border-radius: 10px;
+}
+
+/* Tarjeta individual de Categoría */
+.category-card {
+    background: #FFFFFF;
+    border: 2px solid #000000; /* Borde negro marcado del mockup */
+    border-radius: 16px;
+    width: 130px;
+    min-width: 130px;
+    padding: 15px 10px;
+    text-decoration: none;
+    color: #000000;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.category-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    color: #000000;
+}
+.category-card img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    margin-bottom: 8px;
+}
+
+/* Estructura de Tarjetas de Productos */
+.product-card {
+    background-color: #EFEFEF; /* Fondo gris claro del mockup */
+    border-radius: 18px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: none;
+}
+
+/* Contenedor de la imagen para que NO se deforme ni se haga gigante */
+.card-img-wrapper {
+    border-radius: 14px;
+    overflow: hidden;
+    width: 100%;
+    height: 170px; /* Altura controlada fija */
+    background-color: #FFFFFF;
+}
+.product-card img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover; /* Recorta perfectamente la imagen al contenedor */
+}
+
+/* Textos dentro de la tarjeta de producto */
+.product-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #000000;
+    margin-top: 10px;
+    margin-bottom: 6px;
+    text-align: left;
+}
+.product-price {
+    font-weight: bold;
+    color: #000000;
+    font-size: 0.95rem;
+}
+.product-rating {
+    color: #FFBA08; /* Estrella dorada */
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* Botón Comprar Guinda */
+.btn-comprar {
+    background-color: #8B0000; /* Color guinda de la UTEZ */
+    color: #FFFFFF;
+    border: none;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    padding: 6px 0;
+    width: 100%;
+    margin-top: auto; /* Empuja el botón al fondo si hay títulos largos */
+    transition: background-color 0.2s;
+}
+.btn-comprar:hover {
+    background-color: #660000;
+    color: #FFFFFF;
+}

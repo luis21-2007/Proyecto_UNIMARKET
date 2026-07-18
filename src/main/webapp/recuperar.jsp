@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar sesion</title>
+    <title>Recuperar Contraseña</title>
     <link href="assets/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/estilos-login.css">
     <link rel="stylesheet" href="assets/css/bootstrap-icons-1.13.1/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/css/estilos-login.css">
 </head>
 <body>
 
@@ -28,16 +28,29 @@
             </div>
         </div>
 
+
         <div class="col-12 col-md-6">
             <div class="login-card shadow-sm">
-                <form action="login" method="POST" class="text-center">
+                <form action="recuperar" method="POST" class="text-center">
 
                     <div class="mb-2">
-                        <i class="bi bi-person-circle avatar-icon"></i>
+                        <i class="bi bi-shield-lock avatar-icon"></i>
                     </div>
 
-                    <h5 class="fw-bold mb-4 text-black">Usuario</h5>
+                    <h5 class="fw-bold mb-2 text-black">¿Olvidaste tu contraseña?</h5>
 
+                    <p class="text-muted mb-4 px-2" style="font-size: 13px;">
+                        Ingresa tu correo institucional registrado y te enviaremos las instrucciones de recuperación.
+                    </p>
+
+                    <!-- Mensajes de alerta con el estilo del login -->
+                    <% if (request.getAttribute("mensaje") != null) { %>
+                    <div class="alert alert-info py-2 px-3 mb-3 text-start" style="font-size: 12px; border-radius: 8px;">
+                        <i class="bi bi-info-circle-fill me-2"></i> <%= request.getAttribute("mensaje") %>
+                    </div>
+                    <% } %>
+
+                    <!-- Campo de entrada para el correo (mismos estilos que tu login) -->
                     <div class="custom-input-group mb-3">
                         <div class="input-addon">
                             <i class="bi bi-envelope"></i>
@@ -45,18 +58,13 @@
                         <input type="email" name="correo" class="custom-input" placeholder="Ingresa tu correo institucional" required>
                     </div>
 
-                    <div class="custom-input-group mb-4">
-                        <div class="input-addon">
-                            <i class="bi bi-lock"></i>
-                        </div>
-                        <input type="password" name="contra" class="custom-input" placeholder="Ingresa tu Contraseña" required>
-                    </div>
 
                     <div class="mb-3">
-                        <button type="submit" class="btn btn-iniciar shadow-sm">Iniciar</button>
+                        <button type="submit" class="btn btn-iniciar shadow-sm w-100">Enviar</button>
                     </div>
-                    <p class="footer-text mb-0">No te acuerdas de tu contraseña? <a href="recuperar.jsp">Recupera tu contraseña</a>
-                    <p class="footer-text mb-0">No Tienes Cuenta? <a href="registro.jsp">Crear cuenta</a>
+
+                    <p class="footer-text mb-0 mt-3">
+                        ¿Recordaste tu contraseña? <a href="login.jsp" class="text-decoration-none">Iniciar sesión</a>
                     </p>
 
                 </form>

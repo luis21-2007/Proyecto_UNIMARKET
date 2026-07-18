@@ -30,7 +30,7 @@
 
         <div class="col-12 col-md-6">
             <div class="login-card shadow-sm">
-                <form action="VerificarCodigoServlet" method="POST" class="text-center">
+                <form action="Verificar" method="POST" class="text-center">
 
                     <div class="mb-2">
                         <i class="bi bi-shield-check avatar-icon"></i>
@@ -38,7 +38,7 @@
 
                     <h5 class="fw-bold mb-2 text-black">Verifica tu cuenta</h5>
 
-                    <p class="text-muted mb-4" style="font-size: 13px; px-2">
+                    <p class="text-muted mb-4 px-2" style="font-size: 13px;">
                         Ingresa el código de verificación de 6 dígitos que enviamos a tu correo institucional.
                     </p>
 
@@ -49,6 +49,8 @@
                         <input type="text" name="c4" class="code-box" maxlength="1" required autocomplete="off">
                         <input type="text" name="c5" class="code-box" maxlength="1" required autocomplete="off">
                         <input type="text" name="c6" class="code-box" maxlength="1" required autocomplete="off">
+                        <input type="text" name="c7" class="code-box" maxlength="1" required autocomplete="off">
+                        <input type="text" name="c8" class="code-box" maxlength="1" required autocomplete="off">
                     </div>
 
                     <div class="mb-3">
@@ -68,6 +70,6 @@
 
 <script src="assets/js/bootstrap.js"></script>
 
-<script src="assets/js/carrusel.js"></script>
+<script src="assets/js/token.js"></script>
 </body>
 </html>

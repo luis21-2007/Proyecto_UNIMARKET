@@ -30,7 +30,7 @@
 
         <div class="col-12 col-md-6">
             <div class="login-card shadow-sm">
-                <form action="RegistroServlet" method="POST" class="text-center">
+                <form action="register" method="POST" class="text-center">
 
                     <div class="mb-2">
                         <i class="bi bi-person-circle avatar-icon"></i>
@@ -42,7 +42,19 @@
                         <div class="input-addon">
                             <i class="bi bi-person"></i>
                         </div>
-                        <input type="text" name="nombre" class="custom-input" placeholder="Ingresa tu Nombre completo" required>
+                        <input type="text" name="nombre" class="custom-input" placeholder="Ingresa tu Nombre " required>
+                    </div>
+                    <div class="custom-input-group mb-3">
+                        <div class="input-addon">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        <input type="text" name="apellido" class="custom-input" placeholder="Ingresa tu Apellido " required>
+                    </div>
+                    <div class="custom-input-group mb-3">
+                        <div class="input-addon">
+                            <i class="bi bi-person"></i>
+                        </div>
+                        <input type="text" name="carrera" class="custom-input" placeholder="Ingresa tu Carrera " required>
                     </div>
 
                     <div class="custom-input-group mb-3">
@@ -56,20 +68,20 @@
                         <div class="input-addon">
                             <i class="bi bi-lock"></i>
                         </div>
-                        <input type="password" name="password" class="custom-input" placeholder="Ingresa tu Contraseña" required>
+                        <input type="password" name="contra1" class="custom-input" placeholder="Ingresa tu Contraseña" required>
                     </div>
 
                     <div class="custom-input-group mb-4">
                         <div class="input-addon">
                             <i class="bi bi-lock"></i>
                         </div>
-                        <input type="password" name="confirmPassword" class="custom-input" placeholder="Confirmar Contraseña" required>
+                        <input type="password" name="contra2" class="custom-input" placeholder="Confirmar Contraseña" required>
                     </div>
 
                     <div class="mb-3">
                         <button type="submit" class="btn btn-iniciar shadow-sm">Crear</button>
                     </div>
-                     <a href="verificacion.jsp">ver vista token</a>
+
                     <p class="footer-text mb-0">¿Ya tienes cuenta? <a href="login.jsp">Iniciar Sesion</a>
                     </p>
 
