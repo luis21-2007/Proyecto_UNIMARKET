@@ -138,23 +138,27 @@ public class UserDao implements Dao<User,Integer> {
         return false;
     }
     public boolean login(String correo, String contrasena) {
-        // 1. Agregamos el filtro 'activo = 1' a la consulta SQL
-        String sql = "SELECT COUNT(*) FROM usuario WHERE correo = ? AND contrasena = ? AND activo = 1";
+        // Usamos LOWER() en el correo para evitar problemas de mayúsculas
+        String sql = "SELECT COUNT(*) FROM usuario WHERE LOWER(correo) = LOWER(?) AND contrasena = ? AND activo = 1";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            // Validación de seguridad para prevenir el NullPointerException anterior
+            // Validación para evitar NullPointerException
             if (correo == null || contrasena == null) {
                 return false;
             }
 
+            // 1. Convertimos la contraseña ingresada por el usuario a su versión SHA-256 (64 caracteres)
+            String contrasenaHash = HashUtil.hashSHA256(contrasena);
+
+            // 2. Pasamos el correo limpio y la contraseña YA ENCRIPTADA a la consulta
             ps.setString(1, correo.trim());
-            ps.setString(2, contrasena);
+            ps.setString(2, contrasenaHash);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    // Solo devolverá true si coinciden los datos Y el usuario está activo (activo = 1)
+                    // Retorna true si coincide el correo, el hash de la contraseña y activo = 1
                     return rs.getInt(1) > 0;
                 }
             }
@@ -164,6 +168,7 @@ public class UserDao implements Dao<User,Integer> {
         }
         return false;
     }
+    /*
     public int loginConEstado(String correo, String contrasena) {
         // Seleccionamos directamente la columna activo
         String sql = "SELECT activo FROM usuario WHERE correo = ? AND contrasena = ?";
@@ -191,6 +196,8 @@ public class UserDao implements Dao<User,Integer> {
         }
         return 0; // 0 = Correo o contraseña incorrectos / Error
     }
+
+     */
 
     public boolean verificarTokenYActivarUsuario(String correo, String token) {
         // 1. Buscamos si el token coincide con el correo del usuario y no ha expirado
