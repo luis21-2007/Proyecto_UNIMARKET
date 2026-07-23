@@ -30,58 +30,83 @@
 
         <div class="col-12 col-md-6">
             <div class="login-card shadow-sm">
-                <form action="register" method="POST" class="text-center">
+                <% if (request.getAttribute("error") != null) { %>
+                <div class="alert alert-danger py-2 px-3 mb-3 text-start" style="font-size: 15px; border-radius: 8px;">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> <%= request.getAttribute("error") %>
+                </div>
+                <% } %>
+                <form action="register" method="POST" id="formRegistro" class="text-center" novalidate>
 
                     <div class="mb-2">
                         <i class="bi bi-person-circle avatar-icon"></i>
                     </div>
 
-                    <h5 class="fw-bold mb-4 text-black">Bienvenido</h5>
+                    <h5 class="fw-bold mb-2 text-black">Bienvenido</h5>
 
-                    <div class="custom-input-group mb-3">
+                    <div class="custom-input-group mb-2">
                         <div class="input-addon">
                             <i class="bi bi-person"></i>
                         </div>
-                        <input type="text" name="nombre" class="custom-input" placeholder="Ingresa tu Nombre " required>
+                        <input value="${param.nombre}" type="text" name="nombre" class="custom-input" placeholder="Ingresa tu Nombre" maxlength="25" pattern="[a-zA-ZÁÉÍÓÚáéíóúÑñ\s]{1,50}" required>
                     </div>
-                    <div class="custom-input-group mb-3">
+                    <div class="custom-input-group mb-2">
                         <div class="input-addon">
                             <i class="bi bi-person"></i>
                         </div>
-                        <input type="text" name="apellido" class="custom-input" placeholder="Ingresa tu Apellido " required>
-                    </div>
-                    <div class="custom-input-group mb-3">
-                        <div class="input-addon">
-                            <i class="bi bi-person"></i>
-                        </div>
-                        <input type="text" name="carrera" class="custom-input" placeholder="Ingresa tu Carrera " required>
+                        <input value="${param.apellido}" type="text" name="apellido" class="custom-input" placeholder="Ingresa tu Apellido" maxlength="25" pattern="[a-zA-ZÁÉÍÓÚáéíóúÑñ\s]{1,50}" required>
                     </div>
 
-                    <div class="custom-input-group mb-3">
+                    <div class="custom-input-group mb-2">
                         <div class="input-addon">
-                            <i class="bi bi-envelope"></i>
+                            <i class="bi bi-mortarboard"></i>
                         </div>
-                        <input type="email" name="correo" class="custom-input" placeholder="Ingresa tu correo institucional" required>
+                        <input type="text"  value="${param.carrera}" name="carrera" class="custom-input" placeholder="Elige tu carrera tu Carrera" list="lista-carreras" required autocomplete="off">
+                    </div>
+                    <datalist id="lista-carreras">
+                        <option value="Licenciatura en Negocios y Mercadotecnia">
+                        <option value="Licenciatura en Diseño Digital y Producción Audiovisual">
+                        <option value="Licenciatura en Contaduría">
+                        <option value="Licenciatura en Administración">
+                        <option value="Licenciatura en Gestión del Bienestar">
+                        <option value="Licenciatura en Terapia Física">
+                        <option value="Ingeniería en Tecnologías de la Información">
+                        <option value="Ingeniería en Diseño Textil y Moda">
+                        <option value="Ingeniería Industrial">
+                        <option value="Ingeniería Mecatrónica">
+                        <option value="Ingeniería en Mantenimiento Industrial">
+                        <option value="Ingeniería en Nanotecnología">
+                    </datalist>
+                    <div class="custom-input-group mb-2">
+                        <div class="input-addon">
+                            <i class="bi bi-phone"></i>
+                        </div>
+                        <input type="tel" value="${param.telefono}" name="telefono" class="custom-input" placeholder="Ingresa tu Celular / WhatsApp" maxlength="10" pattern="^[0-9]{10}$" onkeypress="return event.charCode >= 48 && event.charCode <= 57" required autocomplete="off">
+                    </div>
+                    <div class="custom-input-group mb-2">
+                        <div class="input-addon">
+                              <i class="bi bi-envelope"></i>
+                        </div>
+                        <input type="email" value="${param.correo}" name="correo" class="custom-input" placeholder="ejemplo@utez.edu.mx"
+                               pattern="^[a-zA-Z0-9._%+-]+@utez\.edu\.mx$" required>
                     </div>
 
-                    <div class="custom-input-group mb-3">
+                    <div class="custom-input-group mb-2">
                         <div class="input-addon">
                             <i class="bi bi-lock"></i>
                         </div>
-                        <input type="password" name="contra1" class="custom-input" placeholder="Ingresa tu Contraseña" required>
+                        <input type="password" name="contra1" class="custom-input" placeholder="Ingresa tu Contraseña" maxlength="12"  required>
                     </div>
 
-                    <div class="custom-input-group mb-4">
+                    <div class="custom-input-group mb-2">
                         <div class="input-addon">
                             <i class="bi bi-lock"></i>
                         </div>
-                        <input type="password" name="contra2" class="custom-input" placeholder="Confirmar Contraseña" required>
+                        <input type="password" name="contra2" class="custom-input" placeholder="Confirmar Contraseña" maxlength="12"  required>
                     </div>
 
                     <div class="mb-3">
                         <button type="submit" class="btn btn-iniciar shadow-sm">Crear</button>
                     </div>
-
                     <p class="footer-text mb-0">¿Ya tienes cuenta? <a href="login.jsp">Iniciar Sesion</a>
                     </p>
 
@@ -92,5 +117,6 @@
     </div>
 </div>
 <script src="assets/js/bootstrap.js"></script>
+<script src="assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

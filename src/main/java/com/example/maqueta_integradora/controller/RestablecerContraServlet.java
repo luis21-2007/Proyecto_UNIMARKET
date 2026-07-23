@@ -24,13 +24,18 @@ public class RestablecerContraServlet extends HttpServlet {
 
         // 1. Validar que el código ingresado coincida en la BD y no haya expirado
         boolean codigoEsValido = dao.validarCodigoYObtenerUsuario(correo, codigo);
-
-        if (!codigoEsValido) {
-            request.setAttribute("error", "Código incorrecto o expirado, intenta de nuevo.");
+        if (codigo.isBlank() || codigo == null || contra1.isBlank() || contra1 == null || contra2.isBlank() || contra2 == null){
+            request.setAttribute("error", "Por favor, completa todos los campos son obligatorios.");
             request.getRequestDispatcher("restablecer.jsp?correo=" + correo).forward(request, response);
             return;
         }
 
+        if (!codigoEsValido) {
+            request.setAttribute("error", "Código incorrecto o expirado, intenta de nuevo.");
+            request.setAttribute("codigo",codigo);
+            request.getRequestDispatcher("restablecer.jsp?correo=" + correo).forward(request, response);
+            return;
+        }
         // 2. Validar que las dos contraseñas ingresadas coincidan
         if (contra1 == null || !contra1.equals(contra2)) {
             request.setAttribute("error", "Las contraseñas ingresadas no coinciden.");
