@@ -27,6 +27,12 @@ public class LoginServlet extends HttpServlet {
             request.getRequestDispatcher("login.jsp").forward(request, response);
             return;
         }
+        if (!email.toLowerCase().endsWith("@utez.edu.mx")) {
+            request.setAttribute("error", "El correo debe ser institucional con terminación @utez.edu.mx");
+            request.setAttribute("contra",contra);
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+            return;
+        }
 
         // Intenta logear. Esto devolverá TRUE solo si las credenciales son correctas Y activo = 1
         boolean esValido = dao.login(email, contra);
@@ -42,6 +48,8 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("correoPendiente", email);
 
             request.setAttribute("error", "Credenciales incorrectas o cuenta pendiente de verificación.");
+            request.setAttribute("correo",email);
+            request.setAttribute("contra",contra);
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }

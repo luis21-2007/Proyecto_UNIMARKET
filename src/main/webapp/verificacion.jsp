@@ -30,6 +30,16 @@
 
         <div class="col-12 col-md-6">
             <div class="login-card shadow-sm">
+                <% if (request.getAttribute("error") != null) { %>
+                <div class="alert alert-danger py-2 px-3 mb-3 text-start" style="font-size: 15px; border-radius: 8px;">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> <%= request.getAttribute("error") %>
+                </div>
+                <% } %>
+                <% if (request.getAttribute("mensaje") != null) { %>
+                <div class="alert alert-info py-2 px-3 mb-3 text-start" style="font-size: 15px; border-radius: 8px;">
+                    <i class="bi bi-info-circle-fill me-2"></i> <%= request.getAttribute("mensaje") %>
+                </div>
+                <% } %>
                 <form action="Verificar" method="POST" class="text-center">
 
                     <div class="mb-2">
@@ -43,14 +53,14 @@
                     </p>
 
                     <div class="code-inputs-container mb-4">
-                        <input type="text" name="c1" class="code-box" maxlength="1" required autocomplete="off" autofocus>
-                        <input type="text" name="c2" class="code-box" maxlength="1" required autocomplete="off">
-                        <input type="text" name="c3" class="code-box" maxlength="1" required autocomplete="off">
-                        <input type="text" name="c4" class="code-box" maxlength="1" required autocomplete="off">
-                        <input type="text" name="c5" class="code-box" maxlength="1" required autocomplete="off">
-                        <input type="text" name="c6" class="code-box" maxlength="1" required autocomplete="off">
-                        <input type="text" name="c7" class="code-box" maxlength="1" required autocomplete="off">
-                        <input type="text" name="c8" class="code-box" maxlength="1" required autocomplete="off">
+                        <input type="text" name="c1" class="code-box" maxlength="1" required autocomplete="off" autofocus onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                        <input type="text" name="c2" class="code-box" maxlength="1" required autocomplete="off" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                        <input type="text" name="c3" class="code-box" maxlength="1" required autocomplete="off" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                        <input type="text" name="c4" class="code-box" maxlength="1" required autocomplete="off" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                        <input type="text" name="c5" class="code-box" maxlength="1" required autocomplete="off" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                        <input type="text" name="c6" class="code-box" maxlength="1" required autocomplete="off" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                        <input type="text" name="c7" class="code-box" maxlength="1" required autocomplete="off" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                        <input type="text" name="c8" class="code-box" maxlength="1" required autocomplete="off" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                     </div>
 
                     <div class="mb-3">
@@ -58,7 +68,9 @@
                     </div>
 
                     <p class="footer-text mb-0">
-                        ¿No recibiste el código? <a href="ReenviarCodigoServlet">Reenviar</a> <span id="contador" class="timer-text">15:00</span>
+                        ¿No recibiste el código?
+                        <a href="javascript:void(0);" id="btnReenviar" onclick="reenviarCodigo()">Reenviar</a>
+                        <span id="contador" class="timer-text">15:00</span>
                     </p>
 
                 </form>
