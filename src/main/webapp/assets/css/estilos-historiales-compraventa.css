@@ -1,0 +1,137 @@
+/* ==========================================================
+   ESTILOS: Historial de Compra-Venta
+   Usado por: H_Ventas.jsp y H_Compras.jsp
+   ========================================================== */
+
+body {
+    background-color: #faf7f5;
+}
+
+.page-title {
+    font-size: 2.8rem;
+    font-weight: 900;
+    margin-bottom: 0px;
+    color: #000;
+}
+
+.page-subtitle {
+    color: #7a7a7a;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.title-divider {
+    border-bottom: 3px solid #f38a55;
+    display: inline-block;
+    padding-bottom: 5px;
+    margin-bottom: 25px;
+    width: fit-content;
+}
+
+.product-title {
+    font-weight: 900;
+    font-size: 1.8rem;
+    margin-bottom: 0;
+    color: #000;
+}
+
+/* Texto gris informativo (ID, vendedor, fecha) */
+.info-text,
+.vendor-text,
+.date-text {
+    color: #8a8a8a;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 2px;
+}
+
+/* ---------- Historial de Venta ---------- */
+
+.sale-card {
+    background-color: #f2f3f4;
+    border: 1px solid #6c757d;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.product-img {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    border-radius: 8px;
+    background-color: transparent;
+}
+
+.price-text {
+    color: #e67e22;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.badge-completada {
+    border: 1.5px solid #28a745;
+    color: #28a745;
+    background-color: transparent;
+    border-radius: 20px;
+    font-weight: bold;
+    padding: 4px 20px;
+    display: inline-block;
+    font-size: 1.1rem;
+}
+
+/* ---------- Historial de Compras ---------- */
+
+.purchase-card {
+    background-color: #f2f3f4;
+    border: 1px solid #6c757d;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.purchase-card .product-img {
+    width: 170px;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.purchase-card .price-text {
+    color: #d67a42;
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.btn-pill {
+    border-radius: 20px;
+    font-weight: bold;
+    padding: 2px 18px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.btn-entregado {
+    border: 1.5px solid #28a745;
+    color: #28a745;
+    background-color: transparent;
+}
+
+.btn-calificar,
+.btn-reportar {
+    border: 1.5px solid #8B0000;
+    color: #8B0000;
+    background-color: transparent;
+}
+
+.btn-calificar:hover,
+.btn-reportar:hover {
+    background-color: #dc3545 !important;
+    color: #ffffff !important;
+    border-color: #dc3545 !important;
+}
