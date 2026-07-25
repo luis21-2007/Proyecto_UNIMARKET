@@ -137,6 +137,7 @@ public class UserDao implements Dao<User,Integer> {
     public boolean delete(Integer id) {
         return false;
     }
+
     public boolean login(String correo, String contrasena) {
         // Usamos LOWER() en el correo para evitar problemas de mayúsculas
         String sql = "SELECT COUNT(*) FROM usuario WHERE LOWER(correo) = LOWER(?) AND contrasena = ? AND activo = 1";
@@ -144,12 +145,10 @@ public class UserDao implements Dao<User,Integer> {
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            // Validación para evitar NullPointerException
+
             if (correo == null || contrasena == null) {
                 return false;
             }
-
-            // 1. Convertimos la contraseña ingresada por el usuario a su versión SHA-256 (64 caracteres)
             String contrasenaHash = HashUtil.hashSHA256(contrasena);
 
             // 2. Pasamos el correo limpio y la contraseña YA ENCRIPTADA a la consulta
@@ -167,6 +166,32 @@ public class UserDao implements Dao<User,Integer> {
             e.printStackTrace();
         }
         return false;
+    }
+    public User obtenerPorCorreo(String correo) {
+        String sql = "SELECT id_usuario, nombre, apellido, correo, carrera, telefono, rol FROM usuario WHERE LOWER(correo) = LOWER(?)";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, correo.trim());
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    User u = new User();
+                    u.setId(rs.getInt("id_usuario"));
+                    u.setNombre(rs.getString("nombre"));
+                    u.setApellido(rs.getString("apellido"));
+                    u.setCorreo(rs.getString("correo"));
+                    u.setCarrera(rs.getString("carrera"));
+                    u.setTelefono(rs.getLong("telefono"));
+                    u.setRol(rs.getString("rol"));
+                    return u;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     /*
     public int loginConEstado(String correo, String contrasena) {
