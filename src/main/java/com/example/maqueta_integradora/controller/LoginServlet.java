@@ -1,5 +1,6 @@
 package com.example.maqueta_integradora.controller;
 
+import com.example.maqueta_integradora.model.User;
 import com.example.maqueta_integradora.model.dao.UserDao;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,7 +13,7 @@ import java.io.IOException;
 
 @WebServlet(name = "LoginServlet", value = "/login")
 public class LoginServlet extends HttpServlet {
-    private final UserDao dao = new UserDao(); // Es buena práctica usar private final
+    private final UserDao dao = new UserDao();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -27,14 +28,26 @@ public class LoginServlet extends HttpServlet {
             request.getRequestDispatcher("login.jsp").forward(request, response);
             return;
         }
+        if (!email.toLowerCase().endsWith("@utez.edu.mx")) {
+            request.setAttribute("error", "El correo debe ser institucional con terminación @utez.edu.mx");
+            request.setAttribute("contra",contra);
+            request.getRequestDispatcher("login.jsp").forward(request, response);
+            return;
+        }
 
         // Intenta logear. Esto devolverá TRUE solo si las credenciales son correctas Y activo = 1
         boolean esValido = dao.login(email, contra);
-
         if (esValido) {
             HttpSession session = request.getSession(true);
-            session.setAttribute("usuario", email);
-            response.sendRedirect("index.jsp");
+            User usuarioLogueado = dao.obtenerPorCorreo(email);
+            session.setAttribute("usuario", usuarioLogueado);
+
+            // Redirección según el rol
+            if ("ADMIN".equalsIgnoreCase(usuarioLogueado.getRol())) {
+                response.sendRedirect("restablecer.jsp");
+            } else {
+                response.sendRedirect("index.jsp");
+            }
         } else {
             // Si falla, preparamos la sesión con el correo por si el usuario
             // sigue en estado inactivo (activo = 0) y necesita verificar su cuenta.
@@ -42,6 +55,8 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("correoPendiente", email);
 
             request.setAttribute("error", "Credenciales incorrectas o cuenta pendiente de verificación.");
+            request.setAttribute("correo",email);
+            request.setAttribute("contra",contra);
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }

@@ -21,6 +21,17 @@ public class RecuperarContraServlet extends HttpServlet {
         // MENSAJE DE SEGURIDAD (Se muestra siempre para evitar rastreo de correos activos)
         String mensajeGenerico = "Si el email se encuentra registrado, te llegará un correo electrónico con instrucciones.";
 
+        if (correo == null || correo.isBlank()) {
+            request.setAttribute("error", "Todos los campos deben de estar llenos");
+            request.getRequestDispatcher("recuperar.jsp").forward(request, response);
+            return;
+        }
+        if (!correo.toLowerCase().endsWith("@utez.edu.mx")) {
+            request.setAttribute("error", "El correo debe ser institucional con terminación @utez.edu.mx");
+            request.getRequestDispatcher("recuperar.jsp").forward(request, response);
+            return;
+        }
+
         if (correo != null && !correo.isBlank()) {
             boolean existe = dao.existeCorreo(correo);
             if (existe) {

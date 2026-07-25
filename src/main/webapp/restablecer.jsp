@@ -29,7 +29,7 @@
         </div>
         <div class="col-12 col-md-6">
             <div class="login-card shadow-sm">
-                <form action="restablecer" method="POST" class="text-center">
+                <form action="restablecer" method="POST" class="text-center" novalidate>
                     <input type="hidden" name="correo" value="<%= request.getParameter("correo") != null ? request.getParameter("correo") : "" %>">
                     <div class="mb-2">
                         <i class="bi bi-key-fill avatar-icon"></i>
@@ -40,10 +40,8 @@
                     <p class="text-muted mb-4 px-2" style="font-size: 13px;">
                         Ingresa el código que te enviamos junto con tu nueva contraseña para actualizar tu cuenta.
                     </p>
-
-                    <!-- Mensajes de error con tu estilo consistente -->
                     <% if (request.getAttribute("error") != null) { %>
-                    <div class="alert alert-danger py-2 px-3 mb-3 text-start" style="font-size: 12px; border-radius: 8px;">
+                    <div class="alert alert-danger py-2 px-3 mb-3 text-start" style="font-size: 15px; border-radius: 8px;">
                         <i class="bi bi-exclamation-triangle-fill me-2"></i> <%= request.getAttribute("error") %>
                     </div>
                     <% } %>
@@ -51,19 +49,19 @@
                         <div class="input-addon">
                             <i class="bi bi-shield-check"></i>
                         </div>
-                        <input type="text" name="codigo" class="custom-input text-uppercase" placeholder="Código de 6 dígitos" maxlength="6" required autocomplete="off">
+                        <input type="text" value="${param.codigo}" name="codigo" class="custom-input text-uppercase" placeholder="Código de 6 dígitos" maxlength="6" required autocomplete="off">
                     </div>
                     <div class="custom-input-group mb-3">
                         <div class="input-addon">
                             <i class="bi bi-lock"></i>
                         </div>
-                        <input type="password" name="contra1" class="custom-input" placeholder="Nueva contraseña" required>
+                        <input type="password" name="contra1" class="custom-input" placeholder="Nueva contraseña" maxlength="12" required>
                     </div>
                     <div class="custom-input-group mb-4">
                         <div class="input-addon">
                             <i class="bi bi-lock-fill"></i>
                         </div>
-                        <input type="password" name="contra2" class="custom-input" placeholder="Confirmar contraseña" required>
+                        <input type="password" name="contra2" class="custom-input" placeholder="Confirmar contraseña" maxlength="12" required>
                     </div>
                     <div class="mb-3">
                         <button type="submit" class="btn btn-iniciar shadow-sm w-100">Restablecer</button>
