@@ -1,6 +1,7 @@
 package com.example.maqueta_integradora.model.dao;
 
 import com.example.maqueta_integradora.model.User;
+import com.example.maqueta_integradora.utils.HashUtil;
 import com.example.maqueta_integradora.utils.SQLConnector;
 
 import java.security.SecureRandom;
@@ -13,7 +14,7 @@ public class UserDao implements Dao<User,Integer> {
     @Override
     public boolean create(User entidad) {
         // 1. Sentencias SQL corregidas (el orden de los ? ahora coincide con tus sets)
-        String sqlUsuario = "INSERT INTO usuario(nombre, apellido, correo, contrasena, carrera) VALUES(?, ?, ?, ?, ?)";
+        String sqlUsuario = "INSERT INTO usuario(nombre, apellido, correo, contrasena, carrera , telefono) VALUES(?, ?, ?, ?, ?, ?)";
         String sqlToken = "INSERT INTO tokens_verificacion(token, id_usuario, fecha_expiracion) VALUES(?, ?, ?)";
         Connection con = null;
         PreparedStatement psUsuario = null;
@@ -27,11 +28,14 @@ public class UserDao implements Dao<User,Integer> {
             // 2. Preparamos la inserción del usuario pidiendo que retorne la llave generada (id_usuario)
             psUsuario = con.prepareStatement(sqlUsuario, new String[]{"id_usuario"});
 
+            String contraEncriptada = HashUtil.hashSHA256(entidad.getContrasena());
+
             psUsuario.setString(1, entidad.getNombre());
             psUsuario.setString(2, entidad.getApellido());
             psUsuario.setString(3, entidad.getCorreo());
-            psUsuario.setString(4, entidad.getContrasena());
+            psUsuario.setString(4, contraEncriptada);
             psUsuario.setString(5, entidad.getCarrera());
+            psUsuario.setLong(6, entidad.getTelefono());
 
             psUsuario.executeUpdate();
 
@@ -134,23 +138,27 @@ public class UserDao implements Dao<User,Integer> {
         return false;
     }
     public boolean login(String correo, String contrasena) {
-        // 1. Agregamos el filtro 'activo = 1' a la consulta SQL
-        String sql = "SELECT COUNT(*) FROM usuario WHERE correo = ? AND contrasena = ? AND activo = 1";
+        // Usamos LOWER() en el correo para evitar problemas de mayúsculas
+        String sql = "SELECT COUNT(*) FROM usuario WHERE LOWER(correo) = LOWER(?) AND contrasena = ? AND activo = 1";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            // Validación de seguridad para prevenir el NullPointerException anterior
+            // Validación para evitar NullPointerException
             if (correo == null || contrasena == null) {
                 return false;
             }
 
+            // 1. Convertimos la contraseña ingresada por el usuario a su versión SHA-256 (64 caracteres)
+            String contrasenaHash = HashUtil.hashSHA256(contrasena);
+
+            // 2. Pasamos el correo limpio y la contraseña YA ENCRIPTADA a la consulta
             ps.setString(1, correo.trim());
-            ps.setString(2, contrasena);
+            ps.setString(2, contrasenaHash);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    // Solo devolverá true si coinciden los datos Y el usuario está activo (activo = 1)
+                    // Retorna true si coincide el correo, el hash de la contraseña y activo = 1
                     return rs.getInt(1) > 0;
                 }
             }
@@ -160,7 +168,7 @@ public class UserDao implements Dao<User,Integer> {
         }
         return false;
     }
-
+    /*
     public int loginConEstado(String correo, String contrasena) {
         // Seleccionamos directamente la columna activo
         String sql = "SELECT activo FROM usuario WHERE correo = ? AND contrasena = ?";
@@ -188,6 +196,8 @@ public class UserDao implements Dao<User,Integer> {
         }
         return 0; // 0 = Correo o contraseña incorrectos / Error
     }
+
+     */
 
     public boolean verificarTokenYActivarUsuario(String correo, String token) {
         // 1. Buscamos si el token coincide con el correo del usuario y no ha expirado
@@ -262,19 +272,25 @@ public class UserDao implements Dao<User,Integer> {
         }
     }
     public boolean existeCorreo(String correo) {
-        String sql = "SELECT COUNT(*) FROM usuario WHERE correo = ?";
+        String sql = "SELECT COUNT(*) FROM usuario WHERE LOWER(correo) = LOWER(?)";
+
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, correo.trim());
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getInt(1) > 0;
+
+            // Verificamos que no venga nulo antes de hacer el trim
+            if (correo != null) {
+                ps.setString(1, correo.trim());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getInt(1) > 0;
+                    }
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
-
     // Guarda el código de recuperación en la BD (expira en 15 minutos)
     public boolean guardarCodigoRecuperacion(String correo, String codigo) {
         String sql = "UPDATE usuario SET codigo_recuperacion = ?, limite_recuperacion = ? WHERE correo = ?";
@@ -316,6 +332,24 @@ public class UserDao implements Dao<User,Integer> {
             ps.setString(1, nuevaContra);
             ps.setString(2, correo.trim());
             return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    public boolean actualizarTokenPorCorreo(String correo, String nuevoToken) {
+        // Actualizamos la tabla tokens_verificacion buscando al usuario por su correo
+        String sql = "UPDATE tokens_verificacion SET token = ?,  fecha_expiracion = SYSDATE + INTERVAL '15' MINUTE WHERE id_usuario = (SELECT id_usuario FROM usuario WHERE LOWER(correo) = LOWER(?))";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, nuevoToken);
+            ps.setString(2, correo.trim());
+
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0; // Si retorna true, significa que encontró el id_usuario y actualizó el token
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
