@@ -31,7 +31,7 @@
 
         <div class="col-12 col-md-6">
             <div class="login-card shadow-sm">
-                <form action="recuperar" method="POST" class="text-center">
+                <form action="recuperar" method="POST" class="text-center" novalidate>
 
                     <div class="mb-2">
                         <i class="bi bi-shield-lock avatar-icon"></i>
@@ -43,22 +43,24 @@
                         Ingresa tu correo institucional registrado y te enviaremos las instrucciones de recuperación.
                     </p>
 
-                    <!-- Mensajes de alerta con el estilo del login -->
-                    <% if (request.getAttribute("mensaje") != null) { %>
-                    <div class="alert alert-info py-2 px-3 mb-3 text-start" style="font-size: 12px; border-radius: 8px;">
-                        <i class="bi bi-info-circle-fill me-2"></i> <%= request.getAttribute("mensaje") %>
+                    <% if (request.getAttribute("error") != null) { %>
+                    <div class="alert alert-danger py-2 px-3 mb-3 text-start" style="font-size: 15px; border-radius: 8px;">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> <%= request.getAttribute("error") %>
                     </div>
                     <% } %>
 
-                    <!-- Campo de entrada para el correo (mismos estilos que tu login) -->
+                    <% if (request.getAttribute("mensaje") != null) { %>
+                    <div class="alert alert-info py-2 px-3 mb-3 text-start" style="font-size: 15px; border-radius: 8px;">
+                        <i class="bi bi-info-circle-fill me-2"></i> <%= request.getAttribute("mensaje") %>
+                    </div>
+                    <% } %>
                     <div class="custom-input-group mb-3">
                         <div class="input-addon">
                             <i class="bi bi-envelope"></i>
                         </div>
-                        <input type="email" name="correo" class="custom-input" placeholder="Ingresa tu correo institucional" required>
+                        <input type="email" name="correo" class="custom-input" placeholder="Ingresa tu correo institucional"
+                               pattern="^[a-zA-Z0-9._%+-]+@utez\.edu\.mx$" required>
                     </div>
-
-
                     <div class="mb-3">
                         <button type="submit" class="btn btn-iniciar shadow-sm w-100">Enviar</button>
                     </div>

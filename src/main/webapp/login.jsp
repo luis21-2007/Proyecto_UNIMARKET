@@ -30,8 +30,12 @@
 
         <div class="col-12 col-md-6">
             <div class="login-card shadow-sm">
-                <form action="login" method="POST" class="text-center">
-
+                <% if (request.getAttribute("error") != null) { %>
+                <div class="alert alert-danger py-2 px-3 mb-3 text-start" style="font-size: 15px; border-radius: 8px;">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> <%= request.getAttribute("error") %>
+                </div>
+                <% } %>
+                <form action="login" method="POST" class="text-center" novalidate>
                     <div class="mb-2">
                         <i class="bi bi-person-circle avatar-icon"></i>
                     </div>
@@ -42,14 +46,14 @@
                         <div class="input-addon">
                             <i class="bi bi-envelope"></i>
                         </div>
-                        <input type="email" name="correo" class="custom-input" placeholder="Ingresa tu correo institucional" required>
+                        <input type="email" value="${param.correo}" name="correo" class="custom-input" placeholder="Ingresa tu correo institucional" pattern="^[a-zA-Z0-9._%+-]+@utez\.edu\.mx$" required>
                     </div>
 
                     <div class="custom-input-group mb-4">
                         <div class="input-addon">
                             <i class="bi bi-lock"></i>
                         </div>
-                        <input type="password" name="contra" class="custom-input" placeholder="Ingresa tu Contraseña" required>
+                        <input type="password" value="${param.contra}" name="contra" class="custom-input" placeholder="Ingresa tu Contraseña" maxlength="12" required>
                     </div>
 
                     <div class="mb-3">

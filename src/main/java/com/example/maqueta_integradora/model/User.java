@@ -9,6 +9,16 @@ public class User {
     private String contrasena;
     private String token;
 
+    public long getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(long telefono) {
+        this.telefono = telefono;
+    }
+
+    private long telefono;
+
     public String getToken() {
         return token;
     }
@@ -17,13 +27,14 @@ public class User {
         this.token = token;
     }
 
-    public User(String nombre, int id, String apellido, String carrera, String correo, String contrasena) {
+    public User(String nombre, int id, String apellido, String carrera, String correo, String contrasena , long telefono) {
         this.nombre = nombre;
         this.id = id;
         this.apellido = apellido;
         this.carrera = carrera;
         this.correo = correo;
         this.contrasena = contrasena;
+        this.telefono = telefono;
     }
 
     public User(){
