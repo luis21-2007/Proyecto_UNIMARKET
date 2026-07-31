@@ -100,7 +100,7 @@
                         <span class="product-price">$25 c/u</span>
                         <span class="product-rating"><i class="bi bi-star-fill me-1"></i>4.5</span>
                     </div>
-                    <button class="btn btn-comprar shadow-sm">Revisa</button>
+                    <button class="btn btn-comprar shadow-sm">Revisar</button>
                 </div>
             </div>
 
