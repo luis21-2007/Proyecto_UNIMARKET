@@ -57,20 +57,6 @@
     <div class="px-md-4">
         <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-4">
 
-            <!-- Producto 1: Mini-pizzas -->
-            <div class="col">
-                <div class="product-card">
-                    <div class="card-img-wrapper">
-                        <img src="assets/img/icono-integradora.jpeg" alt="Mini-pizzas hawaianas">
-                    </div>
-                    <div class="product-title text-truncate">Mini-pizzas hawaianas</div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="product-price">$30 c/u</span>
-                        <span class="product-rating"><i class="bi bi-star-fill me-1"></i>4.5</span>
-                    </div>
-                    <button class="btn btn-comprar shadow-sm">Comprar</button>
-                </div>
-            </div>
 
             <!-- Producto 2: Tortas -->
             <div class="col">
@@ -83,24 +69,10 @@
                         <span class="product-price">$35 c/u</span>
                         <span class="product-rating"><i class="bi bi-star-fill me-1"></i>4.5</span>
                     </div>
-                    <button class="btn btn-comprar shadow-sm">Comprar</button>
+                    <button class="btn btn-comprar shadow-sm">Revisar</button>
                 </div>
             </div>
 
-            <!-- Producto 3: Aguas Frescas -->
-            <div class="col">
-                <div class="product-card">
-                    <div class="card-img-wrapper">
-                        <img src="assets/img/icono-integradora.jpeg" alt="Agua de sabores 1Lt">
-                    </div>
-                    <div class="product-title text-truncate">Agua de sabores 1Lt</div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="product-price">$35 c/u</span>
-                        <span class="product-rating"><i class="bi bi-star-fill me-1"></i>4.5</span>
-                    </div>
-                    <button class="btn btn-comprar shadow-sm">Comprar</button>
-                </div>
-            </div>
 
             <!-- Producto 4: Pays -->
             <div class="col">
@@ -113,7 +85,7 @@
                         <span class="product-price">$30 c/u</span>
                         <span class="product-rating"><i class="bi bi-star-fill me-1"></i>4.5</span>
                     </div>
-                    <button class="btn btn-comprar shadow-sm">Comprar</button>
+                    <button class="btn btn-comprar shadow-sm">Revisar</button>
                 </div>
             </div>
 
@@ -128,28 +100,10 @@
                         <span class="product-price">$25 c/u</span>
                         <span class="product-rating"><i class="bi bi-star-fill me-1"></i>4.5</span>
                     </div>
-                    <button class="btn btn-comprar shadow-sm">Comprar</button>
+                    <button class="btn btn-comprar shadow-sm">Revisar</button>
                 </div>
             </div>
 
-            <!-- Producto 6: Esmalte -->
-            <div class="col">
-                <div class="product-card">
-                    <div class="card-img-wrapper">
-                        <img src="assets/img/icono-integradora.jpeg" alt="Esmalte de uñas rosa">
-                    </div>
-                    <div class="product-title text-truncate">Esmalte de uñas rosa</div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="product-price">$20 c/u</span>
-                        <span class="product-rating"><i class="bi bi-star-fill me-1"></i>4.5</span>
-                    </div>
-                    <button class="btn btn-comprar shadow-sm">Comprar</button>
-                </div>
-            </div>
 
-        </div>
-    </div>
-
-</div>
 
 <%@ include file="layout/footer.jsp" %>
