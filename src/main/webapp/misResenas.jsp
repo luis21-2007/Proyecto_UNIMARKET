@@ -1,18 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Reseñas</title>
-
-    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/bootstrap-icons-1.13.1/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="assets/css/estilos-historiales-compraventa.css">
-</head>
-<body>
-
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="layout/header.jsp" %>
 
 <div class="container mt-5">
@@ -27,10 +13,9 @@
     <div class="row">
         <div class="col-12 col-lg-10">
 
-            <!-- Reseña 1 -->
             <div class="sale-card d-flex flex-column flex-md-row align-items-center">
 
-                <img src="assets/img/productos/hoodie.png"
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3WuH8Z61dWeLhQzhoHaP_hiY6B7E_7AWAhxNm1rVX30lNiDh9OEkXrSQ&s=10"
                      class="product-img me-4 mb-3 mb-md-0"
                      alt="Producto">
 
@@ -68,10 +53,10 @@
 
             </div>
 
-            <!-- Reseña 2 -->
+
             <div class="sale-card d-flex flex-column flex-md-row align-items-center">
 
-                <img src="assets/img/productos/audifonos.png"
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCl0TWtKdQkyWJJ9D1y08weaX1LHI4eDw7Qi_d-K2d79ueJDINEWtYAkES&s=10"
                      class="product-img me-4 mb-3 mb-md-0"
                      alt="Producto">
 
@@ -112,7 +97,7 @@
             <!-- Reseña 3 -->
             <div class="sale-card d-flex flex-column flex-md-row align-items-center">
 
-                <img src="assets/img/productos/mouse.png"
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRidA4KS1pUXhAkX--_UbbitS7PvTn9JivnAFCfq_JYtVKQe4fjzmx-cntb&s=10"
                      class="product-img me-4 mb-3 mb-md-0"
                      alt="Producto">
 
@@ -155,7 +140,5 @@
 
 </div>
 
-<script src="assets/js/bootstrap.js"></script>
 
-</body>
-</html>
+<%@ include file="layout/footer.jsp" %>
