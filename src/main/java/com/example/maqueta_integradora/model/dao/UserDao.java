@@ -354,7 +354,8 @@ public class UserDao implements Dao<User,Integer> {
         String sql = "UPDATE usuario SET contrasena = ?, codigo_recuperacion = NULL, limite_recuperacion = NULL WHERE correo = ?";
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, nuevaContra);
+            String contraHash = HashUtil.hashSHA256(nuevaContra);
+            ps.setString(1, contraHash);
             ps.setString(2, correo.trim());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {

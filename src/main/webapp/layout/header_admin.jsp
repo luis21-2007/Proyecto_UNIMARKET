@@ -7,7 +7,8 @@
     <link href="assets/css/bootstrap.css" rel="stylesheet">
     <link href="assets/css/bi/bootstrap-icons.min.css" rel="stylesheet">
     <link href="assets/css/estilos-personalizados.css" rel="stylesheet">
-    <link href="assets/css/estilos-index.css" rel="stylesheet">
+    <link href="assets/css/estilos-index_admin.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/estilos-gestionCategorias.css">
 </head>
 <body>
 
@@ -37,7 +38,7 @@
         </div>
 
         <div class="d-flex flex-column align-items-center">
-            <a href="#" class="icon-btn mb-2">
+            <a href="categorias" class="icon-btn mb-2">
                 <i class="bi bi-pencil-square"></i>
             </a>
             <span class="icon-label" style="min-height: 2.2em; display: block;">Categorias</span>
