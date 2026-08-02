@@ -100,3 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
     iniciarCronometro();
     configurarInputsCodigo();
 });
+function filtrarPorCategoria(idCategoria) {
+    document.getElementById('inputCategoriaId').value = idCategoria;
+    document.getElementById('formFiltroCategoria').submit();
+}

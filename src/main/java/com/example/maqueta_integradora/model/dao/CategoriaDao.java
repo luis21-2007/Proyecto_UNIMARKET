@@ -32,7 +32,8 @@ public class CategoriaDao implements Dao<Categoria, Integer> {
     @Override
     public List<Categoria> getAll() {
         List<Categoria> lista = new ArrayList<>();
-        String sql = "SELECT id_categoria, nombre_categoria, fecha_creacion, fecha_modificacion, id_admin_creo, id_admin_modifico FROM categoria ORDER BY nombre_categoria ASC";
+        // Filtramos solo las que están activas (estado = 1)
+        String sql = "SELECT id_categoria, nombre_categoria, fecha_creacion, fecha_modificacion, id_admin_creo, id_admin_modifico, estado FROM categoria WHERE estado = 1 ORDER BY nombre_categoria ASC";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -49,6 +50,8 @@ public class CategoriaDao implements Dao<Categoria, Integer> {
                 int idMod = rs.getInt("id_admin_modifico");
                 cat.setIdAdminModifico(rs.wasNull() ? null : idMod);
 
+                cat.setEstado(rs.getInt("estado") == 1); // 1 es true, 0 es false
+
                 lista.add(cat);
             }
         } catch (SQLException e) {
@@ -57,7 +60,6 @@ public class CategoriaDao implements Dao<Categoria, Integer> {
         }
         return lista;
     }
-
     @Override
     public Categoria getById(Integer id) {
         String sql = "SELECT id_categoria, nombre_categoria, fecha_creacion, fecha_modificacion, id_admin_creo, id_admin_modifico FROM categoria WHERE id_categoria = ?";
@@ -91,7 +93,7 @@ public class CategoriaDao implements Dao<Categoria, Integer> {
 
     @Override
     public boolean update(Categoria entidad) {
-        // En Oracle SYSDATE guarda la fecha/hora actual del servidor
+        // guardar la fecha/hora actual del servidor
         String sql = "UPDATE categoria SET nombre_categoria = ?, fecha_modificacion = SYSDATE, id_admin_modifico = ? WHERE id_categoria = ?";
 
         try (Connection con = SQLConnector.getConnection();
@@ -119,24 +121,24 @@ public class CategoriaDao implements Dao<Categoria, Integer> {
 
     @Override
     public boolean delete(Integer id) {
-        String sql = "DELETE FROM categoria WHERE id_categoria = ?";
+            // Baja lógica: Cambiamos el estado a 0 (Inactivo)
+            String sql = "UPDATE categoria SET estado = 0, fecha_modificacion = SYSDATE WHERE id_categoria = ?";
 
-        try (Connection con = SQLConnector.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+            try (Connection con = SQLConnector.getConnection();
+                 PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setInt(1, id);
+                ps.setInt(1, id);
 
-            int filasAfectadas = ps.executeUpdate();
-            return filasAfectadas > 0;
+                int filasAfectadas = ps.executeUpdate();
+                return filasAfectadas > 0;
 
-        } catch (SQLException e) {
-            System.err.println("Error al eliminar categoría.");
-            e.printStackTrace();
+            } catch (SQLException e) {
+                System.err.println("Error al realizar la baja lógica de la categoría.");
+                e.printStackTrace();
+            }
+            return false;
         }
-        return false;
-    }
-
-    // Útil para validar duplicados al CREAR una nueva categoría
+    //validar duplicados al CREAR una nueva categoría
     public boolean existeNombre(String nombre) {
         String sql = "SELECT COUNT(*) FROM categoria WHERE LOWER(nombre_categoria) = LOWER(?)";
 
@@ -158,7 +160,7 @@ public class CategoriaDao implements Dao<Categoria, Integer> {
         return false;
     }
 
-    // Útil para validar duplicados al EDITAR (ignora el ID de la categoría actual)
+    // validar duplicados al EDITAR (ignora el ID de la categoría actual)
     public boolean existeNombreExcluyendoId(String nombre, int idCategoria) {
         String sql = "SELECT COUNT(*) FROM categoria WHERE LOWER(nombre_categoria) = LOWER(?) AND id_categoria <> ?";
 

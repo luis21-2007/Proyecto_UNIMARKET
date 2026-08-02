@@ -46,7 +46,7 @@ public class LoginServlet extends HttpServlet {
             if ("ADMIN".equalsIgnoreCase(usuarioLogueado.getRol())) {
                 response.sendRedirect("index_admin.jsp");
             } else {
-                response.sendRedirect("index.jsp");
+                response.sendRedirect("inicio");
             }
         } else {
             // Si falla, preparamos la sesión con el correo por si el usuario

@@ -116,3 +116,10 @@ body {
 .footer-text a:hover {
     text-decoration: underline;
 }
+select.custom-input {
+    cursor: pointer;
+}
+input[type=number].custom-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

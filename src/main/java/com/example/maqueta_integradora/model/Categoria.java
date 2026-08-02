@@ -10,20 +10,20 @@ public class Categoria {
     private Timestamp fechaModificacion;
     private int idAdminCreo;
     private Integer idAdminModifico; // Integer (objeto) por si es NULL al crearse por primera vez
+    private boolean estado;
 
     public Categoria() {
     }
 
-    public Categoria(int idCategoria, String nombreCategoria, Timestamp fechaCreacion, Timestamp fechaModificacion, int idAdminCreo, Integer idAdminModifico) {
+    public Categoria(int idCategoria, String nombreCategoria, Timestamp fechaCreacion, Timestamp fechaModificacion, int idAdminCreo, Integer idAdminModifico , boolean estado){
         this.idCategoria = idCategoria;
         this.nombreCategoria = nombreCategoria;
         this.fechaCreacion = fechaCreacion;
         this.fechaModificacion = fechaModificacion;
         this.idAdminCreo = idAdminCreo;
         this.idAdminModifico = idAdminModifico;
+        this.estado = estado;
     }
-
-    // --- GETTERS Y SETTERS ---
 
     public int getIdCategoria() {
         return idCategoria;
@@ -71,5 +71,12 @@ public class Categoria {
 
     public void setIdAdminModifico(Integer idAdminModifico) {
         this.idAdminModifico = idAdminModifico;
+    }
+    public boolean isEstado() {
+        return estado;
+    }
+
+    public void setEstado(boolean estado) {
+        this.estado = estado;
     }
 }
