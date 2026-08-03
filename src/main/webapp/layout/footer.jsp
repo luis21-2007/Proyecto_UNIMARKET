@@ -25,5 +25,6 @@
 <script src="${pageContext.request.contextPath}assets/js/slick.min.js"></script>
 <script src="assets/js/token.js"></script>
 <script src="assets/js/bootstrap.js" ></script>
+<script src="assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

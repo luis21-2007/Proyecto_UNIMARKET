@@ -55,7 +55,6 @@
                     <span class="icon-label text-center" style="min-height: 2.2em; display: block;">Agregar<br>Producto</span>
                 </div>
 
-                <!-- Botón de Cerrar Sesión (Opcional pero recomendable) -->
                 <div class="d-flex flex-column align-items-center">
                     <a href="logout" class="icon-btn mb-2" title="Cerrar sesión">
                         <i class="bi bi-box-arrow-right"></i>
@@ -65,10 +64,10 @@
 
             </c:when>
 
-            <%-- OPCIÓN 2: VISITANTE / INVITADO (NO HA INICIADO SESIÓN) --%>
+            <%-- sin sesion--%>
             <c:otherwise>
 
-                <!-- Botón Único para Iniciar Sesión / Perfil Invitado -->
+                <!--  inicio de sesion obligatorio -->
                 <div class="d-flex flex-column align-items-center">
                     <a href="login.jsp" class="icon-btn mb-2" title="Iniciar Sesión">
                         <i class="bi bi-person-circle"></i>

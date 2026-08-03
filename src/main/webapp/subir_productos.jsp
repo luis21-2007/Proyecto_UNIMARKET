@@ -15,8 +15,6 @@
 
 <div class="container login-container" style="min-height: 100vh; display: flex; align-items: center;">
     <div class="row align-items-center g-5 w-100">
-
-        <!-- Columna Izquierda: Logo / Marca -->
         <div class="col-12 col-md-6 text-md-start text-center ps-lg-5">
             <div class="brand-title">
                 <div class="mb-2">
@@ -30,75 +28,57 @@
                 </div>
             </div>
         </div>
-
-        <!-- Columna Derecha: Formulario de Subir Producto -->
         <div class="col-12 col-md-6">
-            <!-- Usamos la clase .login-card de tu CSS global -->
             <div class="login-card shadow-sm">
 
-                <form action="subirProducto" method="POST" enctype="multipart/form-data" class="text-center">
+                <!-- ALERTA DE ERROR SI VIENE DEL SERVLET -->
+                <c:if test="${not empty error}">
+                    <div class="alert alert-danger py-2 px-3 mb-3 text-start" style="font-size: 15px; border-radius: 8px;">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> ${error}
+                    </div>
+                </c:if>
 
+                <form action="subirProducto" method="POST" enctype="multipart/form-data" id="formSubirProducto" class="text-center" novalidate>
                     <div class="mb-3">
-                        <!-- Botón Personalizado -->
                         <label for="input-file" class="btn btn-iniciar" style="cursor: pointer; padding: 6px 20px; font-size: 14px;">
                             <i class="bi bi-plus-lg me-1"></i> Subir imágenes (Máx 3)
                         </label>
-
-                        <!-- Input Múltiple (máximo 3) -->
-                        <input type="file" id="input-file" name="imagenes" accept="image/*" multiple style="display: none;" required onchange="previewImages(event)">
-
-                        <!-- Texto que indica cuántas fotos ha seleccionado -->
+                        <input type="file" id="input-file" name="imagenes" accept="image/png, image/jpeg, image/jpg, image/webp" multiple style="display: none;" required onchange="previewImages(event)">
                         <p id="file-count" class="footer-text mt-2 mb-2" style="font-weight: bold; color: #8B0000;"></p>
-
-                        <!-- Contenedor de Previsualización -->
                         <div id="preview-container" class="d-flex justify-content-center gap-2 mt-2"></div>
                     </div>
-
-                    <!-- Texto de Advertencia -->
                     <p class="footer-text mb-4 text-center">
-                        Procura que tus imágenes sean iguales a tu producto.
+                        Procura que tus imágenes sean iguales a tu producto real.
                     </p>
-
-                    <!-- Campos del Formulario (Usando .custom-input-group, .input-addon y .custom-input) -->
-
-                    <!-- Nombre del Producto -->
                     <div class="custom-input-group mb-3">
                         <div class="input-addon">
                             <i class="bi bi-box-seam"></i>
                         </div>
-                        <input type="text" name="nombre_producto" class="custom-input" placeholder="Ingresa el nombre del producto" required>
+                        <input type="text" name="nombre_producto" value="${param.nombre_producto}" class="custom-input" placeholder="Ingresa el nombre del producto" maxlength="20" pattern="^[a-zA-Z0-9áéíóúÁÉÍÓÚÑñ\s\-\.\#]{3,60}$" required>
                     </div>
-                    <!-- Categoría (Select Dinámico) -->
                     <div class="custom-input-group mb-3">
                         <div class="input-addon">
                             <i class="bi bi-grid-3x3-gap"></i>
                         </div>
                         <select name="categoria" class="custom-input" style="color: #555;" required>
-                            <option value="" disabled selected>Selecciona la categoría del producto</option>
-                            <!-- Se itera con JSTL si mandas la lista desde el Servlet -->
+                            <option value="" disabled ${empty param.categoria ? 'selected' : ''}>Selecciona la categoría del producto</option>
                             <c:forEach var="cat" items="${listaCategorias}">
-                                <option value="${cat.idCategoria}">${cat.nombreCategoria}</option>
+                                <option value="${cat.idCategoria}" ${param.categoria == cat.idCategoria ? 'selected' : ''}>${cat.nombreCategoria}</option>
                             </c:forEach>
                         </select>
                     </div>
-
-                    <!-- Precio -->
                     <div class="custom-input-group mb-3">
                         <div class="input-addon">
                             <i class="bi bi-tags"></i>
                         </div>
-                        <input type="number" step="0.01" name="precio" class="custom-input" placeholder="Ingresa el precio del producto" required>
+                        <input type="number" step="0.50" min="1" max="99999" name="precio" value="${param.precio}" class="custom-input" placeholder="Ingresa el precio del producto ($)" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46" maxlength="10" required>
                     </div>
-
-                    <!-- Descripción -->
                     <div class="custom-input-group mb-3">
                         <div class="input-addon">
                             <i class="bi bi-card-text"></i>
                         </div>
-                        <input type="text" name="descripcion" class="custom-input" placeholder="Ingresa la descripción del producto" required>
+                        <input type="text" name="descripcion" value="${param.descripcion}" class="custom-input" placeholder="Ingresa la descripción del producto" maxlength="50" required>
                     </div>
-
-                    <!-- Botón Subir Producto -->
                     <div class="mt-4">
                         <button type="submit" class="btn btn-iniciar">
                             Subir producto
@@ -112,6 +92,7 @@
 
     </div>
 </div>
+
 <script src="assets/js/imagen-producto.js"></script>
 <script src="assets/js/bootstrap.bundle.min.js"></script>
 </body>
