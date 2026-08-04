@@ -10,6 +10,7 @@
     <link href="assets/css/bi/bootstrap-icons.min.css" rel="stylesheet">
     <link href="assets/css/estilos-personalizados.css" rel="stylesheet">
     <link href="assets/css/estilos-index.css" rel="stylesheet">
+    <link href="assets/css/detalles-productos.css" rel="stylesheet">
 </head>
 <body>
 

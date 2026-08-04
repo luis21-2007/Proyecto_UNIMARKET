@@ -37,7 +37,7 @@ public class ProductoDao implements Dao<Producto, Integer> {
         List<Producto> lista = new ArrayList<>();
 
         // Consulta con subquery para obtener la primera imagen de cada producto
-        String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion,p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario,(SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal  FROM producto p WHERE p.estado = 1 ORDER BY p.fecha_publicacion DESC";
+        String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion   ,p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario,(SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal  FROM producto p WHERE p.estado = 1 ORDER BY p.fecha_publicacion DESC";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -80,7 +80,6 @@ public class ProductoDao implements Dao<Producto, Integer> {
                     p.setNombre(rs.getString("nombre"));
                     p.setPrecio(rs.getDouble("precio"));
                     p.setDescripcion(rs.getString("descripcion"));
-                    p.setImagenUrl(rs.getString("imagen_url"));
                     p.setFechaPublicacion(rs.getTimestamp("fecha_publicacion"));
                     p.setEstado(rs.getInt("estado") == 1);
                     p.setIdCategoria(rs.getInt("id_categoria"));

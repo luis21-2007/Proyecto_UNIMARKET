@@ -57,6 +57,12 @@
             </a>
             <span class="icon-label" style="min-height: 2.2em; display: block;">Reportes</span>
         </div>
+        <div class="d-flex flex-column align-items-center">
+            <a href="logout" class="icon-btn mb-2" title="Cerrar sesión">
+                <i class="bi bi-box-arrow-right"></i>
+            </a>
+            <span class="icon-label" style="min-height: 2.2em; display: block;">Salir<br></span>
+        </div>
 
     </div>
 </header>

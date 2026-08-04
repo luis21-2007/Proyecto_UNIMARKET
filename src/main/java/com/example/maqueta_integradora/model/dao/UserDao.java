@@ -125,6 +125,34 @@ public class UserDao implements Dao<User,Integer> {
 
     @Override
     public User getById(Integer id) {
+        if (id == null) {
+            return null;
+        }
+        String sql = "SELECT id_usuario, nombre, apellido, correo, carrera, telefono, rol FROM usuario WHERE id_usuario = ?";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    User u = new User();
+                    u.setId(rs.getInt("id_usuario"));
+                    u.setNombre(rs.getString("nombre"));
+                    u.setApellido(rs.getString("apellido"));
+                    u.setCorreo(rs.getString("correo"));
+                    u.setCarrera(rs.getString("carrera"));
+                    u.setTelefono(rs.getLong("telefono"));
+                    u.setRol(rs.getString("rol"));
+                    return u;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener usuario por ID: " + id);
+            e.printStackTrace();
+        }
+
         return null;
     }
 
