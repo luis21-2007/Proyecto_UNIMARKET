@@ -15,20 +15,13 @@
 <header class="custom-header d-flex align-items-center justify-content-between pe-4">
 
     <div class="logo-container d-flex align-items-center h-100">
-        <a href="index.jsp" class="d-inline-block">
+        <a href="adminDashboard" class="d-inline-block">
             <img src="assets/img/icono-integradora.jpeg" alt="Logo" class="logo-img rounded-circle">
         </a>
     </div>
 
     <div class="d-flex align-items-center gap-4">
 
-        <div class="d-flex flex-column align-items-center" >
-            <a href="#" class="icon-btn mb-2">
-                <span class="notification-badge"></span>
-                <i class="bi bi-grid"></i>
-            </a>
-            <span class="icon-label" style="min-height: 2.2em; display: block;">Inicio<br></span>
-        </div>
 
         <div class="d-flex flex-column align-items-center">
             <a href="gestionUsuarios" class="icon-btn mb-2">

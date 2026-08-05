@@ -47,7 +47,6 @@
                                 <small class="text-muted fw-semibold">${user.correo}</small>
                             </div>
                         </div>
-
                         <div class="d-flex align-items-center gap-3">
                             <!-- Badge de Estado -->
                             <c:choose>

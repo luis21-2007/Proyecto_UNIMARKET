@@ -54,7 +54,7 @@ public class LoginServlet extends HttpServlet {
             HttpSession session = request.getSession(true);
             session.setAttribute("correoPendiente", email);
 
-            request.setAttribute("error", "Credenciales incorrectas o cuenta pendiente de verificación.");
+            request.setAttribute("error", "Credenciales incorrectas o cuenta pendiente de verificación o Tu cuenta fue deshabilitada.");
             request.setAttribute("correo",email);
             request.setAttribute("contra",contra);
             request.getRequestDispatcher("login.jsp").forward(request, response);
