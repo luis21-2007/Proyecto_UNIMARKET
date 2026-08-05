@@ -1,53 +1,44 @@
-const ctx = document.getElementById('productosChart').getContext('2d');
-const productosChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'],
-        datasets: [{
-            label: 'Productos Subidos',
-            data: [10, 50, 75, 50, 25, 75, 100],
-            borderColor: '#c64646',
-            backgroundColor: 'transparent',
-            pointBackgroundColor: '#fff',
-            pointBorderColor: '#c64646',
-            pointBorderWidth: 2,
-            pointRadius: 4,
-            borderWidth: 2,
-            tension: 0
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                display: false
-            }
+document.addEventListener("DOMContentLoaded", function () {
+    const canvas = document.getElementById('productosChart');
+    if (!canvas) return;
+
+    // Leemos los datos enviados desde el JSP
+    const totalProductos = parseInt(canvas.getAttribute('data-productos')) || 0;
+    const totalUsuarios = parseInt(canvas.getAttribute('data-usuarios')) || 0;
+
+    const ctx = canvas.getContext('2d');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Total Productos', 'Total Usuarios'],
+            datasets: [{
+                label: 'Registros en Plataforma',
+                data: [totalProductos, totalUsuarios],
+                backgroundColor: [
+                    'rgba(139, 0, 0, 0.7)',  // Guinda
+                    'rgba(243, 156, 18, 0.7)' // Naranja
+                ],
+                borderColor: [
+                    '#8B0000',
+                    '#f39c12'
+                ],
+                borderWidth: 2,
+                borderRadius: 8
+            }]
         },
-        scales: {
-            y: {
-                min: 25,
-                max: 125,
-                ticks: {
-                    stepSize: 25,
-                    color: '#000',
-                    font: { size: 14, weight: 'bold' }
-                },
-                grid: {
-                    color: '#a0a0a0',
-                    drawBorder: false,
-                    borderDash: [10, 10]
-                }
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
             },
-            x: {
-                ticks: {
-                    color: '#000',
-                    font: { size: 14, weight: 'bold' }
-                },
-                grid: {
-                    display: false
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
                 }
             }
         }
-    }
+    });
 });

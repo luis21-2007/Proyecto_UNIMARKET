@@ -95,3 +95,120 @@ body {
 .btn-detalles:hover {
     background-color: #e0a000;
 }
+/* Estilos adaptados al diseño de tu maqueta */
+.gestion-title {
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: #000;
+    text-decoration: underline;
+    margin-bottom: 2rem;
+}
+
+.search-input-group {
+    background-color: #e2e5e7;
+    border-radius: 20px;
+    padding: 6px 15px;
+    margin-bottom: 1.5rem;
+}
+
+.search-input-group input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Contenedor Amarillo Principal */
+.users-container-card {
+    background-color: #f7b700; /* Amarillo/Dorado de la maqueta */
+    border: 2px solid #222;
+    border-radius: 15px 15px 0 0;
+    padding: 1.5rem;
+}
+
+/* Tarjetas Blancas de Usuarios */
+.user-item-card {
+    background-color: #ffffff;
+    border-radius: 15px;
+    padding: 12px 20px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.user-item-card:last-child {
+    margin-bottom: 0;
+}
+
+/* Avatar con Iniciales */
+.user-avatar {
+    width: 48px;
+    height: 48px;
+    background-color: #e5b3b3; /* Rosa/Grisáceo suave de las iniciales */
+    color: #8c4242;
+    border: 1px solid #c98888;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* Badge de Estado Activo */
+.status-badge-active {
+    border: 1.5px solid #28a745;
+    color: #28a745;
+    background-color: #f0fff4;
+    font-weight: 700;
+    border-radius: 20px;
+    padding: 4px 25px;
+    font-size: 0.9rem;
+}
+
+.status-badge-inactive {
+    border: 1.5px solid #dc3545;
+    color: #dc3545;
+    background-color: #fff0f0;
+    font-weight: 700;
+    border-radius: 20px;
+    padding: 4px 20px;
+    font-size: 0.9rem;
+}
+
+/* Botón de opciones (tres puntos) */
+.btn-options {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #000;
+    cursor: pointer;
+}
+
+/* Footer de Paginación */
+.pagination-footer {
+    background-color: #ffebad; /* Amarillo claro */
+    border: 2px solid #222;
+    border-top: none;
+    border-radius: 0 0 15px 15px;
+    padding: 10px 20px;
+}
+
+.page-btn {
+    background-color: #fce18a;
+    border: 1px solid #e0c265;
+    color: #000;
+    font-weight: bold;
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    text-decoration: none;
+    margin: 0 2px;
+}
+
+.page-btn.active {
+    background-color: #e0b020;
+}

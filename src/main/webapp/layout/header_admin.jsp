@@ -31,7 +31,7 @@
         </div>
 
         <div class="d-flex flex-column align-items-center">
-            <a href="#" class="icon-btn mb-2">
+            <a href="gestionUsuarios" class="icon-btn mb-2">
                 <i class="bi bi-people-fill"></i>
             </a>
             <span class="icon-label" style="min-height: 2.2em; display: block;">Usuarios</span>

@@ -11,6 +11,15 @@ public class Categoria {
     private int idAdminCreo;
     private Integer idAdminModifico; // Integer (objeto) por si es NULL al crearse por primera vez
     private boolean estado;
+    private int totalProductos;
+
+    public int getTotalProductos() {
+        return totalProductos;
+    }
+
+    public void setTotalProductos(int totalProductos) {
+        this.totalProductos = totalProductos;
+    }
 
     public Categoria() {
     }

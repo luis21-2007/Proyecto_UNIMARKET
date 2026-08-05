@@ -9,8 +9,15 @@ public class User {
     private String contrasena;
     private String token;
     private String rol;
+    private  Integer activo;
 
+    public Integer getActivo() {
+        return activo;
+    }
 
+    public void setActivo(Integer activo) {
+        this.activo = activo;
+    }
     public long getTelefono() {
         return telefono;
     }

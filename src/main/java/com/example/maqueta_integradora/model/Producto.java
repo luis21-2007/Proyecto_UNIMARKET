@@ -12,6 +12,7 @@ public class Producto {
     private Integer idCategoria;
     private Integer idUsuario;
 
+
     // Getters y Setters
     public Integer getIdProducto() { return idProducto; }
     public void setIdProducto(Integer idProducto) { this.idProducto = idProducto; }

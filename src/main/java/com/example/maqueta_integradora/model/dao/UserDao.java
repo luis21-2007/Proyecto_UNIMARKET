@@ -117,10 +117,36 @@ public class UserDao implements Dao<User,Integer> {
             return false;
         }
     */
-
     @Override
     public List<User> getAll() {
-        return List.of();
+        List<User> listaUsuarios = new java.util.ArrayList<>();
+        // Puedes agregar "WHERE activo = 1" si solo deseas listar los usuarios activos
+        String sql = "SELECT id_usuario, nombre, apellido, correo, carrera, telefono, rol, activo FROM usuario ORDER BY id_usuario DESC";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                User u = new User();
+                u.setId(rs.getInt("id_usuario"));
+                u.setNombre(rs.getString("nombre"));
+                u.setApellido(rs.getString("apellido"));
+                u.setCorreo(rs.getString("correo"));
+                u.setCarrera(rs.getString("carrera"));
+                u.setTelefono(rs.getLong("telefono"));
+                u.setRol(rs.getString("rol"));
+                u.setActivo(rs.getInt("activo"));
+
+                listaUsuarios.add(u);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al consultar la lista completa de usuarios:");
+            e.printStackTrace();
+        }
+
+        return listaUsuarios;
     }
 
     @Override
@@ -221,36 +247,6 @@ public class UserDao implements Dao<User,Integer> {
         }
         return null;
     }
-    /*
-    public int loginConEstado(String correo, String contrasena) {
-        // Seleccionamos directamente la columna activo
-        String sql = "SELECT activo FROM usuario WHERE correo = ? AND contrasena = ?";
-
-        try (Connection con = SQLConnector.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            if (correo == null || contrasena == null) return 0; // Datos incorrectos
-
-            ps.setString(1, correo.trim());
-            ps.setString(2, contrasena);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    int activo = rs.getInt("activo");
-                    if (activo == 1) {
-                        return 1; // 1 = Login exitoso y cuenta activa
-                    } else {
-                        return 2; // 2 = Credenciales correctas pero cuenta INACTIVA
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0; // 0 = Correo o contraseña incorrectos / Error
-    }
-
-     */
 
     public boolean verificarTokenYActivarUsuario(String correo, String token) {
         // 1. Buscamos si el token coincide con el correo del usuario y no ha expirado
@@ -408,6 +404,37 @@ public class UserDao implements Dao<User,Integer> {
             e.printStackTrace();
         }
         return false;
+    }
+    public boolean desactivarUsuario(int idUsuario) {
+        String sql = "UPDATE usuario SET activo = 0 WHERE id_usuario = ?";
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idUsuario);
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error al dar de baja al usuario con ID: " + idUsuario);
+            e.printStackTrace();
+        }
+        return false;
+    }
+    public boolean activarUsuario(int idUsuario) {
+        String sql = "UPDATE usuario SET activo = 1 WHERE id_usuario = ?";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idUsuario);
+            int filasAfectadas = ps.executeUpdate();
+
+            return filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error al activar usuario con ID " + idUsuario + ": " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 
 }

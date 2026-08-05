@@ -60,6 +60,8 @@ public class CategoriaDao implements Dao<Categoria, Integer> {
         }
         return lista;
     }
+
+
     @Override
     public Categoria getById(Integer id) {
         String sql = "SELECT id_categoria, nombre_categoria, fecha_creacion, fecha_modificacion, id_admin_creo, id_admin_modifico FROM categoria WHERE id_categoria = ?";
@@ -121,23 +123,24 @@ public class CategoriaDao implements Dao<Categoria, Integer> {
 
     @Override
     public boolean delete(Integer id) {
-            // Baja lógica: Cambiamos el estado a 0 (Inactivo)
-            String sql = "UPDATE categoria SET estado = 0, fecha_modificacion = SYSDATE WHERE id_categoria = ?";
+        // Baja lógica: Cambiamos el estado a 0 (Inactivo)
+        String sql = "UPDATE categoria SET estado = 0, fecha_modificacion = SYSDATE WHERE id_categoria = ?";
 
-            try (Connection con = SQLConnector.getConnection();
-                 PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-                ps.setInt(1, id);
+            ps.setInt(1, id);
 
-                int filasAfectadas = ps.executeUpdate();
-                return filasAfectadas > 0;
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
 
-            } catch (SQLException e) {
-                System.err.println("Error al realizar la baja lógica de la categoría.");
-                e.printStackTrace();
-            }
-            return false;
+        } catch (SQLException e) {
+            System.err.println("Error al realizar la baja lógica de la categoría.");
+            e.printStackTrace();
         }
+        return false;
+    }
+
     //validar duplicados al CREAR una nueva categoría
     public boolean existeNombre(String nombre) {
         String sql = "SELECT COUNT(*) FROM categoria WHERE LOWER(nombre_categoria) = LOWER(?)";
@@ -181,5 +184,73 @@ public class CategoriaDao implements Dao<Categoria, Integer> {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public boolean desactivar(int idCategoria) {
+        String sql = "UPDATE categoria SET estado = 0 WHERE id_categoria = ?";
+
+        try (Connection con = SQLConnector.getConnection(); // Ajusta a tu método de conexión JDBC
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idCategoria);
+            int filasAfectadas = ps.executeUpdate();
+
+            return filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error al desactivar categoría con ID: " + idCategoria);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Activa una categoría cambiando su estado a 1 (Activa).
+     */
+
+    public boolean activar(int idCategoria) {
+        String sql = "UPDATE categoria SET estado = 1 WHERE id_categoria = ?";
+
+        try (Connection con = SQLConnector.getConnection(); // Ajusta a tu método de conexión JDBC
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idCategoria);
+            int filasAfectadas = ps.executeUpdate();
+
+            return filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error al activar categoría con ID: " + idCategoria);
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public List<Categoria> getAllAdmin() {
+        List<Categoria> lista = new ArrayList<>();
+
+        // c es alias de categoria, p es alias de producto
+        // COUNT(p.id_producto) cuenta cuántos productos tienen asignado ese id_categoria
+        String sql = "SELECT c.id_categoria, c.nombre_categoria, c.estado, COUNT(p.id_producto) AS total_productos FROM categoria c LEFT JOIN producto p ON c.id_categoria = p.id_categoria GROUP BY c.id_categoria, c.nombre_categoria, c.estado ORDER BY c.id_categoria DESC";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Categoria cat = new Categoria();
+                cat.setIdCategoria(rs.getInt("id_categoria"));
+                cat.setNombreCategoria(rs.getString("nombre_categoria"));
+                cat.setEstado(rs.getBoolean("estado"));
+
+                // Leemos el resultado del alias 'total_productos' que calculó el COUNT de SQL
+                cat.setTotalProductos(rs.getInt("total_productos"));
+
+                lista.add(cat);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al contar los productos por categoría.");
+            e.printStackTrace();
+        }
+        return lista;
     }
 }

@@ -56,7 +56,7 @@
             </div>
             <div class="mb-4">
                 <h2 class="fw-bold" style="color: #e67e22;">
-                    <fmt:formatNumber value="${producto.precio}" type="currency" currencySymbol="$"/>
+                    <fmt:formatNumber   currencySymbol="$" value="${producto.precio}" type="currency"/>
                 </h2>
             </div>
             <div>

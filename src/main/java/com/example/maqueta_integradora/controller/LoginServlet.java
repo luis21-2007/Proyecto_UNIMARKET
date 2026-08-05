@@ -44,7 +44,7 @@ public class LoginServlet extends HttpServlet {
 
             // Redirección según el rol
             if ("ADMIN".equalsIgnoreCase(usuarioLogueado.getRol())) {
-                response.sendRedirect("index_admin.jsp");
+                response.sendRedirect("adminDashboard");
             } else {
                 response.sendRedirect("inicio");
             }
