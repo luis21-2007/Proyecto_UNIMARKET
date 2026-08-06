@@ -1,15 +1,21 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%-- FORZA EL USO DE PUNTO (.) PARA DECIMALES EN LUGAR DE COMA (,) --%>
+<fmt:setLocale value="en_US" />
+
 <%@ include file="layout/header.jsp" %>
+
 <c:if test="${param.msg == 'ofertaExitosa'}">
     <div class="alert alert-success alert-dismissible fade show mt-3 shadow-sm" role="alert" style="border-radius: 10px;">
         <i class="bi bi-check-circle-fill me-2"></i> Tu oferta ha sido enviada al vendedor exitosamente.
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 </c:if>
+
 <div class="container py-5">
     <div class="row g-4 align-items-center">
+        <!-- COLUMNA 1: MINIATURAS DE IMÁGENES -->
         <div class="col-12 col-md-3 col-lg-2">
             <div class="d-flex flex-row flex-md-column gap-3 justify-content-center">
                 <c:choose>
@@ -25,6 +31,8 @@
                 </c:choose>
             </div>
         </div>
+
+        <!-- COLUMNA 2: IMAGEN PRINCIPAL -->
         <div class="col-12 col-md-5 col-lg-5">
             <img id="imgPrincipal"
                  src="${not empty listaImagenes ? listaImagenes[0] : 'assets/img/icono-integradora.jpeg'}"
@@ -34,38 +42,54 @@
         <!-- COLUMNA 3: DETALLES DEL PRODUCTO -->
         <div class="col-12 col-md-4 col-lg-5 ps-lg-4">
             <!-- Título del Producto -->
-            <h1 class="product-detail-title mb-4">${producto.nombre}</h1>
+            <h1 class="product-detail-title mb-2">${producto.nombre}</h1>
 
+            <!-- VENDEDOR DEL PRODUCTO (Ubicado arriba de la descripción) -->
+            <div class="d-flex align-items-center mb-3 text-secondary fs-6">
+                <i class="bi bi-person-circle text-warning fs-5 me-2"></i>
+                <span>Vendido por:
+                    <strong class="text-dark">
+                        ${not empty vendedor ? vendedor.nombre : (not empty producto.nombreUsuario ? producto.nombreUsuario : 'Usuario UTEZ')}
+                    </strong>
+                </span>
+            </div>
 
+            <!-- TARJETA DE DESCRIPCIÓN -->
             <div class="description-card mb-4">
                 <div class="d-flex align-items-center text-muted small mb-2">
                     <i class="bi bi-clock-history me-1"></i>
                     <span>Publicado el
-            <c:choose>
-                <c:when test="${not empty producto.fechaPublicacion}">
-                    <fmt:formatDate value="${producto.fechaPublicacion}" pattern="dd/MM/yyyy 'a las' hh:mm a" />
-                </c:when>
-                <c:otherwise>
-                    Recientemente
-                </c:otherwise>
-            </c:choose>
-        </span>
+                        <c:choose>
+                            <c:when test="${not empty producto.fechaPublicacion}">
+                                <fmt:formatDate value="${producto.fechaPublicacion}" pattern="dd/MM/yyyy 'a las' hh:mm a" />
+                            </c:when>
+                            <c:otherwise>
+                                Recientemente
+                            </c:otherwise>
+                        </c:choose>
+                    </span>
                 </div>
                 <span class="description-title text-dark">Descripción</span>
                 <p class="mb-0 text-secondary" style="white-space: pre-line;">${producto.descripcion}</p>
             </div>
+
+            <!-- PRECIO -->
             <div class="mb-4">
                 <h2 class="fw-bold" style="color: #e67e22;">
-                    <fmt:formatNumber   currencySymbol="$" value="${producto.precio}" type="currency"/>
+                    <fmt:formatNumber currencySymbol="$" value="${producto.precio}" type="currency"/>
                 </h2>
             </div>
+
+            <!-- BOTÓN OFERTAR -->
             <div>
                 <button type="button" class="btn btn-comprar-detalle w-100 text-center" data-bs-toggle="modal" data-bs-target="#modalOferta">
                     OFERTAR
                 </button>
             </div>
+        </div>
     </div>
-</div>
+
+    <!-- MODAL DE OFERTA -->
     <div class="modal fade" id="modalOferta" tabindex="-1" aria-labelledby="modalOfertaLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="border-radius: 15px;">
@@ -92,7 +116,7 @@
                                 <input type="number" step="0.01" min="1" max="${producto.precio}" class="form-control form-control-lg fw-bold" id="montoOferta" name="montoOferta" placeholder="0.00" required style="border-radius: 0 10px 10px 0; color: #8B0000;">
                             </div>
                             <div class="form-text mt-1 text-muted small">
-                                Precio original: <strong>$<fmt:formatNumber value="${producto.precio}" type="number" minFractionDigits="2"/></strong>
+                                Precio original: <strong>$<fmt:formatNumber value="${producto.precio}" type="number" minFractionDigits="2" maxFractionDigits="2"/></strong>
                             </div>
                         </div>
                     </div>
@@ -110,5 +134,7 @@
             </div>
         </div>
     </div>
+</div>
+
 <script src="assets/js/detalles-productos.js"></script>
 <%@ include file="layout/footer.jsp" %>

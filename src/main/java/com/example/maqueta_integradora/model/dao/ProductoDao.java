@@ -65,6 +65,7 @@ public class ProductoDao implements Dao<Producto, Integer> {
         }
         return lista;
     }
+
     @Override
     public Producto getById(Integer id) {
         String sql = "SELECT * FROM producto WHERE id_producto = ?";
@@ -134,10 +135,11 @@ public class ProductoDao implements Dao<Producto, Integer> {
         }
         return false;
     }
+
     public boolean guardarImagenProducto(int idProducto, String rutaImagen) {
         String sql = "INSERT INTO imagen_producto (id_producto, imagen_url) VALUES (?, ?)";
 
-        try (Connection con = SQLConnector  .getConnection();
+        try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idProducto);
@@ -150,6 +152,7 @@ public class ProductoDao implements Dao<Producto, Integer> {
             return false;
         }
     }
+
     public int createAndGetId(Producto p) {
         String sql = "INSERT INTO producto (nombre, precio, descripcion, id_categoria, id_usuario) VALUES (?, ?, ?, ?, ?)";
         // Colocamos el parámetro RETURN_GENERATED_KEYS o indicamos el nombre de la columna
@@ -178,6 +181,7 @@ public class ProductoDao implements Dao<Producto, Integer> {
         }
         return 0; // Si falla
     }
+
     public List<String> getImagenesByProductoId(int idProducto) {
         List<String> listaImagenes = new ArrayList<>();
         String sql = "SELECT imagen_url FROM imagen_producto WHERE id_producto = ?";
@@ -196,5 +200,108 @@ public class ProductoDao implements Dao<Producto, Integer> {
             e.printStackTrace();
         }
         return listaImagenes;
+    }
+    public List<Producto> getByCategoria(int idCategoria) {
+        List<Producto> lista = new ArrayList<>();
+
+        String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, (SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal FROM producto p WHERE p.estado = 1 AND p.id_categoria = ? ORDER BY p.fecha_publicacion DESC";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idCategoria);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Producto p = new Producto();
+                    p.setIdProducto(rs.getInt("id_producto"));
+                    p.setNombre(rs.getString("nombre"));
+                    p.setPrecio(rs.getDouble("precio"));
+                    p.setDescripcion(rs.getString("descripcion"));
+                    p.setFechaPublicacion(rs.getTimestamp("fecha_publicacion"));
+                    p.setEstado(rs.getInt("estado") == 1);
+                    p.setIdCategoria(rs.getInt("id_categoria"));
+                    p.setIdUsuario(rs.getInt("id_usuario"));
+
+                    // Asignamos la primera imagen obtenida de la subconsulta
+                    p.setImagenUrl(rs.getString("imagen_principal"));
+
+                    lista.add(p);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener productos filtrados por categoría.");
+            e.printStackTrace();
+        }
+        return lista;
+    }public List<Producto> getAllAdmin() {
+        List<Producto> lista = new ArrayList<>();
+
+        // Se agrega u.nombre AS nombre_vendedor y el LEFT JOIN con la tabla usuario
+        String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, " +
+                "u.nombre AS nombre_vendedor, " +
+                "(SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal " +
+                "FROM producto p " +
+                "LEFT JOIN usuario u ON p.id_usuario = u.id_usuario " +
+                "ORDER BY p.id_producto DESC";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Producto p = new Producto();
+                p.setIdProducto(rs.getInt("id_producto"));
+                p.setNombre(rs.getString("nombre"));
+                p.setPrecio(rs.getDouble("precio"));
+                p.setDescripcion(rs.getString("descripcion"));
+                p.setFechaPublicacion(rs.getTimestamp("fecha_publicacion"));
+                p.setEstado(rs.getInt("estado") == 1);
+                p.setIdCategoria(rs.getInt("id_categoria"));
+                p.setIdUsuario(rs.getInt("id_usuario"));
+                p.setImagenUrl(rs.getString("imagen_principal"));
+
+                // Ahora sí se encuentra en el ResultSet
+                p.setNombreVendedor(rs.getString("nombre_vendedor"));
+
+                lista.add(p);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener todos los productos para administración.");
+            e.printStackTrace();
+        }
+        return lista;
+    }
+    public boolean activar(int idProducto) {
+        String sql = "UPDATE producto SET estado = 1 WHERE id_producto = ?";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idProducto);
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error al activar producto ID " + idProducto + ": " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Método para desactivar el producto (estado = 0)
+    public boolean desactivar(int idProducto) {
+        String sql = "UPDATE producto SET estado = 0 WHERE id_producto = ?";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idProducto);
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error al desactivar producto ID " + idProducto + ": " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.example.maqueta_integradora.controller;
 import com.example.maqueta_integradora.model.Producto;
 import com.example.maqueta_integradora.model.User;
 import com.example.maqueta_integradora.model.dao.ProductoDao;
+import com.example.maqueta_integradora.model.dao.UserDao;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,10 +16,12 @@ import java.util.List;
 public class DetalleProductoServlet extends HttpServlet {
 
     private ProductoDao productoDao;
+    private UserDao userDao;
 
     @Override
     public void init() throws ServletException {
         productoDao = new ProductoDao();
+        userDao = new UserDao();
     }
 
     @Override
@@ -45,12 +48,18 @@ public class DetalleProductoServlet extends HttpServlet {
             int idProducto = Integer.parseInt(idStr);
 
             // 3. Obtener Producto y su lista de fotos
-            Producto producto = productoDao.getById(idProducto); // Método en tu DAO que busca por ID
+            Producto producto = productoDao.getById(idProducto);
             List<String> listaImagenes = productoDao.getImagenesByProductoId(idProducto);
 
             if (producto != null) {
+                // 4. Consultar los datos del usuario vendedor
+                User vendedor = userDao.getById(producto.getIdUsuario()); // O el método que use tu UserDao para buscar por ID
+
+                // 5. Enviar producto, imágenes y vendedor al JSP
                 request.setAttribute("producto", producto);
                 request.setAttribute("listaImagenes", listaImagenes);
+                request.setAttribute("vendedor", vendedor);
+
                 request.getRequestDispatcher("DetalleProducto.jsp").forward(request, response);
             } else {
                 response.sendRedirect("inicio");

@@ -11,6 +11,15 @@ public class Producto {
     boolean estado;
     private Integer idCategoria;
     private Integer idUsuario;
+    private String nombreVendedor;
+
+    public String getNombreVendedor() {
+        return nombreVendedor;
+    }
+
+    public void setNombreVendedor(String nombreVendedor) {
+        this.nombreVendedor = nombreVendedor;
+    }
 
 
     // Getters y Setters

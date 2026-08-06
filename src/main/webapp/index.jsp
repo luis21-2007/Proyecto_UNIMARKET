@@ -5,8 +5,9 @@
 
 <!-- FORMULARIO OCULTO PARA ENVIAR POR POST SIN MOSTRAR '?' EN LA URL -->
 <form id="formFiltroCategoria" action="inicio" method="POST" style="display: none;">
-    <input type="hidden" name="categoriaId" id="inputCategoriaId">
+    <input type="hidden" name="idCategoria" id="inputCategoriaId">
 </form>
+
 <c:if test="${param.msg == 'exito'}">
     <div class="row px-md-4 mb-3">
         <div class="col-12">
@@ -20,6 +21,7 @@
         </div>
     </div>
 </c:if>
+
 <div class="container-fluid py-3 main-market-container">
     <!-- TEXTO DE BIENVENIDA -->
     <div class="row mb-4">
@@ -29,7 +31,7 @@
             </p>
         </div>
     </div>
-<br>
+    <br>
     <br>
     <div class="mb-5 px-md-4">
         <div class="row mb-3">
@@ -50,59 +52,67 @@
                     </c:forEach>
                 </div>
             </div>
-    <div class="px-md-4">
-        <br>
-        <br>
-        <c:choose>
-        <c:when test="${not empty listaProductos}">
-            <!-- CUADRÍCULA DE PRODUCTOS (Solo se activa si hay productos) -->
-            <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-4">
-                <c:forEach var="prod" items="${listaProductos}">
-                    <div class="col">
-                        <div class="product-card">
-                            <div class="card-img-wrapper">
-                                <img src="${not empty prod.imagenUrl ? prod.imagenUrl : 'assets/img/icono-integradora.jpeg'}" alt="${prod.nombre}">
-                            </div>
-                            <div class="product-title text-truncate" title="${prod.nombre}">${prod.nombre}</div>
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="product-price">
-                                <fmt:formatNumber value="${prod.precio}" type="currency" currencySymbol="$"/> c/u
-                            </span>
-                                <span class="product-rating"><i class="bi bi-star-fill me-1"></i>5.0</span>
-                            </div>
+            <div class="px-md-4">
+                <br>
+                <br>
+                <c:choose>
+                    <c:when test="${not empty listaProductos}">
+                        <!-- CUADRÍCULA DE PRODUCTOS (Solo se activa si hay productos) -->
+                        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-4">
+                            <c:forEach var="prod" items="${listaProductos}">
+                                <div class="col">
+                                    <div class="product-card">
+                                        <div class="card-img-wrapper">
+                                            <img src="${not empty prod.imagenUrl ? prod.imagenUrl : 'assets/img/icono-integradora.jpeg'}" alt="${prod.nombre}">
+                                        </div>
+                                        <div class="product-title text-truncate" title="${prod.nombre}">${prod.nombre}</div>
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="product-price">
+                                                <fmt:formatNumber value="${prod.precio}" type="currency" currencySymbol="$"/> c/u
+                                            </span>
+                                            <span class="product-rating"><i class="bi bi-star-fill me-1"></i>5.0</span>
+                                        </div>
 
-                            <!-- CONTROL DE ACCESO AL DETALLE DEL PRODUCTO -->
-                            <c:choose>
-                                <c:when test="${not empty sessionScope.usuario}">
-                                    <a href="detalleProducto?id=${prod.idProducto}" class="btn btn-comprar shadow-sm w-100 text-center">
-                                        Ver detalle
-                                    </a>
-                                </c:when>
-                                <c:otherwise>
-                                    <a href="login.jsp" class="btn btn-comprar shadow-sm w-100 text-center">
-                                        Ver detalle
-                                    </a>
-                                </c:otherwise>
-                            </c:choose>
+                                        <!-- CONTROL DE ACCESO AL DETALLE DEL PRODUCTO -->
+                                        <c:choose>
+                                            <c:when test="${not empty sessionScope.usuario}">
+                                                <a href="detalleProducto?id=${prod.idProducto}" class="btn btn-comprar shadow-sm w-100 text-center">
+                                                    Ver detalle
+                                                </a>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <a href="login.jsp" class="btn btn-comprar shadow-sm w-100 text-center">
+                                                    Ver detalle
+                                                </a>
+                                            </c:otherwise>
+                                        </c:choose>
 
+                                    </div>
+                                </div>
+                            </c:forEach>
                         </div>
-                    </div>
-                </c:forEach>
+                        <div id="sinResultadosBusqueda" class="row d-none">
+                            <div class="col-12 d-flex flex-column align-items-center justify-content-center text-center py-5 w-100" style="min-height: 30vh;">
+                                <i class="bi bi-search display-1 text-muted opacity-50 mb-3"></i>
+                                <p class="text-muted fs-5 fw-medium mb-0">No se encontraron productos que coincidan con tu búsqueda.</p>
+                            </div>
+                        </div>
+                    </c:when>
+                    <%-- MENSAJE CENTRADO CUANDO NO HAY PRODUCTOS --%>
+                    <c:otherwise>
+                        <div class="row">
+                            <div class="col-12 d-flex flex-column align-items-center justify-content-center text-center py-5 w-100" style="min-height: 40vh;">
+                                <i class="bi bi-box-seam display-1 text-muted opacity-50 mb-3"></i>
+                                <p class="text-muted fs-5 fw-medium mb-0">No hay productos disponibles por el momento.</p>
+                            </div>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
-        </c:when>
-
-        <%-- MENSAJE CENTRADO CUANDO NO HAY PRODUCTOS --%>
-        <c:otherwise>
-            <div class="row">
-                <div class="col-12 d-flex flex-column align-items-center justify-content-center text-center py-5 w-100" style="min-height: 40vh;">
-                    <i class="bi bi-box-seam display-1 text-muted opacity-50 mb-3"></i>
-                    <p class="text-muted fs-5 fw-medium mb-0">No hay productos disponibles por el momento.</p>
-                </div>
-            </div>
-        </c:otherwise>
-        </c:choose>
         </div>
     </div>
-    </div>
 </div>
+
+<script src="assets/js/buscador-index.js"></script>
+
 <%@ include file="layout/footer.jsp" %>

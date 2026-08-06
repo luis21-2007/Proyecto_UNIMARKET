@@ -16,28 +16,27 @@
 
 <header class="custom-header d-flex align-items-center justify-content-between pe-4">
 
-    <!-- Logo del Marketplace (Apunta al Servlet 'inicio') -->
+    <!-- Logo del Marketplace -->
     <div class="logo-container d-flex align-items-center h-100">
         <a href="inicio" class="d-inline-block">
             <img src="assets/img/icono-integradora.jpeg" alt="Logo" class="logo-img rounded-circle">
         </a>
     </div>
 
-    <!-- Barra de Búsqueda -->
+    <!-- Barra de Búsqueda con ID asignado -->
     <div class="search-container flex-grow-1 mx-4" style="max-width: 600px;">
         <div class="input-group">
-            <input type="text" class="form-control" placeholder="Busca tus productos favoritos" aria-label="Buscar">
+            <input type="text" id="inputBuscarProducto" class="form-control" placeholder="Busca tus productos favoritos" aria-label="Buscar" autocomplete="off">
             <button class="btn btn-search" type="button">
                 <i class="bi bi-search text-white"></i>
             </button>
         </div>
     </div>
 
-    <!-- Sección de Acciones (Perfil / Agregar Producto / Iniciar Sesión) -->
+    <!-- Sección de Acciones -->
     <div class="d-flex align-items-center gap-4">
 
         <c:choose>
-            <%-- OPCIÓN 1: EL USUARIO YA INICIÓ SESIÓN --%>
             <c:when test="${not empty sessionScope.usuario}">
 
                 <!-- Botón de Perfil -->
@@ -65,10 +64,8 @@
 
             </c:when>
 
-            <%-- sin sesion--%>
             <c:otherwise>
 
-                <!--  inicio de sesion obligatorio -->
                 <div class="d-flex flex-column align-items-center">
                     <a href="login.jsp" class="icon-btn mb-2" title="Iniciar Sesión">
                         <i class="bi bi-person-circle"></i>

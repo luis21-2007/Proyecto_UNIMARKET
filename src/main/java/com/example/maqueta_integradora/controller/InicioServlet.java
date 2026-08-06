@@ -28,19 +28,38 @@ public class InicioServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 1. Obtener todas las categorías activas para el carrusel superior
+        request.setCharacterEncoding("UTF-8");
+
+        // 1. Obtener todas las categorías activas para el menú / carrusel superior
         List<Categoria> listaCategorias = categoriaDao.getAll();
 
-        // 2. Obtener los productos activos guardados en Oracle
-        List<Producto> listaProductos = productoDao.getAll();
+        // 2. Obtener el parámetro opcional de filtrado por categoría
+        String idCatParam = request.getParameter("idCategoria");
+        List<Producto> listaProductos;
 
-        // 3. Enviar las listas al scope del Request
+        // 3. Evaluar si el usuario seleccionó una categoría específica
+        if (idCatParam != null && !idCatParam.isBlank()) {
+            try {
+                int idCategoria = Integer.parseInt(idCatParam.trim());
+                // Trae solo los productos asignados a esa categoría
+                listaProductos = productoDao.getByCategoria(idCategoria);
+            } catch (NumberFormatException e) {
+                // Si viene un valor inválido, carga todos los productos
+                listaProductos = productoDao.getAll();
+            }
+        } else {
+            // Cargar el catálogo completo si no hay filtro
+            listaProductos = productoDao.getAll();
+        }
+
+        // 4. Enviar las listas al scope del Request
         request.setAttribute("listaCategorias", listaCategorias);
         request.setAttribute("listaProductos", listaProductos);
 
-        // 4. Reenviar al JSP del catálogo
+        // 5. Reenviar al JSP del catálogo
         request.getRequestDispatcher("index.jsp").forward(request, response);
     }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
