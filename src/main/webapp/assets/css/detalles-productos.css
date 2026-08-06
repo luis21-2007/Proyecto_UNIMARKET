@@ -1,0 +1,54 @@
+.thumb-img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 15px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.thumb-img:hover, .thumb-img.active-thumb {
+    border-color: #8B0000;
+    transform: scale(1.03);
+}
+.main-detail-img {
+    width: 100%;
+    height: 340px;
+    object-fit: cover;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.product-detail-title {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #000;
+    display: inline-block;
+    padding-bottom: 2px;
+}
+.description-card {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.description-title {
+    font-weight: 700;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+.btn-comprar-detalle {
+    background-color: transparent;
+    color: #8B0000;
+    border: 2px solid #8B0000;
+    font-weight: 800;
+    font-size: 1.2rem;
+    border-radius: 15px;
+    padding: 10px 0;
+    transition: all 0.2s;
+}
+.btn-comprar-detalle:hover {
+    background-color: #8B0000;
+    color: #fff;
+}

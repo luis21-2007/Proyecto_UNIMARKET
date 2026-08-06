@@ -8,7 +8,16 @@ public class User {
     private String correo;
     private String contrasena;
     private String token;
+    private String rol;
+    private  Integer activo;
 
+    public Integer getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Integer activo) {
+        this.activo = activo;
+    }
     public long getTelefono() {
         return telefono;
     }
@@ -27,7 +36,7 @@ public class User {
         this.token = token;
     }
 
-    public User(String nombre, int id, String apellido, String carrera, String correo, String contrasena , long telefono) {
+    public User(String nombre, int id, String apellido, String carrera, String correo, String contrasena , long telefono, String rol) {
         this.nombre = nombre;
         this.id = id;
         this.apellido = apellido;
@@ -35,6 +44,7 @@ public class User {
         this.correo = correo;
         this.contrasena = contrasena;
         this.telefono = telefono;
+        this.rol = rol;
     }
 
     public User(){
@@ -87,5 +97,15 @@ public class User {
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
     }
+
+    public String getRol() {
+        return rol;
+    }
+
+    public void setRol(String rol) {
+        this.rol = rol;
+    }
+
 }
+
 

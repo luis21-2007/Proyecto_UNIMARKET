@@ -1,3 +1,5 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,16 +10,20 @@
     <link href="assets/css/bi/bootstrap-icons.min.css" rel="stylesheet">
     <link href="assets/css/estilos-personalizados.css" rel="stylesheet">
     <link href="assets/css/estilos-index.css" rel="stylesheet">
+    <link href="assets/css/detalles-productos.css" rel="stylesheet">
 </head>
 <body>
 
 <header class="custom-header d-flex align-items-center justify-content-between pe-4">
 
+    <!-- Logo del Marketplace (Apunta al Servlet 'inicio') -->
     <div class="logo-container d-flex align-items-center h-100">
-        <a href="index.jsp" class="d-inline-block">
+        <a href="inicio" class="d-inline-block">
             <img src="assets/img/icono-integradora.jpeg" alt="Logo" class="logo-img rounded-circle">
         </a>
     </div>
+
+    <!-- Barra de Búsqueda -->
     <div class="search-container flex-grow-1 mx-4" style="max-width: 600px;">
         <div class="input-group">
             <input type="text" class="form-control" placeholder="Busca tus productos favoritos" aria-label="Buscar">
@@ -27,6 +33,7 @@
         </div>
     </div>
 
+<<<<<<< HEAD
 
 
     <div class="d-flex align-items-center gap-4">
@@ -47,14 +54,55 @@
             </a>
             <span class="icon-label" style="min-height: 2.2em; display: block;">Perfil<br></span>
         </div>
+=======
+    <!-- Sección de Acciones (Perfil / Agregar Producto / Iniciar Sesión) -->
+    <div class="d-flex align-items-center gap-4">
 
-        <div class="d-flex flex-column align-items-center">
-            <a href="#" class="icon-btn mb-2">
-                <i class="bi bi-plus-lg"></i>
-            </a>
-            <span class="icon-label" style="min-height: 2.2em; display: block;">Agregar<br>Producto</span>
-        </div>
+        <c:choose>
+            <%-- OPCIÓN 1: EL USUARIO YA INICIÓ SESIÓN --%>
+            <c:when test="${not empty sessionScope.usuario}">
+>>>>>>> felipe
+
+                <!-- Botón de Perfil -->
+                <div class="d-flex flex-column align-items-center">
+                    <a href="perfil" class="icon-btn mb-2" title="Ir a mi perfil">
+                        <i class="bi bi-person-circle"></i>
+                    </a>
+                    <span class="icon-label" style="min-height: 2.2em; display: block;">Perfil<br></span>
+                </div>
+
+                <!-- Botón de Agregar Producto -->
+                <div class="d-flex flex-column align-items-center">
+                    <a href="subirProducto" class="icon-btn mb-2" title="Publicar producto">
+                        <i class="bi bi-plus-lg"></i>
+                    </a>
+                    <span class="icon-label text-center" style="min-height: 2.2em; display: block;">Agregar<br>Producto</span>
+                </div>
+
+                <div class="d-flex flex-column align-items-center">
+                    <a href="logout" class="icon-btn mb-2" title="Cerrar sesión">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </a>
+                    <span class="icon-label" style="min-height: 2.2em; display: block;">Salir<br></span>
+                </div>
+
+            </c:when>
+
+            <%-- sin sesion--%>
+            <c:otherwise>
+
+                <!--  inicio de sesion obligatorio -->
+                <div class="d-flex flex-column align-items-center">
+                    <a href="login.jsp" class="icon-btn mb-2" title="Iniciar Sesión">
+                        <i class="bi bi-person-circle"></i>
+                    </a>
+                    <span class="icon-label text-center" style="min-height: 2.2em; display: block;">Iniciar<br>Sesión</span>
+                </div>
+
+            </c:otherwise>
+        </c:choose>
 
     </div>
 </header>
+
 <main class="flex-grow-1 mt-5 mb-5">

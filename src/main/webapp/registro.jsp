@@ -60,7 +60,7 @@
                         <div class="input-addon">
                             <i class="bi bi-mortarboard"></i>
                         </div>
-                        <input type="text"  value="${param.carrera}" name="carrera" class="custom-input" placeholder="Elige tu carrera tu Carrera" list="lista-carreras" required autocomplete="off">
+                        <input type="text" value="${param.carrera}" name="carrera" class="custom-input" placeholder="Elige tu carrera" list="lista-carreras" required autocomplete="off" onkeydown="return ['Backspace', 'Delete', 'Tab', 'Escape'].includes(event.key);" onpaste="return false;">
                     </div>
                     <datalist id="lista-carreras">
                         <option value="Licenciatura en Negocios y Mercadotecnia">
