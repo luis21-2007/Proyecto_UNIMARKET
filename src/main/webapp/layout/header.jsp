@@ -27,7 +27,18 @@
         </div>
     </div>
 
+
+
     <div class="d-flex align-items-center gap-4">
+
+        <div class="d-flex flex-column align-items-center">
+            <a href="misProductos.jsp" class="icon-btn mb-2">
+                <span class="notification-badge"></span>
+                <i class="bi-bag-check-fill"></i>
+            </a>
+            <span class="icon-label" style="min-height: 2.2em; display: block;">Mis<br>Producto</span>
+        </div>
+
 
         <div class="d-flex flex-column align-items-center" >
             <a href="login.jsp" class="icon-btn mb-2">
