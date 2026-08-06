@@ -13,9 +13,7 @@
     <link href="assets/css/detalles-productos.css" rel="stylesheet">
 </head>
 <body>
-
 <header class="custom-header d-flex align-items-center justify-content-between pe-4">
-
     <!-- Logo del Marketplace (Apunta al Servlet 'inicio') -->
     <div class="logo-container d-flex align-items-center h-100">
         <a href="inicio" class="d-inline-block">
@@ -33,36 +31,18 @@
         </div>
     </div>
 
-<<<<<<< HEAD
-
-
-    <div class="d-flex align-items-center gap-4">
-
-        <div class="d-flex flex-column align-items-center">
-            <a href="misProductos.jsp" class="icon-btn mb-2">
-                <span class="notification-badge"></span>
-                <i class="bi-bag-check-fill"></i>
-            </a>
-            <span class="icon-label" style="min-height: 2.2em; display: block;">Mis<br>Producto</span>
-        </div>
-
-
-        <div class="d-flex flex-column align-items-center" >
-            <a href="login.jsp" class="icon-btn mb-2">
-                <span class="notification-badge"></span>
-                <i class="bi bi-person-circle"></i>
-            </a>
-            <span class="icon-label" style="min-height: 2.2em; display: block;">Perfil<br></span>
-        </div>
-=======
     <!-- Sección de Acciones (Perfil / Agregar Producto / Iniciar Sesión) -->
     <div class="d-flex align-items-center gap-4">
-
         <c:choose>
             <%-- OPCIÓN 1: EL USUARIO YA INICIÓ SESIÓN --%>
             <c:when test="${not empty sessionScope.usuario}">
->>>>>>> felipe
-
+                <!-- Botón de Mis Productos-->
+                <div class="d-flex flex-column align-items-center">
+                    <a href="misProductos" class="icon-btn mb-2" title="Ir a mis productos">
+                        <i class="bi-bag-fill"></i>
+                    </a>
+                    <span class="icon-label" style="min-height: 2.2em; display: block;">Mis Productos<br></span>
+                </div>
                 <!-- Botón de Perfil -->
                 <div class="d-flex flex-column align-items-center">
                     <a href="perfil" class="icon-btn mb-2" title="Ir a mi perfil">
@@ -70,7 +50,6 @@
                     </a>
                     <span class="icon-label" style="min-height: 2.2em; display: block;">Perfil<br></span>
                 </div>
-
                 <!-- Botón de Agregar Producto -->
                 <div class="d-flex flex-column align-items-center">
                     <a href="subirProducto" class="icon-btn mb-2" title="Publicar producto">
@@ -78,31 +57,25 @@
                     </a>
                     <span class="icon-label text-center" style="min-height: 2.2em; display: block;">Agregar<br>Producto</span>
                 </div>
-
+                <!-- Botón de Salir -->
                 <div class="d-flex flex-column align-items-center">
                     <a href="logout" class="icon-btn mb-2" title="Cerrar sesión">
                         <i class="bi bi-box-arrow-right"></i>
                     </a>
                     <span class="icon-label" style="min-height: 2.2em; display: block;">Salir<br></span>
                 </div>
-
             </c:when>
-
-            <%-- sin sesion--%>
+            <%-- OPCIÓN 2: SIN SESIÓN --%>
             <c:otherwise>
-
-                <!--  inicio de sesion obligatorio -->
+                <!-- Inicio de sesión obligatorio -->
                 <div class="d-flex flex-column align-items-center">
                     <a href="login.jsp" class="icon-btn mb-2" title="Iniciar Sesión">
                         <i class="bi bi-person-circle"></i>
                     </a>
-                    <span class="icon-label text-center" style="min-height: 2.2em; display: block;">Iniciar<br>Sesión</span>
-                </div>
+                    <span class="icon-label text-center" style="min-height: 2.2em; display: block;">Iniciar<br>Sesión</span> </div>
 
             </c:otherwise>
         </c:choose>
-
     </div>
 </header>
 
-<main class="flex-grow-1 mt-5 mb-5">

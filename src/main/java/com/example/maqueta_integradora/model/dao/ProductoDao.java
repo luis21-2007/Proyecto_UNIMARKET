@@ -197,4 +197,107 @@ public class ProductoDao implements Dao<Producto, Integer> {
         }
         return listaImagenes;
     }
+
+    public List<Producto> obtenerProductosPorUsuario(int idUsuario) {
+
+        List<Producto> lista = new ArrayList<>();
+
+        String sql =
+                "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, " +
+                        "p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, " +
+                        "(SELECT img.imagen_url " +
+                        "FROM imagen_producto img " +
+                        "WHERE img.id_producto = p.id_producto " +
+                        "FETCH FIRST 1 ROWS ONLY) AS imagen_principal " +
+                        "FROM producto p " +
+                        "WHERE p.id_usuario = ? " +
+                        "AND p.estado = 1 " +
+                        "ORDER BY p.fecha_publicacion DESC";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            System.out.println("Buscando productos del usuario: " + idUsuario);
+
+            ps.setInt(1, idUsuario);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                System.out.println("Producto encontrado: " + rs.getString("nombre"));
+
+                Producto p = new Producto();
+
+                p.setIdProducto(rs.getInt("id_producto"));
+                p.setNombre(rs.getString("nombre"));
+                p.setPrecio(rs.getDouble("precio"));
+                p.setDescripcion(rs.getString("descripcion"));
+                p.setFechaPublicacion(rs.getTimestamp("fecha_publicacion"));
+                p.setEstado(rs.getInt("estado") == 1);
+                p.setIdCategoria(rs.getInt("id_categoria"));
+                p.setIdUsuario(rs.getInt("id_usuario"));
+                p.setImagenUrl(rs.getString("imagen_principal"));
+
+                lista.add(p);
+            }
+
+            System.out.println("Total encontrados: " + lista.size());
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
+    public List<Producto> obtenerProductosPorUsuarioYCategoria(int idUsuario, int idCategoria) {
+
+        List<Producto> lista = new ArrayList<>();
+
+        String sql =
+                "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, " +
+                        "p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, " +
+                        "(SELECT img.imagen_url " +
+                        "FROM imagen_producto img " +
+                        "WHERE img.id_producto = p.id_producto " +
+                        "FETCH FIRST 1 ROWS ONLY) AS imagen_principal " +
+                        "FROM producto p " +
+                        "WHERE p.id_usuario = ? " +
+                        "AND p.id_categoria = ? " +
+                        "AND p.estado = 1 " +
+                        "ORDER BY p.fecha_publicacion DESC";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idUsuario);
+            ps.setInt(2, idCategoria);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                Producto p = new Producto();
+
+                p.setIdProducto(rs.getInt("id_producto"));
+                p.setNombre(rs.getString("nombre"));
+                p.setPrecio(rs.getDouble("precio"));
+                p.setDescripcion(rs.getString("descripcion"));
+                p.setFechaPublicacion(rs.getTimestamp("fecha_publicacion"));
+                p.setEstado(rs.getInt("estado") == 1);
+                p.setIdCategoria(rs.getInt("id_categoria"));
+                p.setIdUsuario(rs.getInt("id_usuario"));
+                p.setImagenUrl(rs.getString("imagen_principal"));
+
+                lista.add(p);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error al obtener productos por usuario y categoría.");
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
+
 }
