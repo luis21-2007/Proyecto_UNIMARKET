@@ -184,9 +184,38 @@ public class UserDao implements Dao<User,Integer> {
 
     @Override
     public boolean update(User entidad) {
-        return false;
-    }
+        String sql = "UPDATE usuario SET nombre = ?, apellido = ?, correo = ?, carrera = ?, telefono = ?, rol = ?, activo = ? WHERE id_usuario = ?";
 
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, entidad.getNombre());
+            ps.setString(2, entidad.getApellido() != null ? entidad.getApellido() : "");
+            ps.setString(3, entidad.getCorreo());
+            ps.setString(4, entidad.getCarrera() != null ? entidad.getCarrera() : "");
+
+            // Manejo de teléfono compatible con SQL (Oracle / MySQL)
+            if (entidad.getTelefono() > 0) {
+                ps.setLong(5, entidad.getTelefono());
+            } else {
+                ps.setNull(5, java.sql.Types.NUMERIC);
+            }
+
+            ps.setString(6, entidad.getRol() != null ? entidad.getRol() : "USUARIO");
+            ps.setInt(7, entidad.getActivo());
+
+            // ID del usuario para el WHERE
+            ps.setInt(8, entidad.getId());
+
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error al actualizar la información del usuario ID " + entidad.getId() + ": " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
     @Override
     public boolean delete(Integer id) {
         return false;
@@ -432,6 +461,29 @@ public class UserDao implements Dao<User,Integer> {
 
         } catch (SQLException e) {
             System.err.println("Error al activar usuario con ID " + idUsuario + ": " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public boolean updatePerfil(int idUsuario, String nombre, long telefono) {
+        String sql = "UPDATE usuario SET nombre = ?, telefono = ? WHERE id_usuario = ?";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, nombre);
+
+            if (telefono > 0) {
+                ps.setLong(2, telefono);
+            } else {
+                ps.setNull(2, Types.NUMERIC );
+            }
+            ps.setInt(3, idUsuario);
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error al actualizar el perfil del usuario ID " + idUsuario + ": " + e.getMessage());
             e.printStackTrace();
             return false;
         }

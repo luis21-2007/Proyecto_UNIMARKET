@@ -49,7 +49,7 @@
                     <h5 class="fw-bold mb-2 text-black">Verifica tu cuenta</h5>
 
                     <p class="text-muted mb-4 px-2" style="font-size: 13px;">
-                        Ingresa el código de verificación de 6 dígitos que enviamos a tu correo institucional.
+                        Ingresa el código de verificación de 8 dígitos que enviamos a tu correo institucional.
                     </p>
 
                     <div class="code-inputs-container mb-4">
