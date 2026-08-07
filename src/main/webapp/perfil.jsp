@@ -23,31 +23,35 @@
                     <div class="profile-sidebar-title ms-2">Perfil</div>
 
                     <nav class="d-flex flex-column">
-                        <a href="perfil" class="profile-menu-item active">
+                        <a href="perfil" class="profile-menu-item">
                             <i class="bi bi-person"></i> Ajustes
                         </a>
                         <a href="#" class="profile-menu-item">
-                            <i class="bi bi-lock"></i> Mis ventas
+                            <i class="bi bi-bag-check"></i> Mis ventas
                         </a>
                         <a href="#" class="profile-menu-item">
-                            <i class="bi bi-person"></i> Mis compras
+                            <i class="bi bi-cart3"></i> Mis compras
                         </a>
                         <a href="#" class="profile-menu-item">
-                            <i class="bi bi-lock"></i> Mis reseñas
+                            <i class="bi bi-star"></i> Mis reseñas
                         </a>
-                        <a href="#" class="profile-menu-item">
-                            <i class="bi bi-person"></i> Mis Productos
+                        <a href="misOfertas" class="profile-menu-item">
+                            <i class="bi bi-tag"></i> Mis ofertas enviadas
+                        </a>
+                        <a href="misOfertasVendedor" class="profile-menu-item">
+                            <i class="bi bi-inbox"></i> Ofertas recibidas
                         </a>
                     </nav>
                 </div>
             </div>
+
 
             <!-- CONTENIDO PRINCIPAL -->
             <div class="col-md-8 col-lg-9 ps-md-4">
 
                 <!-- Encabezado -->
                 <h1 class="profile-content-title mb-0">Ajustes</h1>
-                <p class="text-muted fw-semibold mb-4">Gestiona tu cuenta</p>
+              <br>
 
                 <form action="perfil" method="POST">
 
