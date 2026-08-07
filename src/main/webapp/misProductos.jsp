@@ -29,27 +29,7 @@
             </p>
         </div>
     </div>
-    <br>
-    <br>
-    <div class="mb-5 px-md-4">
-        <div class="row mb-3">
-            <div class="col-12">
-                <h4 class="fw-bold text-dark d-flex align-items-center gap-2 mb-0">
-                    <i class="bi bi-grid-fill text-warning"></i> Categorías
-                </h4>
-            </div>
-        </div>
-        <div class="row align-items-center position-relative">
-            <div class="col-11">
-                <div class="category-scroll-container">
-                    <c:forEach var="cat" items="${listaCategorias}">
-                        <a href="javascript:void(0);" onclick="filtrarPorCategoria('${cat.idCategoria}')" class="category-card text-center">
-                            <img src="assets/img/icono-integradora.jpeg" alt="${cat.nombreCategoria}">
-                            <div class="fw-bold small">${cat.nombreCategoria}</div>
-                        </a>
-                    </c:forEach>
-                </div>
-            </div>
+
             <div class="px-md-4">
                 <br>
                 <br>
@@ -74,7 +54,7 @@
                                         <!-- CONTROL DE ACCESO AL DETALLE DEL PRODUCTO -->
                                         <c:choose>
                                             <c:when test="${not empty sessionScope.usuario}">
-                                                <a href="detalleProducto?id=${prod.idProducto}" class="btn btn-comprar shadow-sm w-100 text-center">
+                                                <a href="detallemiProducto?id=${prod.idProducto}" class="btn btn-comprar shadow-sm w-100 text-center">
                                                     Ver detalle
                                                 </a>
                                             </c:when>
