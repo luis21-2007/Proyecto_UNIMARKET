@@ -44,15 +44,21 @@ public class EnviarOfertaServlet extends HttpServlet {
         try {
             int idProducto = Integer.parseInt(idProductoStr);
             double montoOferta = Double.parseDouble(montoOfertaStr);
-            Oferta oferta = new Oferta(montoOferta, usuario.getId(), idProducto);
 
-            boolean registrada = ofertaDao.guardarOferta(oferta);
             ProductoDao productoDao = new ProductoDao();
+            Producto producto = productoDao.getById(idProducto);
+
+            if (producto != null && producto.getIdUsuario() == usuario.getId()) {
+                // Si el dueño del producto es el mismo usuario logueado, redirigir con error
+                response.sendRedirect("detalleProducto?id=" + idProducto + "&error=auto_oferta");
+                return;
+            }
+            Oferta oferta = new Oferta(montoOferta, usuario.getId(), idProducto);
+            boolean registrada = ofertaDao.guardarOferta(oferta);
             UserDao userDao = new UserDao();
 
             if (registrada) {
                 // 1. Obtener la información del producto y del vendedor/dueño
-                Producto producto = productoDao.getById(idProducto);
                 User vendedor = userDao.getById(producto.getIdUsuario()); // O el DAO que use tu modelo de usuario
 
                 if (vendedor != null && vendedor.getCorreo() != null) {

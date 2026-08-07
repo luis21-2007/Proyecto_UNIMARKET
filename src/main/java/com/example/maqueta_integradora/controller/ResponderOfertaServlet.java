@@ -20,9 +20,15 @@ public class ResponderOfertaServlet extends HttpServlet {
         int idOferta = Integer.parseInt(request.getParameter("id"));
         String accion = request.getParameter("accion"); // "aceptar" o "rechazar"
 
-        int nuevoEstado = accion.equals("aceptar") ? 1 : 2;
+        boolean exito = false;
 
-        boolean exito = ofertaDao.actualizarEstado(idOferta, nuevoEstado);
+        if ("aceptar".equalsIgnoreCase(accion)) {
+            // Ejecuta el flujo completo de aceptación + registro de transacción
+            exito = ofertaDao.aceptarOfertaYRegistrarVenta(idOferta);
+        } else if ("rechazar".equalsIgnoreCase(accion)) {
+            // Solo actualiza el estado de la oferta a 2 (Rechazada)
+            exito = ofertaDao.actualizarEstado(idOferta, 2);
+        }
 
         response.sendRedirect("misOfertasVendedor?msg=" + (exito ? "ok" : "error"));
     }

@@ -26,10 +26,10 @@
                         <a href="perfil" class="profile-menu-item">
                             <i class="bi bi-person"></i> Ajustes
                         </a>
-                        <a href="#" class="profile-menu-item">
+                        <a href="misVentas" class="profile-menu-item">
                             <i class="bi bi-bag-check"></i> Mis ventas
                         </a>
-                        <a href="#" class="profile-menu-item">
+                        <a href="misCompras" class="profile-menu-item">
                             <i class="bi bi-cart3"></i> Mis compras
                         </a>
                         <a href="#" class="profile-menu-item">
@@ -44,7 +44,6 @@
                     </nav>
                 </div>
             </div>
-
 
             <!-- CONTENIDO PRINCIPAL -->
             <div class="col-md-8 col-lg-9 ps-md-4">

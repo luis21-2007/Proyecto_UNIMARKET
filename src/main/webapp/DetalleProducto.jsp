@@ -6,9 +6,18 @@
 
 <%@ include file="layout/header.jsp" %>
 
+<!-- ALERTA DE ÉXITO -->
 <c:if test="${param.msg == 'ofertaExitosa'}">
     <div class="alert alert-success alert-dismissible fade show mt-3 shadow-sm" role="alert" style="border-radius: 10px;">
         <i class="bi bi-check-circle-fill me-2"></i> Tu oferta ha sido enviada al vendedor exitosamente.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</c:if>
+
+<!-- ALERTA DE ERROR: AUTO-OFERTA NO PERMITIDA -->
+<c:if test="${param.error == 'auto_oferta'}">
+    <div class="alert alert-danger alert-dismissible fade show mt-3 shadow-sm" role="alert" style="border-radius: 10px;">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> No puedes realizar una oferta en tu propio producto.
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 </c:if>
@@ -80,11 +89,23 @@
                 </h2>
             </div>
 
-            <!-- BOTÓN OFERTAR -->
+            <!-- BOTÓN OFERTAR / VALIDACIÓN DE VENDEDOR -->
             <div>
-                <button type="button" class="btn btn-comprar-detalle w-100 text-center" data-bs-toggle="modal" data-bs-target="#modalOferta">
-                    OFERTAR
-                </button>
+                <c:choose>
+                    <%-- CASO 1: El usuario en sesión es el dueño del producto --%>
+                    <c:when test="${not empty sessionScope.usuario and sessionScope.usuario.id == producto.idUsuario}">
+                        <button type="button" class="btn btn-secondary w-100 text-center fw-bold py-2" disabled style="cursor: not-allowed; opacity: 0.7;">
+                            <i class="bi bi-person-check-fill me-1"></i> ES TU PUBLICACIÓN
+                        </button>
+                    </c:when>
+
+                    <%-- CASO 2: Es otro comprador (Muestra el botón normal para abrir el modal) --%>
+                    <c:otherwise>
+                        <button type="button" class="btn btn-comprar-detalle w-100 text-center fw-bold py-2" data-bs-toggle="modal" data-bs-target="#modalOferta">
+                            OFERTAR
+                        </button>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
     </div>
