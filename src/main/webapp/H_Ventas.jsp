@@ -12,7 +12,7 @@
 </head>
 <body>
 
-<%@ include file="layout/header.jsp" %>
+<%@ include file="layout/header-index.jsp" %>
 
 <div class="container mt-5">
     <div class="title-divider">

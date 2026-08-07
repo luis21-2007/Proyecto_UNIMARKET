@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ include file="layout/header.jsp" %>
+<%@ include file="layout/header-index.jsp" %>
 
 <!-- FORMULARIO OCULTO PARA ENVIAR POR POST SIN MOSTRAR '?' EN LA URL -->
 <form id="formFiltroCategoria" action="inicio" method="POST" style="display: none;">
