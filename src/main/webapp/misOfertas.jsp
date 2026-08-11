@@ -27,7 +27,7 @@
                         <a href="misCompras" class="profile-menu-item">
                             <i class="bi bi-cart3"></i> Mis compras
                         </a>
-                        <a href="#" class="profile-menu-item">
+                        <a href="misResenas" class="profile-menu-item">
                             <i class="bi bi-star"></i> Mis reseñas
                         </a>
                         <a href="misOfertas" class="profile-menu-item">

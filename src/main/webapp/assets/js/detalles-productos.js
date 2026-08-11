@@ -14,3 +14,4 @@ function cambiarImagenPrincipal(nuevaUrl, elementoClick) {
 function contactarVendedor(idProd) {
     alert("¡Gracias por tu interés! Redirigiendo al contacto del vendedor...");
 }
+

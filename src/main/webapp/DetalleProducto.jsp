@@ -22,6 +22,14 @@
     </div>
 </c:if>
 
+<!-- ALERTA DE ERROR: OFERTA YA EXISTENTE -->
+<c:if test="${param.error == 'oferta_existente'}">
+    <div class="alert alert-warning alert-dismissible fade show mt-3 shadow-sm" role="alert" style="border-radius: 10px;">
+        <i class="bi bi-exclamation-circle-fill me-2"></i> Ya tienes una oferta pendiente para este producto. Espera a que el vendedor la responda.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</c:if>
+
 <div class="container py-5">
     <div class="row g-4 align-items-center">
         <!-- COLUMNA 1: MINIATURAS DE IMÁGENES -->
@@ -53,14 +61,54 @@
             <!-- Título del Producto -->
             <h1 class="product-detail-title mb-2">${producto.nombre}</h1>
 
-            <!-- VENDEDOR DEL PRODUCTO (Ubicado arriba de la descripción) -->
-            <div class="d-flex align-items-center mb-3 text-secondary fs-6">
+            <!-- VENDEDOR DEL PRODUCTO -->
+            <div class="d-flex align-items-center mb-2 text-secondary fs-6">
                 <i class="bi bi-person-circle text-warning fs-5 me-2"></i>
                 <span>Vendido por:
                     <strong class="text-dark">
                         ${not empty vendedor ? vendedor.nombre : (not empty producto.nombreUsuario ? producto.nombreUsuario : 'Usuario UTEZ')}
                     </strong>
                 </span>
+            </div>
+
+            <!-- APARTADO NUEVO: CALIFICACIÓN DEL VENDEDOR -->
+            <div class="d-flex align-items-center mb-3">
+                <c:choose>
+                    <c:when test="${not empty promedioVendedor and promedioVendedor > 0}">
+                        <div class="d-flex align-items-center bg-light px-3 py-1 rounded-pill border">
+                            <!-- Estrellas Dinámicas -->
+                            <div class="text-warning fs-6 me-2">
+                                <c:forEach var="i" begin="1" end="5">
+                                    <c:choose>
+                                        <c:when test="${i <= promedioVendedor}">
+                                            <i class="bi bi-star-fill"></i>
+                                        </c:when>
+                                        <c:when test="${i - 0.5 <= promedioVendedor}">
+                                            <i class="bi bi-star-half"></i>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <i class="bi bi-star"></i>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </c:forEach>
+                            </div>
+
+                            <!-- Valor numérico del Promedio y Cantidad de Reseñas -->
+                            <span class="fw-bold text-dark me-1" style="font-size: 0.9rem;">
+                                <fmt:formatNumber value="${promedioVendedor}" maxFractionDigits="1" minFractionDigits="1" />
+                            </span>
+                            <span class="text-muted small">
+                                (${totalResenasVendedor} ${totalResenasVendedor == 1 ? 'reseña' : 'reseñas'})
+                            </span>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <div class="d-flex align-items-center bg-light px-3 py-1 rounded-pill border">
+                            <i class="bi bi-star text-muted me-1"></i>
+                            <span class="text-muted small fw-semibold">Nuevo vendedor (Sin reseñas)</span>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
 
             <!-- TARJETA DE DESCRIPCIÓN -->
@@ -89,7 +137,7 @@
                 </h2>
             </div>
 
-            <!-- BOTÓN OFERTAR / VALIDACIÓN DE VENDEDOR -->
+            <!-- BOTÓN OFERTAR / VALIDACIONES -->
             <div>
                 <c:choose>
                     <%-- CASO 1: El usuario en sesión es el dueño del producto --%>
@@ -99,7 +147,21 @@
                         </button>
                     </c:when>
 
-                    <%-- CASO 2: Es otro comprador (Muestra el botón normal para abrir el modal) --%>
+                    <%-- CASO 2: La oferta fue ACEPTADA por el vendedor (estado = 1) --%>
+                    <c:when test="${estadoOferta == 1}">
+                        <button type="button" class="btn btn-success text-white w-100 text-center fw-bold py-2" disabled style="cursor: default; opacity: 0.9;">
+                            <i class="bi bi-check-circle-fill me-1"></i> ¡OFERTA ACEPTADA!
+                        </button>
+                    </c:when>
+
+                    <%-- CASO 3: El usuario envió oferta y está PENDIENTE (estado = 0) --%>
+                    <c:when test="${estadoOferta == 0}">
+                        <button type="button" class="btn btn-warning text-dark w-100 text-center fw-bold py-2" disabled style="cursor: not-allowed; opacity: 0.85;">
+                            <i class="bi bi-clock-history me-1"></i> OFERTA ENVIADA
+                        </button>
+                    </c:when>
+
+                    <%-- CASO 4: Comprador no ha ofertado o le rechazaron la anterior (estado = -1 o 2) --%>
                     <c:otherwise>
                         <button type="button" class="btn btn-comprar-detalle w-100 text-center fw-bold py-2" data-bs-toggle="modal" data-bs-target="#modalOferta">
                             OFERTAR

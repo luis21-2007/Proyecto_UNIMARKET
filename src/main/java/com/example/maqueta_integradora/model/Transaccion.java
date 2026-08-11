@@ -16,6 +16,10 @@ public class Transaccion {
     private String telefonoVendedor;
     private String nombreComprador;
     private String telefonoComprador;
+    private boolean yaCalificado;
+
+    public boolean isYaCalificado() { return yaCalificado; }
+    public void setYaCalificado(boolean yaCalificado) { this.yaCalificado = yaCalificado; }
 
     public Transaccion(int idTransaccion, int idComprador, int idProducto, int idVendedor, double monto, Timestamp fechaTransaccion, int estado) {
         this.idTransaccion = idTransaccion;
