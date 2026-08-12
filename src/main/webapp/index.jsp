@@ -70,7 +70,6 @@
                                             <span class="product-price">
                                                 <fmt:formatNumber value="${prod.precio}" type="currency" currencySymbol="$"/> c/u
                                             </span>
-                                            <span class="product-rating"><i class="bi bi-star-fill me-1"></i>5.0</span>
                                         </div>
 
                                         <!-- CONTROL DE ACCESO AL DETALLE DEL PRODUCTO -->

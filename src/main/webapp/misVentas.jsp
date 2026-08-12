@@ -20,13 +20,13 @@
                         <a href="perfil" class="profile-menu-item">
                             <i class="bi bi-person"></i> Ajustes
                         </a>
-                        <a href="misVentas" class="profile-menu-item">
+                        <a href="misVentas" class="profile-menu-item active">
                             <i class="bi bi-bag-check"></i> Mis ventas
                         </a>
                         <a href="misCompras" class="profile-menu-item">
                             <i class="bi bi-cart3"></i> Mis compras
                         </a>
-                        <a href="#" class="profile-menu-item">
+                        <a href="misResenas" class="profile-menu-item">
                             <i class="bi bi-star"></i> Mis reseñas
                         </a>
                         <a href="misOfertas" class="profile-menu-item">
@@ -43,6 +43,14 @@
             <div class="col-md-8 col-lg-9 ps-md-4">
                 <h1 class="profile-content-title mb-1">Mis Ventas</h1>
                 <p class="text-muted fw-semibold small mb-4">Registro de ventas concretadas con los compradores.</p>
+
+                <!-- Muestra mensaje de éxito si se actualizó el estado -->
+                <c:if test="${param.msg == 'estadoActualizado'}">
+                    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i> El estado de la transacción ha sido actualizado.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </c:if>
 
                 <div class="ventas-container">
                     <c:choose>
@@ -64,12 +72,62 @@
                                             </small>
                                         </div>
 
-                                        <div class="text-md-end">
-                                            <span class="badge bg-primary px-3 py-2 rounded-pill fs-6 mb-2 d-inline-block">
-                                                <i class="bi bi-bag-check-fill me-1"></i> Venta Concretada
-                                            </span>
-                                            <br>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <!-- BADGE DINÁMICO DE ESTADO -->
+                                            <c:choose>
+                                                <c:when test="${venta.estado == 1}">
+                                                    <span class="badge bg-success px-3 py-2 rounded-pill">
+                                                        <i class="bi bi-bag-check-fill me-1"></i> Vendido / Completada
+                                                    </span>
+                                                </c:when>
+                                                <c:when test="${venta.estado == 2}">
+                                                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">
+                                                        <i class="bi bi-clock-history me-1"></i> En Proceso
+                                                    </span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="badge bg-danger px-3 py-2 rounded-pill">
+                                                        <i class="bi bi-x-circle-fill me-1"></i> Cancelada
+                                                    </span>
+                                                </c:otherwise>
+                                            </c:choose>
+
+                                            <!-- MENÚ DE 3 PUNTOS PARA CAMBIAR ESTADO -->
+                                            <div class="dropdown">
+                                                <button class="btn btn-light btn-sm rounded-circle shadow-none border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="bi bi-three-dots-vertical fs-5"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                                    <c:if test="${venta.estado != 1}">
+                                                        <li>
+                                                            <form action="actualizarEstadoTransaccion" method="POST">
+                                                                <input type="hidden" name="idTransaccion" value="${venta.idTransaccion}">
+                                                                <input type="hidden" name="nuevoEstado" value="1">
+                                                                <button type="submit" class="dropdown-item text-success fw-semibold">
+                                                                    <i class="bi bi-check-circle-fill me-2"></i>Marcar como Vendido
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                    </c:if>
+
+                                                    <c:if test="${venta.estado != 0}">
+                                                        <c:if test="${venta.estado != 1}">
+                                                            <li><hr class="dropdown-divider"></li>
+                                                        </c:if>
+                                                        <li>
+                                                            <form action="actualizarEstadoTransaccion" method="POST">
+                                                                <input type="hidden" name="idTransaccion" value="${venta.idTransaccion}">
+                                                                <input type="hidden" name="nuevoEstado" value="0">
+                                                                <button type="submit" class="dropdown-item text-danger fw-semibold">
+                                                                    <i class="bi bi-x-circle-fill me-2"></i>Cancelar Transacción
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                    </c:if>
+                                                </ul>
+                                            </div>
                                         </div>
+
                                     </div>
                                 </div>
                             </c:forEach>

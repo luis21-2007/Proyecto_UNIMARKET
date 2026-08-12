@@ -2,6 +2,8 @@ package com.example.maqueta_integradora.controller;
 
 import com.example.maqueta_integradora.model.Producto;
 import com.example.maqueta_integradora.model.User;
+import com.example.maqueta_integradora.model.dao.CalificacionDao;
+import com.example.maqueta_integradora.model.dao.OfertaDao;
 import com.example.maqueta_integradora.model.dao.ProductoDao;
 import com.example.maqueta_integradora.model.dao.UserDao;
 
@@ -17,11 +19,15 @@ public class DetalleProductoServlet extends HttpServlet {
 
     private ProductoDao productoDao;
     private UserDao userDao;
+    private OfertaDao ofertaDao;
+    private CalificacionDao calificacionDao; // <-- DAO DE CALIFICACIONES
 
     @Override
     public void init() throws ServletException {
         productoDao = new ProductoDao();
         userDao = new UserDao();
+        ofertaDao = new OfertaDao();
+        calificacionDao = new CalificacionDao(); // <-- INICIALIZACIÓN
     }
 
     @Override
@@ -53,12 +59,23 @@ public class DetalleProductoServlet extends HttpServlet {
 
             if (producto != null) {
                 // 4. Consultar los datos del usuario vendedor
-                User vendedor = userDao.getById(producto.getIdUsuario()); // O el método que use tu UserDao para buscar por ID
+                User vendedor = userDao.getById(producto.getIdUsuario());
 
-                // 5. Enviar producto, imágenes y vendedor al JSP
+                // 5. Consultar estado de la oferta del usuario en sesión
+                int estadoOferta = ofertaDao.getEstadoOfertaUsuario(usuario.getId(), idProducto);
+
+                // 6. Consultar reputación y calificaciones del vendedor
+                int idVendedor = producto.getIdUsuario();
+                double promedioVendedor = calificacionDao.obtenerPromedioCalificaciones(idVendedor);
+                int totalResenasVendedor = calificacionDao.obtenerResenasPorVendedor(idVendedor).size();
+
+                // 7. Enviar datos al JSP
                 request.setAttribute("producto", producto);
                 request.setAttribute("listaImagenes", listaImagenes);
                 request.setAttribute("vendedor", vendedor);
+                request.setAttribute("estadoOferta", estadoOferta);
+                request.setAttribute("promedioVendedor", promedioVendedor);       // <-- NUEVO ATRIBUTO
+                request.setAttribute("totalResenasVendedor", totalResenasVendedor); // <-- NUEVO ATRIBUTO
 
                 request.getRequestDispatcher("DetalleProducto.jsp").forward(request, response);
             } else {

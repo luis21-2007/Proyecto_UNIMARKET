@@ -121,23 +121,24 @@ public class OfertaDao {
         return lista;
     }
     public boolean aceptarOfertaYRegistrarVenta(int idOferta) {
-        String sqlBuscarOferta = "SELECT id_producto, id_usuario, monto_oferta FROM oferta WHERE id_oferta = ?";
+        String sqlBuscarOferta = "SELECT id_producto, id_usuario, monto_oferta FROM oferta WHERE id_oferta = ? AND estado = 0";
         String sqlBuscarVendedor = "SELECT id_usuario FROM producto WHERE id_producto = ?";
         String sqlActualizarOferta = "UPDATE oferta SET estado = 1 WHERE id_oferta = ?";
-        String sqlInsertarTransaccion = "INSERT INTO transaccion (id_producto, id_comprador, id_vendedor, monto, estado) VALUES (?, ?, ?, ?, 1)";
-        String sqlDesactivarProducto = "UPDATE producto SET estado = 0 WHERE id_producto = ?";
+
+        // Insertamos la transacción con estado 2 (En Proceso) por defecto y NO tocamos el producto
+        String sqlInsertarTransaccion = "INSERT INTO transaccion (id_producto, id_comprador, id_vendedor, monto, estado) VALUES (?, ?, ?, ?, 2)";
 
         Connection con = null;
         try {
             con = SQLConnector.getConnection();
-            con.setAutoCommit(false); // Inicia la transacción JDBC (Todo o Nada)
+            con.setAutoCommit(false); // Transacción JDBC para asegurar que se ejecuten todas las consultas
 
             int idProducto = 0;
             int idComprador = 0;
             int idVendedor = 0;
             double monto = 0.0;
 
-            // Step 1: Obtener los datos de la oferta
+            // 1. Obtener datos de la oferta pendiente
             try (PreparedStatement ps = con.prepareStatement(sqlBuscarOferta)) {
                 ps.setInt(1, idOferta);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -152,7 +153,7 @@ public class OfertaDao {
                 }
             }
 
-            // Step 2: Obtener el ID del Vendedor (dueño del producto)
+            // 2. Obtener ID del vendedor (dueño del producto)
             try (PreparedStatement ps = con.prepareStatement(sqlBuscarVendedor)) {
                 ps.setInt(1, idProducto);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -165,13 +166,13 @@ public class OfertaDao {
                 }
             }
 
-            // Step 3: Marcar oferta como Aceptada (estado = 1)
+            // 3. Marcar esta oferta como Aceptada (estado = 1)
             try (PreparedStatement ps = con.prepareStatement(sqlActualizarOferta)) {
                 ps.setInt(1, idOferta);
                 ps.executeUpdate();
             }
 
-            // Step 4: Insertar el registro de la Venta en la tabla TRANSACCION
+            // 4. Crear el registro en la tabla TRANSACCION (estado 2 = En Proceso)
             try (PreparedStatement ps = con.prepareStatement(sqlInsertarTransaccion)) {
                 ps.setInt(1, idProducto);
                 ps.setInt(2, idComprador);
@@ -180,24 +181,18 @@ public class OfertaDao {
                 ps.executeUpdate();
             }
 
-            // Step 5: Desactivar el producto para que ya no aparezca en venta
-            try (PreparedStatement ps = con.prepareStatement(sqlDesactivarProducto)) {
-                ps.setInt(1, idProducto);
-                ps.executeUpdate();
-            }
-
-            con.commit(); // Si todo fue exitoso, se guardan los cambios permanentemente
+            con.commit(); // Guarda cambios permanentemente
             return true;
 
         } catch (SQLException e) {
             if (con != null) {
                 try {
-                    con.rollback(); // Si algo falla, deshace todos los cambios
+                    con.rollback();
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
             }
-            System.err.println("Error procesando la transacción de venta: " + e.getMessage());
+            System.err.println("Error al aceptar la oferta e insertar la transacción: " + e.getMessage());
             e.printStackTrace();
             return false;
         } finally {
@@ -210,5 +205,25 @@ public class OfertaDao {
                 }
             }
         }
+    }
+    public int getEstadoOfertaUsuario(int idUsuario, int idProducto) {
+        // Busca la última oferta hecha por el usuario para este producto
+        String sql = "SELECT estado FROM oferta WHERE id_usuario = ? AND id_producto = ? ORDER BY id_oferta DESC FETCH FIRST 1 ROWS ONLY";;
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idUsuario);
+            ps.setInt(2, idProducto);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("estado"); // Retorna 0 (Pendiente), 1 (Aceptada), 2 (Rechazada), etc.
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al consultar estado de oferta: " + e.getMessage());
+        }
+        return -1; // -1 indica que NO ha realizado ninguna oferta
     }
 }
