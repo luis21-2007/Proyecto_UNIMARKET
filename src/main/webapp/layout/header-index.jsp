@@ -38,6 +38,13 @@
 
         <c:choose>
             <c:when test="${not empty sessionScope.usuario}">
+                <!-- Botón de Mis Productos-->
+                <div class="d-flex flex-column align-items-center">
+                    <a href="misProductos" class="icon-btn mb-2" title="Ir a mis productos">
+                        <i class="bi-bag-fill"></i>
+                    </a>
+                    <span class="icon-label" style="min-height: 2.2em; display: block;">Mis Productos<br></span>
+                </div>
 
                 <!-- Botón de Perfil -->
                 <div class="d-flex flex-column align-items-center">

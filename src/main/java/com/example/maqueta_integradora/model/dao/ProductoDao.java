@@ -37,7 +37,7 @@ public class ProductoDao implements Dao<Producto, Integer> {
         List<Producto> lista = new ArrayList<>();
 
         // Consulta con subquery para obtener la primera imagen de cada producto
-        String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion   ,p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario,(SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal  FROM producto p WHERE p.estado = 1 ORDER BY p.fecha_publicacion DESC";
+        String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, (SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal FROM producto p WHERE p.estado = 1 ORDER BY p.fecha_publicacion DESC";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -201,47 +201,114 @@ public class ProductoDao implements Dao<Producto, Integer> {
         }
         return listaImagenes;
     }
-<<<<<<< HEAD
+
+    // ==========================================
+    // MÉTODOS DE LA RAMA HEAD (TUS MÉTODOS)
+    // ==========================================
 
     public List<Producto> obtenerProductosPorUsuario(int idUsuario) {
-
         List<Producto> lista = new ArrayList<>();
 
-        String sql =
-                "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, " +
-                        "p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, " +
-                        "(SELECT img.imagen_url " +
-                        "FROM imagen_producto img " +
-                        "WHERE img.id_producto = p.id_producto " +
-                        "FETCH FIRST 1 ROWS ONLY) AS imagen_principal " +
-                        "FROM producto p " +
-                        "WHERE p.id_usuario = ? " +
-                        "AND p.estado = 1 " +
-                        "ORDER BY p.fecha_publicacion DESC";
-=======
-    public List<Producto> getByCategoria(int idCategoria) {
-        List<Producto> lista = new ArrayList<>();
-
-        String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, (SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal FROM producto p WHERE p.estado = 1 AND p.id_categoria = ? ORDER BY p.fecha_publicacion DESC";
->>>>>>> felipe
+        String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, " +
+                "p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, " +
+                "(SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal " +
+                "FROM producto p WHERE p.id_usuario = ? AND p.estado = 1 ORDER BY p.fecha_publicacion DESC";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-<<<<<<< HEAD
             System.out.println("Buscando productos del usuario: " + idUsuario);
-
             ps.setInt(1, idUsuario);
-
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-
                 System.out.println("Producto encontrado: " + rs.getString("nombre"));
-
                 Producto p = new Producto();
+                p.setIdProducto(rs.getInt("id_producto"));
+                p.setNombre(rs.getString("nombre"));
+                p.setPrecio(rs.getDouble("precio"));
+                p.setDescripcion(rs.getString("descripcion"));
+                p.setFechaPublicacion(rs.getTimestamp("fecha_publicacion"));
+                p.setEstado(rs.getInt("estado") == 1);
+                p.setIdCategoria(rs.getInt("id_categoria"));
+                p.setIdUsuario(rs.getInt("id_usuario"));
+                p.setImagenUrl(rs.getString("imagen_principal"));
 
-=======
+                lista.add(p);
+            }
+            System.out.println("Total encontrados: " + lista.size());
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+    public List<Producto> obtenerProductosPorUsuarioYCategoria(int idUsuario, int idCategoria) {
+        List<Producto> lista = new ArrayList<>();
+
+        String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, " +
+                "p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, " +
+                "(SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal " +
+                "FROM producto p WHERE p.id_usuario = ? AND p.id_categoria = ? AND p.estado = 1 ORDER BY p.fecha_publicacion DESC";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idUsuario);
+            ps.setInt(2, idCategoria);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Producto p = new Producto();
+                p.setIdProducto(rs.getInt("id_producto"));
+                p.setNombre(rs.getString("nombre"));
+                p.setPrecio(rs.getDouble("precio"));
+                p.setDescripcion(rs.getString("descripcion"));
+                p.setFechaPublicacion(rs.getTimestamp("fecha_publicacion"));
+                p.setEstado(rs.getInt("estado") == 1);
+                p.setIdCategoria(rs.getInt("id_categoria"));
+                p.setIdUsuario(rs.getInt("id_usuario"));
+                p.setImagenUrl(rs.getString("imagen_principal"));
+
+                lista.add(p);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener productos por usuario y categoría.");
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+    // Método para eliminar las imágenes viejas antes de poner las nuevas
+    public boolean eliminarImagenesPorProducto(int idProducto) {
+        String sql = "DELETE FROM imagen_producto WHERE id_producto = ?";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idProducto);
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error al eliminar imágenes previas: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
+    // ==========================================
+    // MÉTODOS DE LA RAMA FELIPE
+    // ==========================================
+
+    public List<Producto> getByCategoria(int idCategoria) {
+        List<Producto> lista = new ArrayList<>();
+        String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, (SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal FROM producto p WHERE p.estado = 1 AND p.id_categoria = ? ORDER BY p.fecha_publicacion DESC";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
             ps.setInt(1, idCategoria);
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -255,8 +322,6 @@ public class ProductoDao implements Dao<Producto, Integer> {
                     p.setEstado(rs.getInt("estado") == 1);
                     p.setIdCategoria(rs.getInt("id_categoria"));
                     p.setIdUsuario(rs.getInt("id_usuario"));
-
-                    // Asignamos la primera imagen obtenida de la subconsulta
                     p.setImagenUrl(rs.getString("imagen_principal"));
 
                     lista.add(p);
@@ -267,16 +332,15 @@ public class ProductoDao implements Dao<Producto, Integer> {
             e.printStackTrace();
         }
         return lista;
-    }public List<Producto> getAllAdmin() {
+    }
+
+    public List<Producto> getAllAdmin() {
         List<Producto> lista = new ArrayList<>();
 
-        // Se agrega u.nombre AS nombre_vendedor y el LEFT JOIN con la tabla usuario
         String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, " +
                 "u.nombre AS nombre_vendedor, " +
                 "(SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal " +
-                "FROM producto p " +
-                "LEFT JOIN usuario u ON p.id_usuario = u.id_usuario " +
-                "ORDER BY p.id_producto DESC";
+                "FROM producto p LEFT JOIN usuario u ON p.id_usuario = u.id_usuario ORDER BY p.id_producto DESC";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -284,7 +348,6 @@ public class ProductoDao implements Dao<Producto, Integer> {
 
             while (rs.next()) {
                 Producto p = new Producto();
->>>>>>> felipe
                 p.setIdProducto(rs.getInt("id_producto"));
                 p.setNombre(rs.getString("nombre"));
                 p.setPrecio(rs.getDouble("precio"));
@@ -295,36 +358,7 @@ public class ProductoDao implements Dao<Producto, Integer> {
                 p.setIdUsuario(rs.getInt("id_usuario"));
                 p.setImagenUrl(rs.getString("imagen_principal"));
 
-<<<<<<< HEAD
-                lista.add(p);
-            }
-
-            System.out.println("Total encontrados: " + lista.size());
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return lista;
-    }
-    public List<Producto> obtenerProductosPorUsuarioYCategoria(int idUsuario, int idCategoria) {
-
-        List<Producto> lista = new ArrayList<>();
-
-        String sql =
-                "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, " +
-                        "p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, " +
-                        "(SELECT img.imagen_url " +
-                        "FROM imagen_producto img " +
-                        "WHERE img.id_producto = p.id_producto " +
-                        "FETCH FIRST 1 ROWS ONLY) AS imagen_principal " +
-                        "FROM producto p " +
-                        "WHERE p.id_usuario = ? " +
-                        "AND p.id_categoria = ? " +
-                        "AND p.estado = 1 " +
-                        "ORDER BY p.fecha_publicacion DESC";
-=======
-                // Ahora sí se encuentra en el ResultSet
+                // Asignamos el nombre del vendedor
                 p.setNombreVendedor(rs.getString("nombre_vendedor"));
 
                 lista.add(p);
@@ -335,45 +369,13 @@ public class ProductoDao implements Dao<Producto, Integer> {
         }
         return lista;
     }
+
     public boolean activar(int idProducto) {
         String sql = "UPDATE producto SET estado = 1 WHERE id_producto = ?";
->>>>>>> felipe
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-<<<<<<< HEAD
-            ps.setInt(1, idUsuario);
-            ps.setInt(2, idCategoria);
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-
-                Producto p = new Producto();
-
-                p.setIdProducto(rs.getInt("id_producto"));
-                p.setNombre(rs.getString("nombre"));
-                p.setPrecio(rs.getDouble("precio"));
-                p.setDescripcion(rs.getString("descripcion"));
-                p.setFechaPublicacion(rs.getTimestamp("fecha_publicacion"));
-                p.setEstado(rs.getInt("estado") == 1);
-                p.setIdCategoria(rs.getInt("id_categoria"));
-                p.setIdUsuario(rs.getInt("id_usuario"));
-                p.setImagenUrl(rs.getString("imagen_principal"));
-
-                lista.add(p);
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error al obtener productos por usuario y categoría.");
-            e.printStackTrace();
-        }
-
-        return lista;
-    }
-
-=======
             ps.setInt(1, idProducto);
             return ps.executeUpdate() > 0;
 
@@ -384,7 +386,6 @@ public class ProductoDao implements Dao<Producto, Integer> {
         }
     }
 
-    // Método para desactivar el producto (estado = 0)
     public boolean desactivar(int idProducto) {
         String sql = "UPDATE producto SET estado = 0 WHERE id_producto = ?";
 
@@ -400,5 +401,4 @@ public class ProductoDao implements Dao<Producto, Integer> {
             return false;
         }
     }
->>>>>>> felipe
 }

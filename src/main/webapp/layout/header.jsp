@@ -14,12 +14,8 @@
 </head>
 <body>
 <header class="custom-header d-flex align-items-center justify-content-between pe-4">
-<<<<<<< HEAD
-    <!-- Logo del Marketplace (Apunta al Servlet 'inicio') -->
-=======
 
-    <!-- Logo del Marketplace -->
->>>>>>> felipe
+    <!-- Logo del Marketplace (Apunta al Servlet 'inicio') -->
     <div class="logo-container d-flex align-items-center h-100">
         <a href="inicio" class="d-inline-block">
             <img src="assets/img/icono-integradora.jpeg" alt="Logo" class="logo-img rounded-circle">
@@ -51,10 +47,7 @@
                     </a>
                     <span class="icon-label text-center" style="min-height: 2.2em; display: block;">Agregar<br>Producto</span>
                 </div>
-<<<<<<< HEAD
-=======
 
->>>>>>> felipe
                 <!-- Botón de Salir -->
                 <div class="d-flex flex-column align-items-center">
                     <a href="logout" class="icon-btn mb-2" title="Cerrar sesión">
@@ -63,24 +56,17 @@
                     <span class="icon-label" style="min-height: 2.2em; display: block;">Salir<br></span>
                 </div>
             </c:when>
-<<<<<<< HEAD
+
             <%-- OPCIÓN 2: SIN SESIÓN --%>
             <c:otherwise>
                 <!-- Inicio de sesión obligatorio -->
-=======
-
-            <c:otherwise>
-
-                <!-- Botón de Iniciar Sesión -->
->>>>>>> felipe
                 <div class="d-flex flex-column align-items-center">
                     <a href="login.jsp" class="icon-btn mb-2" title="Iniciar Sesión">
                         <i class="bi bi-person-circle"></i>
                     </a>
-                    <span class="icon-label text-center" style="min-height: 2.2em; display: block;">Iniciar<br>Sesión</span> </div>
-
+                    <span class="icon-label text-center" style="min-height: 2.2em; display: block;">Iniciar<br>Sesión</span>
+                </div>
             </c:otherwise>
         </c:choose>
     </div>
 </header>
-

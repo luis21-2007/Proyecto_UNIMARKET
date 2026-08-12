@@ -59,39 +59,55 @@ public class EditarProductoServlet extends HttpServlet {
 
             // Inyectamos el ID del usuario logueado por seguridad
             producto.setIdUsuario(usuario.getId());
-
+// =========================================================
+            // LÓGICA DE REEMPLAZO DE IMÁGENES (MÁXIMO 3)
             // =========================================================
-            // 5. INICIO DE LA LÓGICA DE LA IMAGEN
-            // =========================================================
-            Part filePart = request.getPart("imagen");
 
-            // Verificamos si el usuario realmente subió un archivo nuevo
-            if (filePart != null && filePart.getSize() > 0) {
-
-                // Obtenemos el nombre original del archivo subido
-                String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-
-                // Le agregamos la fecha actual al nombre para que no se repita con otras imágenes
-                String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
-
-                // Creamos la ruta física en el servidor donde se guardará la foto
-                String uploadPath = getServletContext().getRealPath("") + File.separator + "assets" + File.separator + "img";
-
-                // Si la carpeta "img" no existe, la creamos
-                File uploadDir = new File(uploadPath);
-                if (!uploadDir.exists()) {
-                    uploadDir.mkdir();
+            // a) Comprobamos si el usuario seleccionó al menos un archivo nuevo
+            boolean subioNuevasImagenes = false;
+            for (Part part : request.getParts()) {
+                if (part.getName().equals("imagenes") && part.getSize() > 0) {
+                    subioNuevasImagenes = true;
+                    break; // Con una que detecte, sabemos que quiere reemplazar
                 }
-
-                // Guardamos el archivo físicamente en esa carpeta
-                filePart.write(uploadPath + File.separator + uniqueFileName);
-
-                // Generamos la ruta relativa que se guardará en la base de datos
-                String rutaImagenBD = "assets/img/" + uniqueFileName;
-
-                // Usamos tu método del DAO para guardar esta nueva imagen asociada a este producto
-                productoDao.guardarImagenProducto(producto.getIdProducto(), rutaImagenBD);
             }
+
+            // b) Si detectamos fotos nuevas, ejecutamos el reemplazo
+            if (subioNuevasImagenes) {
+
+                // 1. BORRAMOS las imágenes anteriores de la BD
+                productoDao.eliminarImagenesPorProducto(producto.getIdProducto());
+
+                // 2. Preparamos la carpeta para guardar las nuevas
+                String uploadPath = getServletContext().getRealPath("") + File.separator + "assets" + File.separator + "img";
+                File uploadDir = new File(uploadPath);
+                if (!uploadDir.exists()) uploadDir.mkdir();
+
+                int contadorImagenes = 0; // Nuestro vigilante para no pasar de 3
+
+                // 3. Recorremos y GUARDAMOS los archivos nuevos
+                for (Part part : request.getParts()) {
+                    // Verificamos que sea imagen, que pese algo, y que llevemos MENOS DE 3
+                    if (part.getName().equals("imagenes") && part.getSize() > 0 && contadorImagenes < 3) {
+
+                        String fileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
+                        String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
+
+                        // Guardamos físicamente en la carpeta
+                        part.write(uploadPath + File.separator + uniqueFileName);
+
+                        // Insertamos la nueva ruta en la BD
+                        String rutaImagenBD = "assets/img/" + uniqueFileName;
+                        productoDao.guardarImagenProducto(producto.getIdProducto(), rutaImagenBD);
+
+                        // Aumentamos el contador
+                        contadorImagenes++;
+                    }
+                }
+            }
+            // =========================================================
+            // FIN DE LA LÓGICA DE IMÁGENES
+            // =========================================================
             // =========================================================
             // FIN DE LA LÓGICA DE LA IMAGEN
             // =========================================================

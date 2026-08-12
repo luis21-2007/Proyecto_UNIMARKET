@@ -185,7 +185,7 @@
                 </div>
 
                 <!-- FORMULARIO DE OFERTA -->
-                <form action="enviarOferta" method="POST">
+                <form id="formOferta" action="enviarOferta" method="POST">
                     <div class="modal-body">
                         <!-- ID Oculto del Producto -->
                         <input type="hidden" name="idProducto" value="${producto.idProducto}">
@@ -208,7 +208,7 @@
                         <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill" data-bs-dismiss="modal">
                             Cancelar
                         </button>
-                        <button type="submit" class="btn btn-danger btn-sm px-4 fw-bold rounded-pill" style="background-color: #8B0000; border-color: #8B0000;">
+                        <button type="submit" id="btnEnviarOferta" class="btn btn-danger btn-sm px-4 fw-bold rounded-pill" style="background-color: #8B0000; border-color: #8B0000;">
                             Enviar oferta
                         </button>
                     </div>
@@ -220,4 +220,18 @@
 </div>
 
 <script src="assets/js/detalles-productos.js"></script>
+<!-- Script para evitar doble envío en la oferta -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const formOferta = document.getElementById('formOferta');
+        const btnEnviarOferta = document.getElementById('btnEnviarOferta');
+
+        if (formOferta && btnEnviarOferta) {
+            formOferta.addEventListener('submit', function() {
+                btnEnviarOferta.disabled = true;
+                btnEnviarOferta.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Enviando...';
+            });
+        }
+    });
+</script>
 <%@ include file="layout/footer.jsp" %>
