@@ -38,7 +38,7 @@
                     </div>
                 </c:if>
 
-                <form action="subirProducto" method="POST" enctype="multipart/form-data" id="formSubirProducto" class="text-center" novalidate>
+                <form action="subirProducto" method="POST" enctype="multipart/form-data" id="formSubirProducto" class="text-center">
                     <div class="mb-3">
                         <label for="input-file" class="btn btn-iniciar" style="cursor: pointer; padding: 6px 20px; font-size: 14px;">
                             <i class="bi bi-plus-lg me-1"></i> Subir imágenes (Máx 3)
@@ -80,7 +80,7 @@
                         <input type="text" name="descripcion" value="${param.descripcion}" class="custom-input" placeholder="Ingresa la descripción del producto" maxlength="50" required>
                     </div>
                     <div class="mt-4">
-                        <button type="submit" class="btn btn-iniciar">
+                        <button type="submit" id="btnSubirProducto" class="btn btn-iniciar">
                             Subir producto
                         </button>
                     </div>

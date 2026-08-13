@@ -36,6 +36,7 @@ public class Oferta {
     }
 
     // Getters y Setters
+
     public Integer getIdOferta() { return idOferta; }
     public void setIdOferta(Integer idOferta) { this.idOferta = idOferta; }
 

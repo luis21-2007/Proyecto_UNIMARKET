@@ -20,6 +20,10 @@ public class ResponderOfertaServlet extends HttpServlet {
         int idOferta = Integer.parseInt(request.getParameter("id"));
         String accion = request.getParameter("accion"); // "aceptar" o "rechazar"
 
+        // Parámetros adicionales para identificar la redirección
+        String idProductoStr = request.getParameter("idProducto");
+        String origen = request.getParameter("origen");
+
         boolean exito = false;
 
         if ("aceptar".equalsIgnoreCase(accion)) {
@@ -30,6 +34,12 @@ public class ResponderOfertaServlet extends HttpServlet {
             exito = ofertaDao.actualizarEstado(idOferta, 2);
         }
 
-        response.sendRedirect("misOfertasVendedor?msg=" + (exito ? "ok" : "error"));
+        // Lógica de redirección dinámica según la procedencia
+        if ("detalle".equalsIgnoreCase(origen) && idProductoStr != null && !idProductoStr.isEmpty()) {
+            String msg = exito ? "respuestaExitosa" : "errorActualizacion";
+            response.sendRedirect("detallemiProducto?id=" + idProductoStr + "&msg=" + msg);
+        } else {
+            response.sendRedirect("misOfertasVendedor?msg=" + (exito ? "ok" : "error"));
+        }
     }
 }

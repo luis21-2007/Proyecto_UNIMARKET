@@ -208,7 +208,8 @@
                         <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill" data-bs-dismiss="modal">
                             Cancelar
                         </button>
-                        <button type="submit" class="btn btn-danger btn-sm px-4 fw-bold rounded-pill" style="background-color: #8B0000; border-color: #8B0000;">
+                        <!-- BOTÓN CON EL ID id="btnSubmitOferta" VINCULADO A JS -->
+                        <button type="submit" id="btnSubmitOferta" class="btn btn-danger btn-sm px-4 fw-bold rounded-pill" style="background-color: #8B0000; border-color: #8B0000;">
                             Enviar oferta
                         </button>
                     </div>

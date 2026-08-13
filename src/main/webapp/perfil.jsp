@@ -64,9 +64,6 @@
                             <div class="profile-input-group">
                                 <input type="text" id="inputUsuario" name="nombre" class="form-control profile-input"
                                        value="${not empty sessionScope.usuario ? sessionScope.usuario.nombre : 'Kex'}" required>
-                                <button type="button" class="btn-edit-field" title="Editar" onclick="document.getElementById('inputUsuario').focus();">
-                                    <i class="bi bi-pencil-fill"></i>
-                                </button>
                             </div>
                         </div>
 
@@ -76,9 +73,6 @@
                             <div class="profile-input-group">
                                 <input type="email" id="inputCorreo" name="correo" class="form-control profile-input"
                                        value="${not empty sessionScope.usuario ? sessionScope.usuario.correo : 'Kex@utez.edu.mx'}" required readonly>
-                                <button type="button" class="btn-edit-field" title="Editar" onclick="document.getElementById('inputCorreo').removeAttribute('readonly'); document.getElementById('inputCorreo').focus();">
-                                    <i class="bi bi-pencil-fill"></i>
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -93,21 +87,14 @@
                             <div class="profile-input-group">
                                 <input type="text" id="inputTelefono" name="telefono" class="form-control profile-input"
                                        value="${not empty sessionScope.usuario.telefono ? sessionScope.usuario.telefono : '+52 *** *** ** 63'}">
-                                <button type="button" class="btn-edit-field" title="Editar" onclick="document.getElementById('inputTelefono').focus();">
-                                    <i class="bi bi-pencil-fill"></i>
-                                </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- BOTÓN DE GUARDAR CAMBIOS -->
                     <div class="btn-guardar-perfil-wrapper">
                         <button type="submit" class="btn btn-guardar-perfil">
                             Guardar Cambios
                         </button>
-                        <div class="btn-save-icon">
-                            <i class="bi bi-floppy-fill"></i>
-                        </div>
                     </div>
 
                 </form>

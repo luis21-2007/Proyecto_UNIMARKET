@@ -33,3 +33,36 @@ function previewImages(event) {
         reader.readAsDataURL(file);
     });
 }
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('formSubirProducto');
+    const btnSubir = document.getElementById('btnSubirProducto');
+    let enviando = false;
+
+    if (form && btnSubir) {
+        form.addEventListener('submit', function (e) {
+            // Verificar si los campos requeridos son válidos
+            if (!form.checkValidity()) {
+                return; // Si el formulario no es válido, permite que el navegador muestre los errores
+            }
+
+            // Si ya se inició el envío, prevenimos cualquier submit adicional
+            if (enviando) {
+                e.preventDefault();
+                return false;
+            }
+
+            // Marcar como enviado inmediatamente para bloquear clics instantáneos
+            enviando = true;
+
+            // Aplicar puntero inactivo e indicador en el botón de forma inmediata
+            btnSubir.style.pointerEvents = 'none';
+            btnSubir.style.opacity = '0.7';
+            btnSubir.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Subiendo...';
+
+            // Deshabilitar formalmente en el ciclo siguiente para asegurar que la petición HTTP/Multipart ya zarpó
+            setTimeout(() => {
+                btnSubir.disabled = true;
+            }, 0);
+        });
+    }
+});

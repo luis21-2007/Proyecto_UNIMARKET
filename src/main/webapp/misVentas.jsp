@@ -92,13 +92,15 @@
                                                 </c:otherwise>
                                             </c:choose>
 
-                                            <!-- MENÚ DE 3 PUNTOS PARA CAMBIAR ESTADO -->
-                                            <div class="dropdown">
-                                                <button class="btn btn-light btn-sm rounded-circle shadow-none border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="bi bi-three-dots-vertical fs-5"></i>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                                                    <c:if test="${venta.estado != 1}">
+                                            <!-- MENÚ DE OPCIONES (Solo visible si la venta NO está en estado Vendido/Completada) -->
+                                            <c:if test="${venta.estado != 1}">
+                                                <div class="dropdown">
+                                                    <button class="btn btn-light btn-sm rounded-circle shadow-none border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="bi bi-three-dots-vertical fs-5"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+
+                                                        <!-- Opción: Marcar como Vendido -->
                                                         <li>
                                                             <form action="actualizarEstadoTransaccion" method="POST">
                                                                 <input type="hidden" name="idTransaccion" value="${venta.idTransaccion}">
@@ -108,24 +110,25 @@
                                                                 </button>
                                                             </form>
                                                         </li>
-                                                    </c:if>
 
-                                                    <c:if test="${venta.estado != 0}">
-                                                        <c:if test="${venta.estado != 1}">
+                                                        <!-- Opción: Cancelar Transacción (Solo si está 'En Proceso', estado 2) -->
+                                                        <c:if test="${venta.estado == 2}">
                                                             <li><hr class="dropdown-divider"></li>
+                                                            <li>
+                                                                <form action="actualizarEstadoTransaccion" method="POST">
+                                                                    <input type="hidden" name="idTransaccion" value="${venta.idTransaccion}">
+                                                                    <input type="hidden" name="nuevoEstado" value="0">
+                                                                    <button type="submit" class="dropdown-item text-danger fw-semibold">
+                                                                        <i class="bi bi-x-circle-fill me-2"></i>Cancelar Transacción
+                                                                    </button>
+                                                                </form>
+                                                            </li>
                                                         </c:if>
-                                                        <li>
-                                                            <form action="actualizarEstadoTransaccion" method="POST">
-                                                                <input type="hidden" name="idTransaccion" value="${venta.idTransaccion}">
-                                                                <input type="hidden" name="nuevoEstado" value="0">
-                                                                <button type="submit" class="dropdown-item text-danger fw-semibold">
-                                                                    <i class="bi bi-x-circle-fill me-2"></i>Cancelar Transacción
-                                                                </button>
-                                                            </form>
-                                                        </li>
-                                                    </c:if>
-                                                </ul>
-                                            </div>
+
+                                                    </ul>
+                                                </div>
+                                            </c:if>
+
                                         </div>
 
                                     </div>
