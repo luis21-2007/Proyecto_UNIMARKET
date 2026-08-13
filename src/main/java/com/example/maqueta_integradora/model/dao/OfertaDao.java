@@ -226,4 +226,36 @@ public class OfertaDao {
         }
         return -1; // -1 indica que NO ha realizado ninguna oferta
     }
+    public List<Oferta> getOfertasByProducto(int idProducto) {
+        List<Oferta> lista = new ArrayList<>();
+
+        String sql = "SELECT o.id_oferta, o.monto_oferta, o.estado, o.fecha_oferta, " +
+                "u.nombre AS nombre_comprador " +
+                "FROM oferta o " +
+                "INNER JOIN usuario u ON o.id_usuario = u.id_usuario " + // JOIN para traer los datos del comprador
+                "WHERE o.id_producto = ? " + // Filtro por el producto actual
+                "ORDER BY o.fecha_oferta DESC";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idProducto);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Oferta o = new Oferta();
+                    o.setIdOferta(rs.getInt("id_oferta"));
+                    o.setMontoOferta(rs.getDouble("monto_oferta"));
+                    o.setEstado(rs.getInt("estado"));
+                    o.setFechaOferta(rs.getTimestamp("fecha_oferta"));
+                    o.setNombreComprador(rs.getString("nombre_comprador"));
+
+                    lista.add(o);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener ofertas por producto: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return lista;
+    }
 }

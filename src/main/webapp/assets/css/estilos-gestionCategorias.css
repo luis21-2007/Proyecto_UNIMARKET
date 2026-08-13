@@ -236,3 +236,10 @@ body {
 .btn-guardar-edit:hover {
     background-color: #d4900f !important;
 }
+.btn-guardar-edit:disabled {
+    background-color: #cccccc !important;
+    border-color: #cccccc !important;
+    color: #666666 !important;
+    cursor: not-allowed !important;
+    opacity: 0.65;
+}
