@@ -11,7 +11,16 @@ function cambiarImagenPrincipal(nuevaUrl, elementoClick) {
     elementoClick.classList.add('active-thumb');
 }
 
-function contactarVendedor(idProd) {
-    alert("¡Gracias por tu interés! Redirigiendo al contacto del vendedor...");
-}
+document.addEventListener("DOMContentLoaded", function() {
+    const formOferta = document.getElementById('formEnviarOferta');
+    const btnSubmit = document.getElementById('btnSubmitOferta');
+
+    if (formOferta && btnSubmit) {
+        formOferta.addEventListener('submit', function() {
+            // Deshabilitar botón y cambiar el estado visual al enviar el formulario
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Enviando...';
+        });
+    }
+});
 

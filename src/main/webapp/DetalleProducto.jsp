@@ -185,7 +185,7 @@
                 </div>
 
                 <!-- FORMULARIO DE OFERTA -->
-                <form action="enviarOferta" method="POST">
+                <form id="formEnviarOferta" action="enviarOferta" method="POST">
                     <div class="modal-body">
                         <!-- ID Oculto del Producto -->
                         <input type="hidden" name="idProducto" value="${producto.idProducto}">
@@ -208,7 +208,7 @@
                         <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill" data-bs-dismiss="modal">
                             Cancelar
                         </button>
-                        <button type="submit" class="btn btn-danger btn-sm px-4 fw-bold rounded-pill" style="background-color: #8B0000; border-color: #8B0000;">
+                        <button type="submit" id="btnSubmitOferta" class="btn btn-danger btn-sm px-4 fw-bold rounded-pill" style="background-color: #8B0000; border-color: #8B0000;">
                             Enviar oferta
                         </button>
                     </div>
@@ -218,6 +218,5 @@
         </div>
     </div>
 </div>
-
 <script src="assets/js/detalles-productos.js"></script>
 <%@ include file="layout/footer.jsp" %>
