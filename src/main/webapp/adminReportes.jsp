@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<%@ include file="layout/header.jsp" %>
+<%@ include file="layout/header_admin.jsp" %>
 
 <div class="container py-4">
     <h2 class="fw-bold mb-1">Gestión de Reportes</h2>
