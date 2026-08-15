@@ -36,8 +36,10 @@ public class ProductoDao implements Dao<Producto, Integer> {
     public List<Producto> getAll() {
         List<Producto> lista = new ArrayList<>();
 
-        // Consulta con subquery para obtener la primera imagen de cada producto
-        String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, (SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal FROM producto p WHERE p.estado = 1 ORDER BY p.fecha_publicacion DESC";
+        // Consulta general del catálogo público: solo productos activos (estado = 1)
+        String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, " +
+                "(SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal " +
+                "FROM producto p WHERE p.estado = 1 ORDER BY p.fecha_publicacion DESC";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -50,11 +52,10 @@ public class ProductoDao implements Dao<Producto, Integer> {
                 p.setPrecio(rs.getDouble("precio"));
                 p.setDescripcion(rs.getString("descripcion"));
                 p.setFechaPublicacion(rs.getTimestamp("fecha_publicacion"));
-                p.setEstado(rs.getInt("estado") == 1);
+                p.setEstado(rs.getInt("estado"));
                 p.setIdCategoria(rs.getInt("id_categoria"));
                 p.setIdUsuario(rs.getInt("id_usuario"));
 
-                // Asignamos la primera imagen obtenida de la subconsulta
                 p.setImagenUrl(rs.getString("imagen_principal"));
 
                 lista.add(p);
@@ -82,7 +83,7 @@ public class ProductoDao implements Dao<Producto, Integer> {
                     p.setPrecio(rs.getDouble("precio"));
                     p.setDescripcion(rs.getString("descripcion"));
                     p.setFechaPublicacion(rs.getTimestamp("fecha_publicacion"));
-                    p.setEstado(rs.getInt("estado") == 1);
+                    p.setEstado(rs.getInt("estado"));
                     p.setIdCategoria(rs.getInt("id_categoria"));
                     p.setIdUsuario(rs.getInt("id_usuario"));
                     return p;
@@ -120,7 +121,7 @@ public class ProductoDao implements Dao<Producto, Integer> {
 
     @Override
     public boolean delete(Integer id) {
-        // Baja lógica
+        // Baja lógica: cambia estado a 0
         String sql = "UPDATE producto SET estado = 0 WHERE id_producto = ?";
 
         try (Connection con = SQLConnector.getConnection();
@@ -155,7 +156,6 @@ public class ProductoDao implements Dao<Producto, Integer> {
 
     public int createAndGetId(Producto p) {
         String sql = "INSERT INTO producto (nombre, precio, descripcion, id_categoria, id_usuario) VALUES (?, ?, ?, ?, ?)";
-        // Colocamos el parámetro RETURN_GENERATED_KEYS o indicamos el nombre de la columna
         String[] keyColumn = {"id_producto"};
 
         try (Connection con = SQLConnector.getConnection();
@@ -172,14 +172,14 @@ public class ProductoDao implements Dao<Producto, Integer> {
             if (filasAfectadas > 0) {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
-                        return rs.getInt(1); // Retorna el ID recién creado
+                        return rs.getInt(1);
                     }
                 }
             }
         } catch (SQLException e) {
             System.out.println("Error al insertar producto: " + e.getMessage());
         }
-        return 0; // Si falla
+        return 0;
     }
 
     public List<String> getImagenesByProductoId(int idProducto) {
@@ -203,42 +203,40 @@ public class ProductoDao implements Dao<Producto, Integer> {
     }
 
     // ==========================================
-    // MÉTODOS DE LA RAMA HEAD (TUS MÉTODOS)
+    // MÉTODOS MIS PRODUCTOS (TODOS LOS ESTADOS)
     // ==========================================
 
     public List<Producto> obtenerProductosPorUsuario(int idUsuario) {
         List<Producto> lista = new ArrayList<>();
 
+        // Se elimina "AND p.estado = 1" para obtener activos (1), vendidos (2) y eliminados (0)
         String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, " +
                 "p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, " +
                 "(SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal " +
-                "FROM producto p WHERE p.id_usuario = ? AND p.estado = 1 ORDER BY p.fecha_publicacion DESC";
+                "FROM producto p WHERE p.id_usuario = ? ORDER BY p.fecha_publicacion DESC";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            System.out.println("Buscando productos del usuario: " + idUsuario);
             ps.setInt(1, idUsuario);
-            ResultSet rs = ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Producto p = new Producto();
+                    p.setIdProducto(rs.getInt("id_producto"));
+                    p.setNombre(rs.getString("nombre"));
+                    p.setPrecio(rs.getDouble("precio"));
+                    p.setDescripcion(rs.getString("descripcion"));
+                    p.setFechaPublicacion(rs.getTimestamp("fecha_publicacion"));
+                    p.setEstado(rs.getInt("estado"));
+                    p.setIdCategoria(rs.getInt("id_categoria"));
+                    p.setIdUsuario(rs.getInt("id_usuario"));
+                    p.setImagenUrl(rs.getString("imagen_principal"));
 
-            while (rs.next()) {
-                System.out.println("Producto encontrado: " + rs.getString("nombre"));
-                Producto p = new Producto();
-                p.setIdProducto(rs.getInt("id_producto"));
-                p.setNombre(rs.getString("nombre"));
-                p.setPrecio(rs.getDouble("precio"));
-                p.setDescripcion(rs.getString("descripcion"));
-                p.setFechaPublicacion(rs.getTimestamp("fecha_publicacion"));
-                p.setEstado(rs.getInt("estado") == 1);
-                p.setIdCategoria(rs.getInt("id_categoria"));
-                p.setIdUsuario(rs.getInt("id_usuario"));
-                p.setImagenUrl(rs.getString("imagen_principal"));
-
-                lista.add(p);
+                    lista.add(p);
+                }
             }
-            System.out.println("Total encontrados: " + lista.size());
-
         } catch (SQLException e) {
+            System.err.println("Error al obtener productos por usuario.");
             e.printStackTrace();
         }
         return lista;
@@ -247,31 +245,32 @@ public class ProductoDao implements Dao<Producto, Integer> {
     public List<Producto> obtenerProductosPorUsuarioYCategoria(int idUsuario, int idCategoria) {
         List<Producto> lista = new ArrayList<>();
 
+        // Se elimina "AND p.estado = 1" para incluir todos los estados filtrados por categoría
         String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, " +
                 "p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, " +
                 "(SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal " +
-                "FROM producto p WHERE p.id_usuario = ? AND p.id_categoria = ? AND p.estado = 1 ORDER BY p.fecha_publicacion DESC";
+                "FROM producto p WHERE p.id_usuario = ? AND p.id_categoria = ? ORDER BY p.fecha_publicacion DESC";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idUsuario);
             ps.setInt(2, idCategoria);
-            ResultSet rs = ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Producto p = new Producto();
+                    p.setIdProducto(rs.getInt("id_producto"));
+                    p.setNombre(rs.getString("nombre"));
+                    p.setPrecio(rs.getDouble("precio"));
+                    p.setDescripcion(rs.getString("descripcion"));
+                    p.setFechaPublicacion(rs.getTimestamp("fecha_publicacion"));
+                    p.setEstado(rs.getInt("estado"));
+                    p.setIdCategoria(rs.getInt("id_categoria"));
+                    p.setIdUsuario(rs.getInt("id_usuario"));
+                    p.setImagenUrl(rs.getString("imagen_principal"));
 
-            while (rs.next()) {
-                Producto p = new Producto();
-                p.setIdProducto(rs.getInt("id_producto"));
-                p.setNombre(rs.getString("nombre"));
-                p.setPrecio(rs.getDouble("precio"));
-                p.setDescripcion(rs.getString("descripcion"));
-                p.setFechaPublicacion(rs.getTimestamp("fecha_publicacion"));
-                p.setEstado(rs.getInt("estado") == 1);
-                p.setIdCategoria(rs.getInt("id_categoria"));
-                p.setIdUsuario(rs.getInt("id_usuario"));
-                p.setImagenUrl(rs.getString("imagen_principal"));
-
-                lista.add(p);
+                    lista.add(p);
+                }
             }
         } catch (SQLException e) {
             System.err.println("Error al obtener productos por usuario y categoría.");
@@ -280,7 +279,6 @@ public class ProductoDao implements Dao<Producto, Integer> {
         return lista;
     }
 
-    // Método para eliminar las imágenes viejas antes de poner las nuevas
     public boolean eliminarImagenesPorProducto(int idProducto) {
         String sql = "DELETE FROM imagen_producto WHERE id_producto = ?";
 
@@ -296,15 +294,11 @@ public class ProductoDao implements Dao<Producto, Integer> {
         }
         return false;
     }
-
-
-    // ==========================================
-    // MÉTODOS DE LA RAMA FELIPE
-    // ==========================================
-
     public List<Producto> getByCategoria(int idCategoria) {
         List<Producto> lista = new ArrayList<>();
-        String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, (SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal FROM producto p WHERE p.estado = 1 AND p.id_categoria = ? ORDER BY p.fecha_publicacion DESC";
+        String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, " +
+                "(SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal " +
+                "FROM producto p WHERE p.estado = 1 AND p.id_categoria = ? ORDER BY p.fecha_publicacion DESC";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -319,7 +313,7 @@ public class ProductoDao implements Dao<Producto, Integer> {
                     p.setPrecio(rs.getDouble("precio"));
                     p.setDescripcion(rs.getString("descripcion"));
                     p.setFechaPublicacion(rs.getTimestamp("fecha_publicacion"));
-                    p.setEstado(rs.getInt("estado") == 1);
+                    p.setEstado(rs.getInt("estado"));
                     p.setIdCategoria(rs.getInt("id_categoria"));
                     p.setIdUsuario(rs.getInt("id_usuario"));
                     p.setImagenUrl(rs.getString("imagen_principal"));
@@ -353,12 +347,10 @@ public class ProductoDao implements Dao<Producto, Integer> {
                 p.setPrecio(rs.getDouble("precio"));
                 p.setDescripcion(rs.getString("descripcion"));
                 p.setFechaPublicacion(rs.getTimestamp("fecha_publicacion"));
-                p.setEstado(rs.getInt("estado") == 1);
+                p.setEstado(rs.getInt("estado"));
                 p.setIdCategoria(rs.getInt("id_categoria"));
                 p.setIdUsuario(rs.getInt("id_usuario"));
                 p.setImagenUrl(rs.getString("imagen_principal"));
-
-                // Asignamos el nombre del vendedor
                 p.setNombreVendedor(rs.getString("nombre_vendedor"));
 
                 lista.add(p);

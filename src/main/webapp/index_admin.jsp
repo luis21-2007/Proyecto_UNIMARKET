@@ -1,13 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
-<!-- IMPORTAR EL HEADER -->
 <%@ include file="layout/header_admin.jsp" %>
 
 <!-- CONTENIDO PRINCIPAL -->
 <div class="container-fluid px-4 px-md-5 mb-5">
-
-    <!-- Título -->
     <h1 class="page-title">Administrador</h1>
 
     <!-- FILA DE TARJETAS (CARDS) BOTONES -->
@@ -47,8 +43,8 @@
             <div class="chart-card">
                 <div style="height: 350px; width: 100%; margin-top: 15px;">
                     <canvas id="productosChart"
-                            data-productos="${totalProductos}"
-                            data-usuarios="${totalUsuarios}">
+                            data-usuarios="${totalUsuarios}"
+                            data-productos="${totalProductos}">
                     </canvas>
                 </div>
             </div>
@@ -57,7 +53,6 @@
 
 </div>
 
-<!-- Incluir Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="assets/js/index_admin.js"></script>
 <%@ include file="layout/footer.jsp" %>

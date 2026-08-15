@@ -90,7 +90,7 @@ public class TransaccionDao {
         }
         return lista;
     }
-
+/*
     // CONSULTAR TRANSACCIÓN POR ID (NUEVO MÉTODO PARA REPORTES/ADMIN)
     public Transaccion obtenerPorId(int idTransaccion) {
         String sql = "SELECT t.id_transaccion, t.id_producto, t.id_comprador, t.id_vendedor, t.monto, " +
@@ -130,11 +130,12 @@ public class TransaccionDao {
         return null;
     }
 
+ */
     // ACTUALIZAR ESTADO DE TRANSACCIÓN Y DAR DE BAJA LÓGICA AL PRODUCTO SI SE COMPLETA
     public boolean actualizarEstado(int idTransaccion, int nuevoEstado) {
         String sqlUpdateTrans = "UPDATE transaccion SET estado = ? WHERE id_transaccion = ?";
         String sqlGetProducto = "SELECT id_producto FROM transaccion WHERE id_transaccion = ?";
-        String sqlDesactivarProducto = "UPDATE producto SET estado = 0 WHERE id_producto = ?";
+        String sqlDesactivarProducto = "UPDATE producto SET estado = 2 WHERE id_producto = ?";
 
         Connection con = null;
         try {
@@ -175,14 +176,12 @@ public class TransaccionDao {
                     }
                 }
             }
-
-            con.commit(); // Confirmar los cambios de forma permanente
+            con.commit();
             return true;
-
         } catch (SQLException e) {
             if (con != null) {
                 try {
-                    con.rollback(); // Deshacer cambios si ocurre algún error
+                    con.rollback();
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                 }
@@ -198,6 +197,27 @@ public class TransaccionDao {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+    public boolean registrarCompraDirectaPendiente(int idComprador, int idVendedor, int idProducto, double monto) {
+        String sql = "INSERT INTO transaccion (id_comprador, id_vendedor, id_producto, monto, fecha_transaccion, estado) " +
+                "VALUES (?, ?, ?, ?, SYSDATE, 2)"; // Estado 2 = en proceso o pendiente
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idComprador);
+            ps.setInt(2, idVendedor);
+            ps.setInt(3, idProducto);
+            ps.setDouble(4, monto);
+
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error al registrar la compra directa pendiente: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
 }

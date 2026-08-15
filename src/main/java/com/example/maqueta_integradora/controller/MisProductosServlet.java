@@ -47,9 +47,6 @@ public class MisProductosServlet extends HttpServlet {
 
         User usuario = (User) session.getAttribute("usuario");
         int idUsuario = usuario.getId();
-        System.out.println("Usuario logueado: " + usuario.getNombre());
-        System.out.println("ID Usuario: " + usuario.getId());
-
         List<Categoria> listaCategorias = categoriaDao.getAll();
 
         List<Producto> listaProductos =

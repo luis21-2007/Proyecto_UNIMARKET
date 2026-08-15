@@ -58,12 +58,7 @@ public class EditarProductoServlet extends HttpServlet {
             producto.setIdCategoria(idCategoria);
 
             // Inyectamos el ID del usuario logueado por seguridad
-            producto.setIdUsuario(usuario.getId());
-// =========================================================
-            // LÓGICA DE REEMPLAZO DE IMÁGENES (MÁXIMO 3)
-            // =========================================================
 
-            // a) Comprobamos si el usuario seleccionó al menos un archivo nuevo
             boolean subioNuevasImagenes = false;
             for (Part part : request.getParts()) {
                 if (part.getName().equals("imagenes") && part.getSize() > 0) {

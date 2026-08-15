@@ -1,4 +1,5 @@
 package com.example.maqueta_integradora.model;
+
 import java.sql.Timestamp;
 
 public class Producto {
@@ -8,19 +9,28 @@ public class Producto {
     private String descripcion;
     private String imagenUrl;
     private Timestamp fechaPublicacion;
-    boolean estado;
+    private int estado; //(0: Eliminado, 1: Activo/Publicado, 2: Vendido)
     private Integer idCategoria;
     private Integer idUsuario;
     private String nombreVendedor;
 
-    public String getNombreVendedor() {
-        return nombreVendedor;
+    // Constructores
+    public Producto() {
     }
 
-    public void setNombreVendedor(String nombreVendedor) {
-        this.nombreVendedor = nombreVendedor;
+    public Producto(Integer idProducto, String nombre, Double precio, String descripcion,
+                    String imagenUrl, Timestamp fechaPublicacion, int estado,
+                    Integer idCategoria, Integer idUsuario) {
+        this.idProducto = idProducto;
+        this.nombre = nombre;
+        this.precio = precio;
+        this.descripcion = descripcion;
+        this.imagenUrl = imagenUrl;
+        this.fechaPublicacion = fechaPublicacion;
+        this.estado = estado;
+        this.idCategoria = idCategoria;
+        this.idUsuario = idUsuario;
     }
-
 
     // Getters y Setters
     public Integer getIdProducto() { return idProducto; }
@@ -41,8 +51,9 @@ public class Producto {
     public Timestamp getFechaPublicacion() { return fechaPublicacion; }
     public void setFechaPublicacion(Timestamp fechaPublicacion) { this.fechaPublicacion = fechaPublicacion; }
 
-    public boolean isEstado() { return estado; }
-    public void setEstado(boolean estado) { this.estado = estado; }
+    // Getter y Setter ajustados para int (reemplaza a isEstado())
+    public int getEstado() { return estado; }
+    public void setEstado(int estado) { this.estado = estado; }
 
     public Integer getIdCategoria() { return idCategoria; }
     public void setIdCategoria(Integer idCategoria) { this.idCategoria = idCategoria; }
@@ -50,18 +61,6 @@ public class Producto {
     public Integer getIdUsuario() { return idUsuario; }
     public void setIdUsuario(Integer idUsuario) { this.idUsuario = idUsuario; }
 
-    public Producto(Integer idProducto, String nombre, Double precio, String descripcion, String imagenUrl, Timestamp fechaPublicacion, boolean estado, Integer idCategoria, Integer idUsuario) {
-        this.idProducto = idProducto;
-        this.nombre = nombre;
-        this.precio = precio;
-        this.descripcion = descripcion;
-        this.imagenUrl = imagenUrl;
-        this.fechaPublicacion = fechaPublicacion;
-        this.estado = estado;
-        this.idCategoria = idCategoria;
-        this.idUsuario = idUsuario;
-    }
-
-    public Producto() {
-    }
+    public String getNombreVendedor() { return nombreVendedor; }
+    public void setNombreVendedor(String nombreVendedor) { this.nombreVendedor = nombreVendedor; }
 }

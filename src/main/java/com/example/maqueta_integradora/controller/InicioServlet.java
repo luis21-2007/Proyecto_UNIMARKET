@@ -63,7 +63,7 @@ public class InicioServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Al recibir el POST con la categoría, simplemente ejecuta la lógica del doGet
+
         doGet(request, response);
     }
 }

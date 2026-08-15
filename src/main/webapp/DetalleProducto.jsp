@@ -6,7 +6,7 @@
 
 <%@ include file="layout/header.jsp" %>
 
-<!-- ALERTA DE ÉXITO -->
+<!-- ALERTA DE ÉXITO: OFERTA -->
 <c:if test="${param.msg == 'ofertaExitosa'}">
     <div class="alert alert-success alert-dismissible fade show mt-3 shadow-sm" role="alert" style="border-radius: 10px;">
         <i class="bi bi-check-circle-fill me-2"></i> Tu oferta ha sido enviada al vendedor exitosamente.
@@ -14,10 +14,18 @@
     </div>
 </c:if>
 
-<!-- ALERTA DE ERROR: AUTO-OFERTA NO PERMITIDA -->
+<!-- ALERTA DE ÉXITO: COMPRA -->
+<c:if test="${param.msg == 'compraExitosa'}">
+    <div class="alert alert-success alert-dismissible fade show mt-3 shadow-sm" role="alert" style="border-radius: 10px;">
+        <i class="bi bi-bag-check-fill me-2"></i> ¡Felicidades! Has realizado la compra exitosamente.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</c:if>
+
+<!-- ALERTA DE ERROR: AUTO-OFERTA / AUTO-COMPRA NO PERMITIDA -->
 <c:if test="${param.error == 'auto_oferta'}">
     <div class="alert alert-danger alert-dismissible fade show mt-3 shadow-sm" role="alert" style="border-radius: 10px;">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i> No puedes realizar una oferta en tu propio producto.
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> No puedes realizar acciones en tu propio producto.
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 </c:if>
@@ -71,7 +79,7 @@
                 </span>
             </div>
 
-            <!-- APARTADO NUEVO: CALIFICACIÓN DEL VENDEDOR -->
+            <!-- APARTADO: CALIFICACIÓN DEL VENDEDOR -->
             <div class="d-flex align-items-center mb-3">
                 <c:choose>
                     <c:when test="${not empty promedioVendedor and promedioVendedor > 0}">
@@ -137,37 +145,100 @@
                 </h2>
             </div>
 
-            <!-- BOTÓN OFERTAR / VALIDACIONES -->
+            <!-- BOTONES DE ACCIÓN (COMPRAR, OFERTAR O WHATSAPP) -->
             <div>
                 <c:choose>
                     <%-- CASO 1: El usuario en sesión es el dueño del producto --%>
                     <c:when test="${not empty sessionScope.usuario and sessionScope.usuario.id == producto.idUsuario}">
-                        <button type="button" class="btn btn-secondary w-100 text-center fw-bold py-2" disabled style="cursor: not-allowed; opacity: 0.7;">
+                        <button type="button" class="btn btn-secondary w-100 text-center fw-bold py-2" disabled style="cursor: not-allowed; opacity: 0.7; border-radius: 25px;">
                             <i class="bi bi-person-check-fill me-1"></i> ES TU PUBLICACIÓN
                         </button>
                     </c:when>
 
-                    <%-- CASO 2: La oferta fue ACEPTADA por el vendedor (estado = 1) --%>
-                    <c:when test="${estadoOferta == 1}">
-                        <button type="button" class="btn btn-success text-white w-100 text-center fw-bold py-2" disabled style="cursor: default; opacity: 0.9;">
-                            <i class="bi bi-check-circle-fill me-1"></i> ¡OFERTA ACEPTADA!
-                        </button>
+                    <%-- CASO 2: La oferta fue ACEPTADA (estadoOferta == 1) O realizó COMPRA DIRECTA (yaComproDirecto) --%>
+                    <c:when test="${estadoOferta == 1 or yaComproDirecto}">
+                        <div class="d-flex flex-column gap-2">
+                            <span class="badge bg-success px-3 py-2 rounded-pill fs-6 text-center">
+                                <i class="bi bi-check-circle-fill me-1"></i>
+                                <c:choose>
+                                    <c:when test="${estadoOferta == 1}">Oferta Aceptada</c:when>
+                                    <c:otherwise>Compra Registrada</c:otherwise>
+                                </c:choose>
+                            </span>
+
+                            <a href="https://wa.me/${vendedor.telefono}?text=Hola%20${vendedor.nombre},%20me%20interesa%20coordinar%20la%20entrega%20de%20mi%20compra/oferta%20por%20${producto.nombre}."
+                               target="_blank"
+                               class="btn btn-success btn-lg w-100 fw-bold shadow-sm d-inline-flex align-items-center justify-content-center gap-2"
+                               style="border-radius: 25px;">
+                                <i class="bi bi-whatsapp fs-5"></i> Contactar por WhatsApp
+                            </a>
+                        </div>
                     </c:when>
 
                     <%-- CASO 3: El usuario envió oferta y está PENDIENTE (estado = 0) --%>
                     <c:when test="${estadoOferta == 0}">
-                        <button type="button" class="btn btn-warning text-dark w-100 text-center fw-bold py-2" disabled style="cursor: not-allowed; opacity: 0.85;">
+                        <button type="button" class="btn btn-warning text-dark w-100 text-center fw-bold py-2" disabled style="cursor: not-allowed; opacity: 0.85; border-radius: 25px;">
                             <i class="bi bi-clock-history me-1"></i> OFERTA ENVIADA
                         </button>
                     </c:when>
 
-                    <%-- CASO 4: Comprador no ha ofertado o le rechazaron la anterior (estado = -1 o 2) --%>
+                    <%-- CASO 4: Comprador no ha ofertado ni comprado --%>
                     <c:otherwise>
-                        <button type="button" class="btn btn-comprar-detalle w-100 text-center fw-bold py-2" data-bs-toggle="modal" data-bs-target="#modalOferta">
-                            OFERTAR
-                        </button>
+                        <div class="d-flex gap-2">
+                            <!-- BOTÓN COMPRAR -->
+                            <button type="button" class="btn btn-comprar-detalle w-50 text-center fw-bold py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalComprar" style="border-radius: 25px;">
+                            <i class="bi bi-bag-check-fill me-1"></i> COMPRAR
+                             </button>
+
+                            <!-- BOTÓN OFERTAR -->
+                            <button type="button" class="btn btn-comprar-detalle w-50 text-center fw-bold py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalOferta" style="border-radius: 25px;">
+                                <i class="bi bi-tag-fill me-1"></i> OFERTAR
+                            </button>
+                        </div>
                     </c:otherwise>
                 </c:choose>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalComprar" tabindex="-1" aria-labelledby="modalComprarLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px;">
+
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-dark" id="modalComprarLabel">
+                        <i class="bi bi-bag-check-fill me-2" style="color: #8B0000;"></i>Confirmar Compra Directa
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- FORMULARIO DE COMPRA -->
+                <form id="formComprarProducto" action="comprarProducto" method="POST">
+                    <div class="modal-body text-center py-4">
+                        <input type="hidden" name="idProducto" value="${producto.idProducto}">
+
+                        <i class="bi bi-cart-check display-3 text-muted mb-3 d-block"></i>
+                        <h6 class="text-secondary mb-2">Estás a punto de comprar:</h6>
+                        <h5 class="fw-bold text-dark mb-3">${producto.nombre}</h5>
+
+                        <div class="p-3 bg-light rounded-3 d-inline-block border">
+                            <span class="text-muted me-2">Precio total:</span>
+                            <span class="fw-bold fs-4" style="color: #e67e22;">
+                                <fmt:formatNumber currencySymbol="$" value="${producto.precio}" type="currency"/>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer border-0 pt-0 justify-content-end gap-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill" data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn text-white btn-sm px-4 fw-bold rounded-pill" style="background-color: #8B0000; border-color: #8B0000;">
+                            Confirmar Compra
+                        </button>
+                    </div>
+                </form>
+
             </div>
         </div>
     </div>
@@ -208,7 +279,6 @@
                         <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill" data-bs-dismiss="modal">
                             Cancelar
                         </button>
-                        <!-- BOTÓN CON EL ID id="btnSubmitOferta" VINCULADO A JS -->
                         <button type="submit" id="btnSubmitOferta" class="btn btn-danger btn-sm px-4 fw-bold rounded-pill" style="background-color: #8B0000; border-color: #8B0000;">
                             Enviar oferta
                         </button>

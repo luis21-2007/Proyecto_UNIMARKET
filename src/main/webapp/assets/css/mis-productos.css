@@ -1,0 +1,22 @@
+/* Forzar el color naranja en nav-pills de Bootstrap */
+.nav-pills .nav-link {
+    color: #F48C06 !important;
+    background-color: #FFFFFF !important;
+    border: 1px solid #E0E0E0 !important;
+    transition: all 0.3s ease;
+}
+
+.nav-pills .nav-link:hover {
+    color: #FFFFFF !important;
+    background-color: #F48C06 !important;
+    border-color: #F48C06 !important;
+}
+
+/* Pestaña ACTIVA */
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+    background-color: #F48C06 !important;
+    color: #FFFFFF !important;
+    border-color: #F48C06 !important;
+    box-shadow: 0 4px 10px rgba(244, 140, 6, 0.35) !important;
+}

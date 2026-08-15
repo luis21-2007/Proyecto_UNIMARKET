@@ -28,123 +28,35 @@
         </div>
     </c:if>
 
+    <!-- SECCIÓN SUPERIOR: EDICIÓN DEL PRODUCTO -->
     <div class="row g-4">
 
-        <!-- ================================================================= -->
-        <!-- BLOQUE IZQUIERDO: IMÁGENES + OFERTAS RECIBIDAS                  -->
-        <!-- ================================================================= -->
-        <div class="col-12 col-md-7 col-lg-7">
-
-            <!-- GALERÍA DE IMÁGENES -->
-            <div class="row g-3">
-                <!-- COLUMNA 1: MINIATURAS -->
-                <div class="col-12 col-md-4 col-lg-3">
-                    <div class="d-flex flex-row flex-md-column gap-3 justify-content-center">
-                        <c:choose>
-                            <c:when test="${not empty listaImagenes}">
-                                <c:forEach var="img" items="${listaImagenes}" varStatus="status">
-                                    <img src="${img}" class="thumb-img ${status.first ? 'active-thumb' : ''}"
-                                         onclick="cambiarImagenPrincipal(this.src, this)" alt="Miniatura">
-                                </c:forEach>
-                            </c:when>
-                            <c:otherwise>
-                                <img src="assets/img/icono-integradora.jpeg" class="thumb-img active-thumb" alt="Default">
-                            </c:otherwise>
-                        </c:choose>
-                    </div>
-                </div>
-
-                <!-- COLUMNA 2: IMAGEN PRINCIPAL -->
-                <div class="col-12 col-md-8 col-lg-9">
-                    <img id="imgPrincipal"
-                         src="${not empty listaImagenes ? listaImagenes[0] : 'assets/img/icono-integradora.jpeg'}"
-                         class="main-detail-img w-100 rounded shadow-sm" alt="${producto.nombre}">
-                </div>
+        <!-- COLUMNA 1: MINIATURAS DE LAS IMÁGENES -->
+        <div class="col-12 col-md-3 col-lg-2">
+            <div class="d-flex flex-row flex-md-column gap-3 justify-content-center">
+                <c:choose>
+                    <c:when test="${not empty listaImagenes}">
+                        <c:forEach var="img" items="${listaImagenes}" varStatus="status">
+                            <img src="${img}" class="thumb-img ${status.first ? 'active-thumb' : ''}"
+                                 onclick="cambiarImagenPrincipal(this.src, this)" alt="Miniatura">
+                        </c:forEach>
+                    </c:when>
+                    <c:otherwise>
+                        <img src="assets/img/icono-integradora.jpeg" class="thumb-img active-thumb" alt="Default">
+                    </c:otherwise>
+                </c:choose>
             </div>
-
-            <!-- SECCIÓN INFERIOR IZQUIERDA: OFERTAS RECIBIDAS -->
-            <hr class="my-4">
-            <div class="row">
-                <div class="col-12">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h3 class="fw-bold m-0">
-                            <i class="bi bi-inbox-fill text-warning me-2"></i>Ofertas Recibidas
-                        </h3>
-                        <span class="badge bg-secondary fs-6 px-3 py-2 rounded-pill">
-                            Total: ${not empty listaOfertasRecibidas ? listaOfertasRecibidas.size() : 0}
-                        </span>
-                    </div>
-
-                    <c:choose>
-                        <c:when test="${not empty listaOfertasRecibidas}">
-                            <div class="row g-3">
-                                <c:forEach var="oferta" items="${listaOfertasRecibidas}">
-                                    <div class="col-12 col-sm-6">
-                                        <div class="card h-100 border-0 shadow-sm p-3" style="border-radius: 15px; background-color: #ffffff;">
-                                            <div class="card-body p-2">
-                                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <h4 class="fw-bold text-success mb-0">
-                                                        <fmt:formatNumber currencySymbol="$" value="${oferta.montoOferta}" type="currency"/>
-                                                    </h4>
-                                                </div>
-
-                                                <p class="text-muted small mb-3">
-                                                    <i class="bi bi-person-fill text-secondary me-1"></i>Ofertante:
-                                                    <strong class="text-dark">${oferta.nombreComprador}</strong>
-                                                </p>
-
-                                                <div class="d-flex justify-content-end align-items-center pt-2 border-top">
-                                                    <c:choose>
-                                                        <%-- Estado 0: Pendiente --%>
-                                                        <c:when test="${oferta.estado == 0}">
-                                                            <div class="d-flex gap-2">
-                                                                <a href="responderOferta?id=${oferta.idOferta}&accion=aceptar&idProducto=${producto.idProducto}&origen=detalle"
-                                                                   class="btn btn-success btn-sm px-3 fw-bold rounded-pill">
-                                                                    <i class="bi bi-check-lg me-1"></i> Aceptar
-                                                                </a>
-                                                                <a href="responderOferta?id=${oferta.idOferta}&accion=rechazar&idProducto=${producto.idProducto}&origen=detalle"
-                                                                   class="btn btn-outline-danger btn-sm px-3 fw-bold rounded-pill">
-                                                                    <i class="bi bi-x-lg me-1"></i> Rechazar
-                                                                </a>
-                                                            </div>
-                                                        </c:when>
-                                                        <%-- Estado 1: Aceptada --%>
-                                                        <c:when test="${oferta.estado == 1}">
-                                                            <span class="badge bg-success px-3 py-2 rounded-pill fs-6">
-                                                                <i class="bi bi-check-circle-fill me-1"></i> Aceptada
-                                                            </span>
-                                                        </c:when>
-                                                        <%-- Estado 2: Rechazada --%>
-                                                        <c:otherwise>
-                                                            <span class="badge bg-secondary px-3 py-2 rounded-pill fs-6">
-                                                                <i class="bi bi-x-circle me-1"></i> Rechazada
-                                                            </span>
-                                                        </c:otherwise>
-                                                    </c:choose>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </c:forEach>
-                            </div>
-                        </c:when>
-                        <c:otherwise>
-                            <div class="alert alert-light border text-center p-5 shadow-sm" style="border-radius: 15px;">
-                                <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
-                                <h5 class="text-secondary fw-bold">Aún no has recibido ofertas</h5>
-                                <p class="text-muted mb-0">Cuando un comprador envíe una propuesta económica por tu producto, aparecerá listada en esta sección.</p>
-                            </div>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-            </div>
-
         </div>
 
-        <!-- ================================================================= -->
-        <!-- BLOQUE DERECHO: FORMULARIO DE EDICIÓN                             -->
-        <!-- ================================================================= -->
-        <div class="col-12 col-md-5 col-lg-5 ps-lg-4">
+        <!-- COLUMNA 2: IMAGEN PRINCIPAL -->
+        <div class="col-12 col-md-5 col-lg-5">
+            <img id="imgPrincipal"
+                 src="${not empty listaImagenes ? listaImagenes[0] : 'assets/img/icono-integradora.jpeg'}"
+                 class="main-detail-img w-100 rounded shadow-sm" alt="${producto.nombre}">
+        </div>
+
+        <!-- COLUMNA 3: FORMULARIO DE EDICIÓN Y ELIMINACIÓN -->
+        <div class="col-12 col-md-4 col-lg-5 ps-lg-4">
             <div class="card border-0 shadow-sm p-4 edit-modal-content">
                 <h4 class="edit-modal-title mb-4"><i class="bi bi-pencil-fill me-2"></i>Editar mi Producto</h4>
 
@@ -197,7 +109,11 @@
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-end mt-4">
+                    <!-- BOTONES DE ACCIÓN: GUARDAR Y ELIMINAR -->
+                    <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
+                        <button type="button" class="btn btn-outline-danger w-100 fw-bold rounded-pill" data-bs-toggle="modal" data-bs-target="#confirmEliminarModal">
+                            <i class="bi bi-trash3-fill me-1"></i> Eliminar producto
+                        </button>
                         <button type="button" class="btn btn-guardar-edit w-100" data-bs-toggle="modal" data-bs-target="#confirmModalProducto" disabled>
                             Guardar Cambios
                         </button>
@@ -208,9 +124,86 @@
 
     </div>
 
+    <!-- SECCIÓN INFERIOR: OFERTAS RECIBIDAS -->
+    <hr class="my-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h3 class="fw-bold m-0">
+                    <i class="bi bi-inbox-fill text-warning me-2"></i>Ofertas Recibidas
+                </h3>
+                <span class="badge bg-secondary fs-6 px-3 py-2 rounded-pill">
+                    Total: ${not empty listaOfertasRecibidas ? listaOfertasRecibidas.size() : 0}
+                </span>
+            </div>
+
+            <c:choose>
+                <c:when test="${not empty listaOfertasRecibidas}">
+                    <div class="row g-3">
+                        <c:forEach var="oferta" items="${listaOfertasRecibidas}">
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="card h-100 border-0 shadow-sm p-3" style="border-radius: 15px; background-color: #ffffff;">
+                                    <div class="card-body p-2">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h4 class="fw-bold text-success mb-0">
+                                                <fmt:formatNumber currencySymbol="$" value="${oferta.montoOferta}" type="currency"/>
+                                            </h4>
+                                        </div>
+
+                                        <p class="text-muted small mb-3">
+                                            <i class="bi bi-person-fill text-secondary me-1"></i>Ofertante:
+                                            <strong class="text-dark">${oferta.nombreComprador}</strong>
+                                        </p>
+
+                                        <div class="d-flex justify-content-end align-items-center pt-2 border-top">
+                                            <c:choose>
+                                                <%-- Estado 0: Pendiente --%>
+                                                <c:when test="${oferta.estado == 0}">
+                                                    <div class="d-flex gap-2">
+                                                        <a href="responderOferta?id=${oferta.idOferta}&accion=aceptar&idProducto=${producto.idProducto}&origen=detalle"
+                                                           class="btn btn-success btn-sm px-3 fw-bold rounded-pill">
+                                                            <i class="bi bi-check-lg me-1"></i> Aceptar
+                                                        </a>
+                                                        <a href="responderOferta?id=${oferta.idOferta}&accion=rechazar&idProducto=${producto.idProducto}&origen=detalle"
+                                                           class="btn btn-outline-danger btn-sm px-3 fw-bold rounded-pill">
+                                                            <i class="bi bi-x-lg me-1"></i> Rechazar
+                                                        </a>
+                                                    </div>
+                                                </c:when>
+                                                <%-- Estado 1: Aceptada --%>
+                                                <c:when test="${oferta.estado == 1}">
+                                                    <span class="badge bg-success px-3 py-2 rounded-pill fs-6">
+                                                        <i class="bi bi-check-circle-fill me-1"></i> Aceptada
+                                                    </span>
+                                                </c:when>
+                                                <%-- Estado 2: Rechazada --%>
+                                                <c:otherwise>
+                                                    <span class="badge bg-secondary px-3 py-2 rounded-pill fs-6">
+                                                        <i class="bi bi-x-circle me-1"></i> Rechazada
+                                                    </span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <div class="alert alert-light border text-center p-5 shadow-sm" style="border-radius: 15px;">
+                        <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+                        <h5 class="text-secondary fw-bold">Aún no has recibido ofertas</h5>
+                        <p class="text-muted mb-0">Cuando un comprador envíe una propuesta económica por tu producto, aparecerá listada en esta sección.</p>
+                    </div>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </div>
+
 </div>
 
-<!-- MODAL DE CONFIRMACIÓN -->
+<!-- MODAL DE CONFIRMACIÓN GUARDAR CAMBIOS -->
 <div class="modal fade" id="confirmModalProducto" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-sm modal-dialog-centered">
         <div class="modal-content custom-modal-content">
@@ -221,6 +214,29 @@
                 <div class="d-flex justify-content-between mt-4 px-2">
                     <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" id="btnConfirmActionProducto" class="btn btn-confirmar">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE CONFIRMACIÓN ELIMINAR PRODUCTO -->
+<div class="modal fade" id="confirmEliminarModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px;">
+            <div class="modal-body p-4 text-center">
+                <i class="bi bi-exclamation-triangle-fill text-danger display-4 d-block mb-3"></i>
+                <h5 class="fw-bold text-dark">¿Eliminar este producto?</h5>
+                <p class="text-muted small mb-0">
+                    Esta acción dará de baja la publicación <strong>"${producto.nombre}"</strong> y ya no aparecerá en el catálogo.
+                </p>
+                <div class="d-flex justify-content-center gap-2 mt-4">
+                    <button type="button" class="btn btn-outline-secondary px-4 rounded-pill fw-bold" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <a href="eliminarProducto?id=${producto.idProducto}" class="btn btn-danger px-4 rounded-pill fw-bold">
+                        Sí, eliminar
+                    </a>
                 </div>
             </div>
         </div>
