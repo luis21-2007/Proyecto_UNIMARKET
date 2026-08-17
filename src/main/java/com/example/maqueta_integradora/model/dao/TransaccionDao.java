@@ -201,7 +201,7 @@ public class TransaccionDao {
     }
     public boolean registrarCompraDirectaPendiente(int idComprador, int idVendedor, int idProducto, double monto) {
         String sql = "INSERT INTO transaccion (id_comprador, id_vendedor, id_producto, monto, fecha_transaccion, estado) " +
-                "VALUES (?, ?, ?, ?, SYSDATE, 2)"; // Estado 2 = en proceso o pendiente
+                "VALUES (?, ?, ?, ?, CURRENT_DATE, 2)"; // Estado 2 = en proceso o pendiente
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {

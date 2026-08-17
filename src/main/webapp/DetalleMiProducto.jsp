@@ -15,15 +15,33 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </c:if>
+
+    <c:if test="${param.msg == 'imagenEliminada'}">
+        <div class="alert alert-success alert-dismissible fade show mt-3 shadow-sm" role="alert" style="border-radius: 10px;">
+            <i class="bi bi-check-circle-fill me-2"></i> La imagen fue eliminada correctamente.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
+
     <c:if test="${param.msg == 'respuestaExitosa'}">
         <div class="alert alert-success alert-dismissible fade show mt-3 shadow-sm" role="alert" style="border-radius: 10px;">
             <i class="bi bi-check-circle-fill me-2"></i> Has respondido a la oferta exitosamente.
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </c:if>
-    <c:if test="${param.error == 'errorActualizacion'}">
+
+    <c:if test="${param.error == 'errorActualizacion' || param.msg == 'errorEliminarImagen'}">
         <div class="alert alert-danger alert-dismissible fade show mt-3 shadow-sm" role="alert" style="border-radius: 10px;">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i> Ocurrió un error al intentar actualizar el producto.
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> Ocurrió un error procesando la solicitud de la imagen o del producto.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
+
+    <!-- ALERTA DE BLOQUEO POR OFERTAS EXISTENTES -->
+    <c:if test="${tieneOfertas}">
+        <div class="alert alert-warning alert-dismissible fade show mt-3 shadow-sm border-0" role="alert" style="border-radius: 10px; background-color: #fff3cd; color: #664d03;">
+            <i class="bi bi-exclamation-triangle-fill me-2 fs-5 align-middle"></i>
+            <strong>Acción restringida:</strong> Este producto no se puede editar ni eliminar porque ya cuenta con ofertas recibidas.
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </c:if>
@@ -31,14 +49,27 @@
     <!-- SECCIÓN SUPERIOR: EDICIÓN DEL PRODUCTO -->
     <div class="row g-4">
 
-        <!-- COLUMNA 1: MINIATURAS DE LAS IMÁGENES -->
+        <!-- COLUMNA 1: MINIATURAS DE LAS IMÁGENES CON BOTÓN 'X' -->
         <div class="col-12 col-md-3 col-lg-2">
             <div class="d-flex flex-row flex-md-column gap-3 justify-content-center">
                 <c:choose>
                     <c:when test="${not empty listaImagenes}">
                         <c:forEach var="img" items="${listaImagenes}" varStatus="status">
-                            <img src="${img}" class="thumb-img ${status.first ? 'active-thumb' : ''}"
-                                 onclick="cambiarImagenPrincipal(this.src, this)" alt="Miniatura">
+                            <div class="position-relative d-inline-block">
+                                <img src="${img}" class="thumb-img ${status.first ? 'active-thumb' : ''}"
+                                     onclick="cambiarImagenPrincipal(this.src, this)" alt="Miniatura">
+
+                                    <%-- Botón X usando data-url en lugar de onclick inline --%>
+                                <c:if test="${not tieneOfertas}">
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm rounded-circle position-absolute d-flex align-items-center justify-content-center shadow-sm btn-eliminar-imagen-trigger"
+                                            style="top: -6px; right: -6px; width: 22px; height: 22px; font-size: 12px; font-weight: bold; border: 1px solid #fff; z-index: 10;"
+                                            title="Eliminar esta imagen"
+                                            data-url="eliminarImagenProducto?idProducto=${producto.idProducto}&imagenUrl=${img}">
+                                        &times;
+                                    </button>
+                                </c:if>
+                            </div>
                         </c:forEach>
                     </c:when>
                     <c:otherwise>
@@ -66,14 +97,14 @@
                     <div class="mb-3 text-start">
                         <label class="edit-field-label">Título del Producto</label>
                         <div class="edit-input-group">
-                            <input type="text" name="nombre" class="edit-input w-100" value="${producto.nombre}" required>
+                            <input type="text" name="nombre" class="edit-input w-100" value="${producto.nombre}" required ${tieneOfertas ? 'disabled' : ''}>
                         </div>
                     </div>
 
                     <div class="mb-3 text-start">
                         <label class="edit-field-label">Descripción</label>
                         <div class="edit-input-group">
-                            <textarea name="descripcion" class="edit-input w-100" rows="4" required>${producto.descripcion}</textarea>
+                            <textarea name="descripcion" class="edit-input w-100" rows="4" required ${tieneOfertas ? 'disabled' : ''}>${producto.descripcion}</textarea>
                         </div>
                     </div>
 
@@ -81,14 +112,14 @@
                         <label class="edit-field-label">Precio ($)</label>
                         <div class="edit-input-group d-flex align-items-center px-2">
                             <span class="text-secondary fw-bold pe-2">$</span>
-                            <input type="number" step="0.01" name="precio" class="edit-input flex-grow-1 border-0 px-0" style="outline: none; box-shadow: none; background: transparent;" value="${producto.precio}" required>
+                            <input type="number" step="0.01" name="precio" class="edit-input flex-grow-1 border-0 px-0" style="outline: none; box-shadow: none; background: transparent;" value="${producto.precio}" required ${tieneOfertas ? 'disabled' : ''}>
                         </div>
                     </div>
 
                     <div class="mb-3 text-start">
                         <label class="edit-field-label">Categoría</label>
                         <div class="edit-input-group">
-                            <select name="idCategoria" id="categoria" class="edit-input w-100" required style="background: transparent; border: none; outline: none; cursor: pointer;">
+                            <select name="idCategoria" id="categoria" class="edit-input w-100" required style="background: transparent; border: none; outline: none; cursor: pointer;" ${tieneOfertas ? 'disabled' : ''}>
                                 <option value="" disabled>Selecciona la categoría</option>
                                 <c:forEach var="cat" items="${listaCategorias}">
                                     <option value="${cat.idCategoria}" ${producto.idCategoria == cat.idCategoria ? 'selected' : ''}>
@@ -99,22 +130,49 @@
                         </div>
                     </div>
 
+                    <!-- CAMPO DE FOTOS CON CONTROL DE LÍMITE (MÁXIMO 3) -->
                     <div class="mb-4 text-start">
-                        <label class="edit-field-label">Nuevas Imágenes (Opcional - Máx 3)</label>
-                        <div class="edit-input-group">
-                            <input type="file" name="imagenes" class="edit-input w-100" style="padding-top: 0.4rem;" accept="image/png, image/jpeg, image/webp" multiple>
+                        <label class="edit-field-label">
+                            Nuevas Imágenes ${not empty listaImagenes && listaImagenes.size() >= 3 ? '(Límite de 3 alcanzado)' : '(Opcional - Máx 3)'}
+                        </label>
+                        <div class="edit-input-group mt-1">
+                            <input type="file"
+                                   name="imagenes"
+                                   class="edit-input w-100"
+                                   style="padding-top: 0.4rem;"
+                                   accept="image/png, image/jpeg, image/webp"
+                                   multiple
+                            ${tieneOfertas || (not empty listaImagenes && listaImagenes.size() >= 3) ? 'disabled' : ''}>
                         </div>
-                        <div class="form-text text-danger mt-2 small">
-                            <i class="bi bi-exclamation-triangle"></i> Si subes nuevas fotos, estas <strong>reemplazarán</strong> a las actuales.
-                        </div>
+
+                        <c:if test="${not tieneOfertas}">
+                            <c:choose>
+                                <c:when test="${not empty listaImagenes && listaImagenes.size() >= 3}">
+                                    <div class="alert alert-danger py-2 px-3 mt-2 mb-0 small rounded-3 border-0 d-flex align-items-center" style="font-size: 13px;">
+                                        <i class="bi bi-exclamation-triangle-fill me-2 fs-6"></i>
+                                        <div>
+                                            Has alcanzado el límite de 3 imágenes. Para subir una nueva, elimina una existente usando la <strong>X</strong> sobre la miniatura de la izquierda.
+                                        </div>
+                                    </div>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="alert alert-warning py-2 px-3 mt-2 mb-0 small rounded-3 border-0 d-flex align-items-center" style="background-color: #fff8e6; color: #8a5300; font-size: 13px;">
+                                        <i class="bi bi-info-circle-fill me-2 fs-6"></i>
+                                        <div>
+                                            Puedes adjuntar más fotos o eliminar la deseada usando la <strong>X</strong> sobre su miniatura.
+                                        </div>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:if>
                     </div>
 
                     <!-- BOTONES DE ACCIÓN: GUARDAR Y ELIMINAR -->
                     <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
-                        <button type="button" class="btn btn-outline-danger w-100 fw-bold rounded-pill" data-bs-toggle="modal" data-bs-target="#confirmEliminarModal">
+                        <button type="button" class="btn btn-outline-danger w-100 fw-bold rounded-pill" data-bs-toggle="modal" data-bs-target="#confirmEliminarModal" ${tieneOfertas ? 'disabled style="cursor: not-allowed; opacity: 0.5;"' : ''}>
                             <i class="bi bi-trash3-fill me-1"></i> Eliminar producto
                         </button>
-                        <button type="button" class="btn btn-guardar-edit w-100" data-bs-toggle="modal" data-bs-target="#confirmModalProducto" disabled>
+                        <button type="button" class="btn btn-guardar-edit w-100" data-bs-toggle="modal" data-bs-target="#confirmModalProducto" ${tieneOfertas ? 'disabled style="cursor: not-allowed; opacity: 0.5;"' : 'disabled'}>
                             Guardar Cambios
                         </button>
                     </div>
@@ -243,5 +301,28 @@
     </div>
 </div>
 
-<script src="assets/js/detalles-productos.js"></script>
+<!-- MODAL DE CONFIRMACIÓN ELIMINAR IMAGEN -->
+<div class="modal fade" id="confirmEliminarImagenModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content" style="border-radius: 15px;">
+            <div class="modal-body p-4 text-center">
+                <i class="bi bi-exclamation-triangle-fill text-danger display-4 d-block mb-3"></i>
+                <h5 class="fw-bold text-dark">¿Eliminar esta imagen?</h5>
+                <p class="text-muted small mb-0">
+                    La foto seleccionada se removerá permanentemente de la publicación.
+                </p>
+                <div class="d-flex justify-content-center gap-2 mt-4">
+                    <button type="button" class="btn btn-outline-secondary px-3 rounded-pill fw-bold" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <a id="btnConfirmarEliminarImagen" href="#" class="btn btn-danger px-3 rounded-pill fw-bold">
+                        Sí, eliminar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="assets/js/detalles-productos.js?v=1.1"></script>
 <%@ include file="layout/footer.jsp" %>

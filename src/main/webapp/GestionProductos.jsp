@@ -39,7 +39,9 @@
             <c:when test="${not empty listaProductos}">
                 <c:forEach var="prod" items="${listaProductos}">
                     <!-- Item de Producto -->
-                    <div class="user-item-card d-flex align-items-center justify-content-between mb-2 p-3 bg-white rounded-3 shadow-sm">
+                    <div class="user-item-card d-flex align-items-center justify-content-between mb-2 p-3 bg-white rounded-3 shadow-sm"
+                         data-nombre="${fn:toLowerCase(prod.nombre)}"
+                         data-vendedor="${fn:toLowerCase(not empty prod.nombreVendedor ? prod.nombreVendedor : '')}">
 
                         <!-- 1. DETALLES DEL PRODUCTO (IZQUIERDA) -->
                         <div class="d-flex align-items-center gap-3" style="flex: 1;">
@@ -65,12 +67,18 @@
                                 <c:out value="${not empty prod.nombreVendedor ? prod.nombreVendedor : 'Sin Asignar'}"/>
                             </span>
                         </div>
+
                         <!-- 3. ESTADO Y OPCIONES (DERECHA) -->
                         <div class="d-flex align-items-center justify-content-end gap-3" style="flex: 1;">
-                            <!-- Badge de Estado -->
+                            <!-- Badge de Estado (1: Activo, 2: Vendido, 0: Inactivo) -->
                             <c:choose>
-                                <c:when test="${prod.estado}">
+                                <c:when test="${prod.estado == 1}">
                                     <span class="status-badge-active">Activo</span>
+                                </c:when>
+                                <c:when test="${prod.estado == 2}">
+                                    <span class="badge bg-primary px-3 py-2 rounded-pill fs-7">
+                                        <i class="bi bi-bag-check-fill me-1"></i>Vendido
+                                    </span>
                                 </c:when>
                                 <c:otherwise>
                                     <span class="status-badge-inactive">Inactivo</span>
@@ -84,22 +92,29 @@
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow">
                                     <c:choose>
-                                        <c:when test="${prod.estado}">
+                                        <c:when test="${prod.estado == 1}">
                                             <li>
                                                 <a class="dropdown-item text-danger"
                                                    href="javascript:void(0)"
-                                                   onclick="prepararModalEstadoProducto(${prod.idProducto}, '<c:out value="${prod.nombre}"/>', 'desactivar')">
+                                                   onclick="prepararModalEstadoProducto(${prod.idProducto}, '${fn:escapeXml(prod.nombre)}', 'desactivar')">
                                                     <i class="bi bi-slash-circle me-2"></i>Deshabilitar
+                                                </a>
+                                            </li>
+                                        </c:when>
+                                        <c:when test="${prod.estado == 0}">
+                                            <li>
+                                                <a class="dropdown-item text-success"
+                                                   href="javascript:void(0)"
+                                                   onclick="prepararModalEstadoProducto(${prod.idProducto}, '${fn:escapeXml(prod.nombre)}', 'activar')">
+                                                    <i class="bi bi-check-circle me-2"></i>Activar
                                                 </a>
                                             </li>
                                         </c:when>
                                         <c:otherwise>
                                             <li>
-                                                <a class="dropdown-item text-success"
-                                                   href="javascript:void(0)"
-                                                   onclick="prepararModalEstadoProducto(${prod.idProducto}, '<c:out value="${prod.nombre}"/>', 'activar')">
-                                                    <i class="bi bi-check-circle me-2"></i>Activar
-                                                </a>
+                                                <span class="dropdown-item text-muted disabled">
+                                                    <i class="bi bi-lock-fill me-2"></i>Sin acciones (Vendido)
+                                                </span>
                                             </li>
                                         </c:otherwise>
                                     </c:choose>
@@ -122,6 +137,7 @@
     </div>
 
 </div>
+
 <!-- Modal de Confirmación Adaptativo (Activar/Desactivar) -->
 <div class="modal fade" id="confirmModalProducto" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-sm modal-dialog-centered">

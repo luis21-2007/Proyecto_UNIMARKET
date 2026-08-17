@@ -43,9 +43,12 @@
                         <label for="input-file" class="btn btn-iniciar" style="cursor: pointer; padding: 6px 20px; font-size: 14px;">
                             <i class="bi bi-plus-lg me-1"></i> Subir imágenes (Máx 3)
                         </label>
+                        <%-- Mantener los id tal cual para la sincronización con JS --%>
                         <input type="file" id="input-file" name="imagenes" accept="image/png, image/jpeg, image/jpg, image/webp" multiple style="display: none;" required onchange="previewImages(event)">
                         <p id="file-count" class="footer-text mt-2 mb-2" style="font-weight: bold; color: #8B0000;"></p>
-                        <div id="preview-container" class="d-flex justify-content-center gap-2 mt-2"></div>
+
+                        <%-- Se agrega flex-wrap para que se acomoden correctamente en celulares --%>
+                        <div id="preview-container" class="d-flex justify-content-center flex-wrap gap-2 mt-2"></div>
                     </div>
                     <p class="footer-text mb-4 text-center">
                         Procura que tus imágenes sean iguales a tu producto real.
@@ -92,8 +95,7 @@
 
     </div>
 </div>
-
-<script src="assets/js/imagen-producto.js"></script>
+<script src="assets/js/imagen-producto.js?v=2.0"></script>
 <script src="assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

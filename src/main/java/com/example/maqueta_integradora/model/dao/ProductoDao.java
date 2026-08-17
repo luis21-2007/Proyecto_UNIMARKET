@@ -278,18 +278,18 @@ public class ProductoDao implements Dao<Producto, Integer> {
         }
         return lista;
     }
-
-    public boolean eliminarImagenesPorProducto(int idProducto) {
-        String sql = "DELETE FROM imagen_producto WHERE id_producto = ?";
+    public boolean eliminarImagenEspecifica(int idProducto, String rutaImagen) {
+        String sql = "DELETE FROM imagen_producto WHERE id_producto = ? AND imagen_url = ?";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idProducto);
+            ps.setString(2, rutaImagen);
             return ps.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            System.err.println("Error al eliminar imágenes previas: " + e.getMessage());
+            System.err.println("Error al eliminar la imagen específica: " + e.getMessage());
             e.printStackTrace();
         }
         return false;

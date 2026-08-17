@@ -1,11 +1,11 @@
 package com.example.maqueta_integradora.controller;
 
 import com.example.maqueta_integradora.model.Categoria;
-import com.example.maqueta_integradora.model.Oferta; // <--- 1. Importa tu modelo Oferta
+import com.example.maqueta_integradora.model.Oferta;
 import com.example.maqueta_integradora.model.Producto;
 import com.example.maqueta_integradora.model.User;
 import com.example.maqueta_integradora.model.dao.CategoriaDao;
-import com.example.maqueta_integradora.model.dao.OfertaDao; // <--- 2. Importa tu OfertaDao
+import com.example.maqueta_integradora.model.dao.OfertaDao;
 import com.example.maqueta_integradora.model.dao.ProductoDao;
 
 import jakarta.servlet.ServletException;
@@ -20,13 +20,13 @@ public class DetalleMiProductoServlet extends HttpServlet {
 
     private ProductoDao productoDao;
     private CategoriaDao categoriaDao;
-    private OfertaDao ofertaDao; // <--- 3. Declaras tu OfertaDao
+    private OfertaDao ofertaDao;
 
     @Override
     public void init() throws ServletException {
         productoDao = new ProductoDao();
         categoriaDao = new CategoriaDao();
-        ofertaDao = new OfertaDao(); // <--- 4. Lo inicializas aquí
+        ofertaDao = new OfertaDao();
     }
 
     @Override
@@ -67,7 +67,7 @@ public class DetalleMiProductoServlet extends HttpServlet {
             return;
         }
 
-        // 6. Enviar atributos a la vista
+        // 6. Enviar atributos del producto y propietario
         request.setAttribute("esPropietario", true);
         request.setAttribute("producto", producto);
 
@@ -78,8 +78,14 @@ public class DetalleMiProductoServlet extends HttpServlet {
         // --- CARGAR CATEGORÍAS ---
         List<Categoria> listaCategorias = categoriaDao.getAll();
         request.setAttribute("listaCategorias", listaCategorias);
+
+        // --- CARGAR OFERTAS RECIBIDAS Y VERIFICAR BLOQUEO DE EDICIÓN ---
         List<Oferta> listaOfertasRecibidas = ofertaDao.getOfertasByProducto(idProducto);
         request.setAttribute("listaOfertasRecibidas", listaOfertasRecibidas);
+
+        // Evalúa si existen ofertas para deshabilitar campos/botones en el JSP
+        boolean tieneOfertas = listaOfertasRecibidas != null && !listaOfertasRecibidas.isEmpty();
+        request.setAttribute("tieneOfertas", tieneOfertas);
 
         // 7. Redireccionar a la vista JSP
         request.getRequestDispatcher("DetalleMiProducto.jsp").forward(request, response);

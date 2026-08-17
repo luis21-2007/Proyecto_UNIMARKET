@@ -16,7 +16,33 @@ function cambiarImagenPrincipal(nuevaUrl, elementoClick) {
     }
 }
 
+function abrirModalEliminarImagen(url) {
+    const btnConfirmar = document.getElementById('btnConfirmarEliminarImagen');
+    if (btnConfirmar) {
+        btnConfirmar.setAttribute('href', url);
+    }
+    const modalEl = document.getElementById('confirmEliminarImagenModal');
+    if (modalEl && typeof bootstrap !== 'undefined') {
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function() {
+
+    // ==========================================
+    // DELEGACIÓN DE EVENTOS PARA EL BOTÓN X (ELIMINAR IMAGEN)
+    // ==========================================
+    document.addEventListener('click', function (e) {
+        const btnX = e.target.closest('.btn-eliminar-imagen-trigger');
+        if (btnX) {
+            e.preventDefault();
+            const targetUrl = btnX.getAttribute('data-url');
+            if (targetUrl) {
+                abrirModalEliminarImagen(targetUrl);
+            }
+        }
+    });
 
     // ==========================================
     // 1. FORMULARIO DE OFERTA (BLINDADO CONTRA DUPLICADOS)
@@ -28,40 +54,38 @@ document.addEventListener("DOMContentLoaded", function() {
     let enviandoOferta = false;
 
     function procesarEnvioOferta(e) {
-        // 1. Verificar si el formulario cumple validaciones HTML5 (monto válido, campos requeridos)
         if (formOferta && !formOferta.checkValidity()) {
             return false;
         }
 
-        // 2. Si ya se está enviando, prevenir peticiones dobles
         if (enviandoOferta) {
             if (e) e.preventDefault();
             return false;
         }
 
-        // 3. Activar bandera de envío
         enviandoOferta = true;
 
-        // 4. Deshabilitar botón de submit estándar
         if (btnSubmitOferta) {
             btnSubmitOferta.style.pointerEvents = 'none';
             btnSubmitOferta.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Enviando...';
-            setTimeout(() => { btnSubmitOferta.disabled = true; }, 0);
+            setTimeout(() => {
+                btnSubmitOferta.disabled = true;
+            }, 0);
         }
 
-        // 5. Deshabilitar botón del modal en caso de existir
         if (btnConfirmarOfertaModal) {
             btnConfirmarOfertaModal.style.pointerEvents = 'none';
             btnConfirmarOfertaModal.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Enviando...';
-            setTimeout(() => { btnConfirmarOfertaModal.disabled = true; }, 0);
+            setTimeout(() => {
+                btnConfirmarOfertaModal.disabled = true;
+            }, 0);
         }
     }
 
-    // Intercepta el evento submit nativo (clic en tipo submit o pulsar ENTER)
     if (formOferta) {
         formOferta.addEventListener('submit', function (e) {
             if (!formOferta.checkValidity()) {
-                return; // Deja que el navegador muestre las alertas nativas si faltan datos
+                return;
             }
 
             if (enviandoOferta) {
@@ -73,7 +97,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Intercepta clic directo si usas un botón manual en un modal
     if (btnConfirmarOfertaModal && formOferta) {
         btnConfirmarOfertaModal.addEventListener('click', function (e) {
             if (enviandoOferta) {
@@ -82,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
 
             if (!formOferta.checkValidity()) {
-                formOferta.reportValidity(); // Muestra mensajes de validación HTML5
+                formOferta.reportValidity();
                 return;
             }
 
@@ -97,7 +120,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // ==========================================
-    // 2. FORMULARIO DE EDICIÓN DE PRODUCTO CON MODAL Y ENTER CONTROLADO
+    // 2. FORMULARIO DE EDICIÓN DE PRODUCTO CON MODAL Y DETECCIÓN DE CAMBIOS
     // ==========================================
     const formEditar = document.getElementById('formEditarProducto');
     const btnConfirm = document.getElementById('btnConfirmActionProducto');
@@ -107,7 +130,7 @@ document.addEventListener("DOMContentLoaded", function() {
         let formConfirmado = false;
 
         // Intercepta la tecla ENTER o cualquier submit directo
-        formEditar.addEventListener('submit', function(e) {
+        formEditar.addEventListener('submit', function (e) {
             if (btnGuardar && btnGuardar.disabled) {
                 e.preventDefault();
                 return false;
@@ -127,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Evento del botón Confirmar dentro del Modal
         if (btnConfirm) {
-            btnConfirm.addEventListener('click', function() {
+            btnConfirm.addEventListener('click', function () {
                 if (formConfirmado) return;
 
                 formConfirmado = true;
@@ -141,23 +164,29 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Detección de cambios para habilitar/deshabilitar botón guardar
         if (btnGuardar) {
-            const initialData = new FormData(formEditar);
+            // Guardamos los valores iniciales de cada elemento de forma explícita
+            const initialValues = {};
+            Array.from(formEditar.elements).forEach(input => {
+                if (input.name && input.type !== 'file') {
+                    initialValues[input.name] = input.value;
+                }
+            });
 
             const checkChanges = () => {
                 let hasChanged = false;
 
-                for (let [key, value] of initialData.entries()) {
-                    const input = formEditar.elements[key];
-                    if (input && input.type !== 'file') {
-                        if (input.value !== value) {
-                            hasChanged = true;
-                            break;
-                        }
+                // Comparar textos, números y selects
+                for (let name in initialValues) {
+                    const input = formEditar.elements[name];
+                    if (input && input.value !== initialValues[name]) {
+                        hasChanged = true;
+                        break;
                     }
                 }
 
+                // Comparar si seleccionó imágenes nuevas
                 const fileInput = formEditar.querySelector('input[type="file"]');
-                if (fileInput && fileInput.files.length > 0) {
+                if (fileInput && fileInput.files && fileInput.files.length > 0) {
                     hasChanged = true;
                 }
 

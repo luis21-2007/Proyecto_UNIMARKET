@@ -1,48 +1,46 @@
-document.addEventListener('DOMContentLoaded', function () {
-    // Filtro de búsqueda en tiempo real
+function prepararModalEstadoProducto(idProducto, nombreProducto, accion) {
+    const textoAccion = document.getElementById('accionTextoConfirmProd');
+    const textoNombre = document.getElementById('productoNombreConfirm');
+    const btnConfirmar = document.getElementById('btnConfirmActionProducto');
+
+    if (textoAccion) {
+        textoAccion.textContent = accion === 'activar' ? 'activar' : 'deshabilitar';
+    }
+
+    if (textoNombre) {
+        textoNombre.textContent = nombreProducto;
+    }
+
+    if (btnConfirmar) {
+        // Redirige al Servlet encargado del cambio de estado
+        btnConfirmar.href = `cambiarEstadoProducto?id=${idProducto}&accion=${accion}`;
+    }
+
+    const modalEl = document.getElementById('confirmModalProducto');
+    if (modalEl && typeof bootstrap !== 'undefined') {
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Filtro en tiempo real por nombre de producto o vendedor
     const filtroInput = document.getElementById('filtroProducto');
     if (filtroInput) {
-        filtroInput.addEventListener('keyup', function () {
-            const valor = this.value.toLowerCase().trim();
-            const items = document.querySelectorAll('.user-item-card');
+        filtroInput.addEventListener('input', function () {
+            const query = this.value.toLowerCase().trim();
+            const tarjetas = document.querySelectorAll('.user-item-card');
 
-            items.forEach(function (item) {
-                const texto = item.textContent.toLowerCase();
-                if (texto.includes(valor)) {
-                    item.classList.remove('d-none');
-                    item.classList.add('d-flex');
+            tarjetas.forEach(tarjeta => {
+                const nombre = tarjeta.getAttribute('data-nombre') || '';
+                const vendedor = tarjeta.getAttribute('data-vendedor') || '';
+
+                if (nombre.includes(query) || vendedor.includes(query)) {
+                    tarjeta.style.setProperty('display', 'flex', 'important');
                 } else {
-                    item.classList.remove('d-flex');
-                    item.classList.add('d-none');
+                    tarjeta.style.setProperty('display', 'none', 'important');
                 }
             });
         });
     }
 });
-
-// Función global que activa el modal de Bootstrap
-function prepararModalEstadoProducto(idProducto, nombreProducto, accion) {
-    const spanAccion = document.getElementById('accionTextoConfirmProd');
-    const strongNombre = document.getElementById('productoNombreConfirm');
-    const btnConfirmar = document.getElementById('btnConfirmActionProducto');
-
-    // Asignar los textos dinámicos
-    strongNombre.textContent = nombreProducto;
-
-    if (accion === 'desactivar') {
-        spanAccion.textContent = 'deshabilitar';
-        btnConfirmar.href = 'gestionProductos?id=' + idProducto + '&accion=desactivar';
-        btnConfirmar.className = 'btn btn-confirmar btn-danger';
-    } else {
-        spanAccion.textContent = 'activar';
-        btnConfirmar.href = 'gestionProductos?id=' + idProducto + '&accion=activar';
-        btnConfirmar.className = 'btn btn-confirmar btn-success';
-    }
-
-    // Obtener e instanciar el Modal con Bootstrap 5
-    const modalElement = document.getElementById('confirmModalProducto');
-    if (modalElement) {
-        const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
-        modal.show();
-    }
-}
