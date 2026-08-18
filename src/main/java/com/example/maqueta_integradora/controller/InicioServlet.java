@@ -56,7 +56,6 @@ public class InicioServlet extends HttpServlet {
         request.setAttribute("listaCategorias", listaCategorias);
         request.setAttribute("listaProductos", listaProductos);
 
-        // 5. Reenviar al JSP del catálogo
         request.getRequestDispatcher("index.jsp").forward(request, response);
     }
 

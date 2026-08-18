@@ -22,24 +22,43 @@ public class LoginServlet extends HttpServlet {
         String email = request.getParameter("correo");
         String contra = request.getParameter("contra");
 
-        // Validamos primero que no vengan nulos o vacíos para evitar errores
+        // 1. Validar campos vacíos
         if (email == null || email.isBlank() || contra == null || contra.isBlank()) {
             request.setAttribute("error", "Por favor, completa todos los campos.");
             request.getRequestDispatcher("login.jsp").forward(request, response);
             return;
         }
+
+        // 2. Validar dominio institucional
         if (!email.toLowerCase().endsWith("@utez.edu.mx")) {
             request.setAttribute("error", "El correo debe ser institucional con terminación @utez.edu.mx");
-            request.setAttribute("contra",contra);
+            request.setAttribute("contra", contra);
             request.getRequestDispatcher("login.jsp").forward(request, response);
             return;
         }
 
-        // Intenta logear. Esto devolverá TRUE solo si las credenciales son correctas Y activo = 1
+        // 3. Validar credenciales y cuenta activa (activo = 1)
         boolean esValido = dao.login(email, contra);
+
         if (esValido) {
-            HttpSession session = request.getSession(true);
             User usuarioLogueado = dao.obtenerPorCorreo(email);
+
+            // 4. NUEVA VALIDACIÓN: Verificar si ya tiene una sesión abierta (sesion_activa == 1)
+            if (usuarioLogueado.getSesionActiva() == 1) {
+                request.setAttribute("error", "Tiene un dispositivo con una sesión abierta por favor cierrala si quieres iniciar sesión");
+                request.setAttribute("correo", email);
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+                return;
+            }
+
+            // 5. Marcar la sesión como activa (1) en la Base de Datos
+            dao.actualizarSesionActiva(usuarioLogueado.getId(), 1);
+
+            // Actualizamos la propiedad en el objeto que guardamos en sesión
+            usuarioLogueado.setSesionActiva(1);
+
+            // 6. Crear la sesión en el servidor
+            HttpSession session = request.getSession(true);
             session.setAttribute("usuario", usuarioLogueado);
 
             // Redirección según el rol
@@ -48,15 +67,15 @@ public class LoginServlet extends HttpServlet {
             } else {
                 response.sendRedirect("inicio");
             }
+
         } else {
-            // Si falla, preparamos la sesión con el correo por si el usuario
-            // sigue en estado inactivo (activo = 0) y necesita verificar su cuenta.
+            // Si las credenciales fallan o el usuario está inactivo
             HttpSession session = request.getSession(true);
             session.setAttribute("correoPendiente", email);
 
             request.setAttribute("error", "Credenciales incorrectas o cuenta pendiente de verificación o Tu cuenta fue deshabilitada.");
-            request.setAttribute("correo",email);
-            request.setAttribute("contra",contra);
+            request.setAttribute("correo", email);
+            request.setAttribute("contra", contra);
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }

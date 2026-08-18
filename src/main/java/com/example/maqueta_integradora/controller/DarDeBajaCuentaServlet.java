@@ -2,8 +2,6 @@ package com.example.maqueta_integradora.controller;
 
 import com.example.maqueta_integradora.model.User;
 import com.example.maqueta_integradora.model.dao.UserDao;
-import java.io.IOException;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -11,28 +9,30 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@WebServlet("/logout")
-public class LogoutServlet extends HttpServlet {
+import java.io.IOException;
 
-    private final UserDao dao = new UserDao();
+@WebServlet("/darDeBajaCuenta")
+public class DarDeBajaCuentaServlet extends HttpServlet {
+
+    private final UserDao userDao = new UserDao();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Obtenemos la sesión actual si existe
         HttpSession session = request.getSession(false);
 
         if (session != null) {
             User usuario = (User) session.getAttribute("usuario");
-            if (usuario != null) {
-                dao.actualizarSesionActiva(usuario.getId(), 0);
-            }
-            session.invalidate();
-        }
 
-        // Redirigimos al Servlet principal para refrescar el estado de la página
-        response.sendRedirect("inicio");
+            if (usuario != null) {
+                userDao.darDeBaja(usuario.getId());
+                // 2. Liberar la sesión activa en la BD (sesion_activa = 0)
+                userDao.actualizarSesionActiva(usuario.getId(), 0);
+                session.invalidate();
+            }
+        }
+        response.sendRedirect("login.jsp?msg=cuenta_desactivada");
     }
 
     @Override

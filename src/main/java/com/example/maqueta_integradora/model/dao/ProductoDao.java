@@ -32,14 +32,17 @@ public class ProductoDao implements Dao<Producto, Integer> {
         return false;
     }
 
-    @Override
     public List<Producto> getAll() {
         List<Producto> lista = new ArrayList<>();
 
-        // Consulta general del catálogo público: solo productos activos (estado = 1)
+        // Consulta general del catálogo público: solo productos activos (p.estado = 1)
+        // y pertenecientes a usuarios activos (u.activo = 1)
         String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, " +
                 "(SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal " +
-                "FROM producto p WHERE p.estado = 1 ORDER BY p.fecha_publicacion DESC";
+                "FROM producto p " +
+                "INNER JOIN usuario u ON p.id_usuario = u.id_usuario " +
+                "WHERE p.estado = 1 AND u.activo = 1 " +
+                "ORDER BY p.fecha_publicacion DESC";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -66,7 +69,6 @@ public class ProductoDao implements Dao<Producto, Integer> {
         }
         return lista;
     }
-
     @Override
     public Producto getById(Integer id) {
         String sql = "SELECT * FROM producto WHERE id_producto = ?";
@@ -202,9 +204,6 @@ public class ProductoDao implements Dao<Producto, Integer> {
         return listaImagenes;
     }
 
-    // ==========================================
-    // MÉTODOS MIS PRODUCTOS (TODOS LOS ESTADOS)
-    // ==========================================
 
     public List<Producto> obtenerProductosPorUsuario(int idUsuario) {
         List<Producto> lista = new ArrayList<>();
@@ -296,9 +295,14 @@ public class ProductoDao implements Dao<Producto, Integer> {
     }
     public List<Producto> getByCategoria(int idCategoria) {
         List<Producto> lista = new ArrayList<>();
+
+        // Consulta por categoría: productos activos (p.estado = 1), pertenecientes a usuarios activos (u.activo = 1)
         String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, " +
                 "(SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal " +
-                "FROM producto p WHERE p.estado = 1 AND p.id_categoria = ? ORDER BY p.fecha_publicacion DESC";
+                "FROM producto p " +
+                "INNER JOIN usuario u ON p.id_usuario = u.id_usuario " +
+                "WHERE p.estado = 1 AND u.activo = 1 AND p.id_categoria = ? " +
+                "ORDER BY p.fecha_publicacion DESC";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {

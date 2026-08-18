@@ -99,24 +99,20 @@ public class UserDao implements Dao<User,Integer> {
             }
         }
     }
-    /*public boolean create(User entidad) {
-        String sql = "INSERT INTO DUENOS(nombre, correo, contrasena, maqueta, apellido) VALUES(?, ?, ?, ?, ?)";
+    public boolean actualizarSesionActiva(int idUsuario, int estadoSesion) {
+        String sql = "UPDATE usuario SET sesion_activa = ? WHERE id_usuario = ?";
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setString(1, entidad.getNombre());
-            ps.setString(2, entidad.getApellido());
-            ps.setString(3, entidad.getCorreo());
-            ps.setString(4, entidad.getContrasena());
-            ps.setString(5, entidad.getCarrera());
+            ps.setInt(1, estadoSesion);
+            ps.setInt(2, idUsuario);
+            return ps.executeUpdate() > 0;
 
-            int filasAfectadas = ps.executeUpdate();
-            return filasAfectadas > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
-    */
+    }
     @Override
     public List<User> getAll() {
         List<User> listaUsuarios = new java.util.ArrayList<>();
@@ -249,9 +245,8 @@ public class UserDao implements Dao<User,Integer> {
             e.printStackTrace();
         }
         return false;
-    }
-    public User obtenerPorCorreo(String correo) {
-        String sql = "SELECT id_usuario, nombre, apellido, correo, carrera, telefono, rol FROM usuario WHERE LOWER(correo) = LOWER(?)";
+    }public User obtenerPorCorreo(String correo) {
+        String sql = "SELECT id_usuario, nombre, apellido, correo, carrera, telefono, rol, sesion_activa FROM usuario WHERE LOWER(correo) = LOWER(?)";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -268,6 +263,10 @@ public class UserDao implements Dao<User,Integer> {
                     u.setCarrera(rs.getString("carrera"));
                     u.setTelefono(rs.getLong("telefono"));
                     u.setRol(rs.getString("rol"));
+
+                    // 2. Mapeamos la nueva bandera de sesión activa
+                    u.setSesionActiva(rs.getInt("sesion_activa"));
+
                     return u;
                 }
             }
@@ -276,7 +275,21 @@ public class UserDao implements Dao<User,Integer> {
         }
         return null;
     }
+    public boolean darDeBaja(int idUsuario) {
+        // Ajusta la columna si tu campo de baja lógica se llama 'activo', 'estatus', etc.
+        String sql = "UPDATE usuario SET activo = 0, sesion_activa = 0 WHERE id_usuario = ?";
 
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idUsuario);
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
     public boolean verificarTokenYActivarUsuario(String correo, String token) {
         // 1. Buscamos si el token coincide con el correo del usuario y no ha expirado
         String sqlBuscarToken =

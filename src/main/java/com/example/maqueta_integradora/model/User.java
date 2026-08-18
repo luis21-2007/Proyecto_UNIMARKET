@@ -10,6 +10,15 @@ public class User {
     private String token;
     private String rol;
     private  Integer activo;
+    private int sesionActiva;
+
+    public int getSesionActiva() {
+        return sesionActiva;
+    }
+
+    public void setSesionActiva(int sesionActiva) {
+        this.sesionActiva = sesionActiva;
+    }
 
     public Integer getActivo() {
         return activo;
