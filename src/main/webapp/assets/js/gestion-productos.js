@@ -13,7 +13,7 @@ function prepararModalEstadoProducto(idProducto, nombreProducto, accion) {
 
     if (btnConfirmar) {
         // Redirige al Servlet encargado del cambio de estado
-        btnConfirmar.href = `cambiarEstadoProducto?id=${idProducto}&accion=${accion}`;
+        btnConfirmar.href = `gestionProductos?id=${idProducto}&accion=${accion}`;
     }
 
     const modalEl = document.getElementById('confirmModalProducto');
