@@ -23,8 +23,7 @@
 <main class="flex-grow-1 d-flex flex-column align-items-center justify-content-center text-center p-4">
     <div class="container d-flex flex-column align-items-center">
 
-        <!-- Ilustración del gatito -->
-        <img src="assets/img/Error 500 Conejito.png" alt="Error 500 Conejitto" class="img-fluid mb-4" style="max-width: 240px;">
+        <img src="assets/img/Error500.jpg" alt="Error 500 Conejitto" class="img-fluid mb-4" style="max-width: 240px;">
 
         <!-- Mensaje principal -->
         <h1 class="fw-bolder text-dark mb-3">

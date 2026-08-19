@@ -3,7 +3,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ include file="layout/header-index.jsp" %>
 
-<!-- FORMULARIO OCULTO PARA ENVIAR POR POST SIN MOSTRAR '?' EN LA URL -->
 <form id="formFiltroCategoria" action="inicio" method="POST" style="display: none;">
     <input type="hidden" name="idCategoria" id="inputCategoriaId">
 </form>
@@ -46,7 +45,7 @@
                 <div class="category-scroll-container">
                     <c:forEach var="cat" items="${listaCategorias}">
                         <a href="javascript:void(0);" onclick="filtrarPorCategoria('${cat.idCategoria}')" class="category-card text-center">
-                            <img src="assets/img/icono-integradora.jpeg" alt="${cat.nombreCategoria}">
+                            <img src="assets/img/categori.png" alt="${cat.nombreCategoria}">
                             <div class="fw-bold small">${cat.nombreCategoria}</div>
                         </a>
                     </c:forEach>
