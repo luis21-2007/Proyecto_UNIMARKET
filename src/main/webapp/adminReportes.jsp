@@ -17,22 +17,23 @@
 
     <c:choose>
         <c:when test="${not empty listaReportes}">
-            <div class="d-flex flex-column gap-3">
+            <!-- FORZAMOS DIRECCIÓN VERTICAL Y ANCHO COMPLETO -->
+            <div class="d-flex flex-column gap-3 w-100" style="flex-direction: column !important;">
                 <c:forEach var="reporte" items="${listaReportes}">
 
                     <!-- TARJETA DE REPORTE ESTILO ADMIN -->
-                    <div class="card border-0 shadow-sm p-3 bg-white" style="border-radius: 18px;">
-                        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                    <div class="card border-0 shadow-sm p-3 bg-white w-100" style="border-radius: 18px;">
+                        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 w-100">
 
                             <!-- INFORMACIÓN DEL USUARIO REPORTADO Y REPORTE -->
-                            <div class="d-flex align-items-start gap-3">
+                            <div class="d-flex align-items-start gap-3" style="flex: 1;">
                                 <!-- Avatar con Iniciales del Reportado -->
                                 <div class="rounded-circle d-flex align-items-center justify-content-center text-danger fw-bold flex-shrink-0"
                                      style="width: 48px; height: 48px; background-color: #fce8e6; font-size: 1.1rem;">
                                     <i class="bi bi-exclamation-triangle-fill"></i>
                                 </div>
 
-                                <div>
+                                <div class="w-100">
                                     <h6 class="fw-bold text-dark mb-0">
                                         Reportado: <c:out value="${reporte.nombreReportado}"/>
                                     </h6>
@@ -58,7 +59,7 @@
                             </div>
 
                             <!-- ESTADO (PILL BADGE) Y ACCIONES -->
-                            <div class="d-flex align-items-center justify-content-between justify-content-md-end gap-3 min-w-md-150">
+                            <div class="d-flex align-items-center justify-content-between justify-content-md-end gap-3 flex-shrink-0">
 
                                     <%-- Insignias dinámicas de Estado --%>
                                 <c:choose>
@@ -85,36 +86,44 @@
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
                                         <li><h6 class="dropdown-header">Cambiar Estado</h6></li>
-                                        <li>
-                                            <form action="adminReportes" method="POST">
-                                                <input type="hidden" name="idReporte" value="${reporte.idReporte}">
-                                                <input type="hidden" name="nuevoEstado" value="1">
-                                                <button class="dropdown-item d-flex align-items-center gap-2 py-2" type="submit">
-                                                    <i class="bi bi-search text-info"></i> Marcar En Revisión
-                                                </button>
-                                            </form>
-                                        </li>
-                                        <li>
-                                            <form action="adminReportes" method="POST">
-                                                <input type="hidden" name="idReporte" value="${reporte.idReporte}">
-                                                <input type="hidden" name="nuevoEstado" value="2">
-                                                <button class="dropdown-item d-flex align-items-center gap-2 text-danger py-2" type="submit">
-                                                    <i class="bi bi-slash-circle text-danger"></i> Aplicar Sanción
-                                                </button>
-                                            </form>
-                                        </li>
-                                        <li>
-                                            <form action="adminReportes" method="POST">
-                                                <input type="hidden" name="idReporte" value="${reporte.idReporte}">
-                                                <input type="hidden" name="nuevoEstado" value="3">
-                                                <button class="dropdown-item d-flex align-items-center gap-2 text-muted py-2" type="submit">
-                                                    <i class="bi bi-x-circle text-secondary"></i> Desestimar Reporte
-                                                </button>
-                                            </form>
-                                        </li>
+
+                                        <c:if test="${reporte.estado != 1}">
+                                            <li>
+                                                <form action="adminReportes" method="POST">
+                                                    <input type="hidden" name="idReporte" value="${reporte.idReporte}">
+                                                    <input type="hidden" name="nuevoEstado" value="1">
+                                                    <button class="dropdown-item d-flex align-items-center gap-2 py-2" type="submit">
+                                                        <i class="bi bi-search text-info"></i> Marcar En Revisión
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </c:if>
+
+                                        <c:if test="${reporte.estado != 2}">
+                                            <li>
+                                                <form action="adminReportes" method="POST">
+                                                    <input type="hidden" name="idReporte" value="${reporte.idReporte}">
+                                                    <input type="hidden" name="nuevoEstado" value="2">
+                                                    <button class="dropdown-item d-flex align-items-center gap-2 text-danger py-2" type="submit">
+                                                        <i class="bi bi-slash-circle text-danger"></i> Aplicar Sanción
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </c:if>
+
+                                        <c:if test="${reporte.estado != 3}">
+                                            <li>
+                                                <form action="adminReportes" method="POST">
+                                                    <input type="hidden" name="idReporte" value="${reporte.idReporte}">
+                                                    <input type="hidden" name="nuevoEstado" value="3">
+                                                    <button class="dropdown-item d-flex align-items-center gap-2 text-muted py-2" type="submit">
+                                                        <i class="bi bi-x-circle text-secondary"></i> Desestimar Reporte
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </c:if>
                                     </ul>
                                 </div>
-
                             </div>
 
                         </div>

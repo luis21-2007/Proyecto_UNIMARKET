@@ -8,7 +8,19 @@
 
     <!-- FILA DE TARJETAS (CARDS) BOTONES -->
     <div class="row g-4 justify-content-center">
-        <!-- Card 1: Usuarios -->
+
+        <div class="col-12 col-md-6">
+            <a href="gestionProductos" class="stat-card-link text-decoration-none">
+                <div class="stat-card">
+                    <div class="stat-title">Productos Activos</div>
+                    <div class="d-flex justify-content-between align-items-end">
+                        <div class="stat-value">${totalProductos}</div>
+                        <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
         <div class="col-12 col-md-6">
             <a href="gestionUsuarios" class="stat-card-link text-decoration-none">
                 <div class="stat-card">
@@ -21,21 +33,8 @@
             </a>
         </div>
 
-        <!-- Card 2: Productos -->
-        <div class="col-12 col-md-6">
-            <a href="listaProductos.jsp" class="stat-card-link text-decoration-none">
-                <div class="stat-card">
-                    <div class="stat-title">Productos subidos</div>
-                    <div class="d-flex justify-content-between align-items-end">
-                        <div class="stat-value">${totalProductos}</div>
-                        <div class="stat-icon"><i class="bi bi-box-seam"></i></div>
-                    </div>
-                </div>
-            </a>
-        </div>
     </div>
 
-    <!-- SECCIÓN DE LA GRÁFICA -->
     <h2 class="chart-section-title mt-5">Grafica de Productos Y Usuarios</h2>
 
     <div class="row">

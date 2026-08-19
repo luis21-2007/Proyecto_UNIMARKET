@@ -212,3 +212,44 @@ body {
 .page-btn.active {
     background-color: #e0b020;
 }
+.pagination .page-link {
+    font-size: 1.1rem;
+    padding: 10px 18px;
+    font-weight: 600;
+    color: #333 !important;
+    border-radius: 8px !important;
+    margin: 0 3px;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+}
+
+.pagination .page-link:hover {
+    background-color: #e2e5e7 !important;
+    color: #000 !important;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #8B0000 !important;
+    border-color: #000307 !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+
+
+.pagination .page-item.active .page-link:hover,
+.pagination .page-item.active .page-link:focus {
+    background-color: #6b0000 !important;
+    border-color: #000307 !important;
+    color: #ffffff !important;
+}
+.btn-nueva-cat {
+    background-color: #f7b700 !important;
+    color: #000000 !important;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-nueva-cat:hover {
+    background-color: #e0a500 !important;
+    color: #000000 !important;
+}

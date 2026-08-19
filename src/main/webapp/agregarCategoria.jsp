@@ -61,7 +61,7 @@
     </div>
     <div class="row mt-5">
         <div class="col-12 ps-lg-5 text-center text-md-start">
-            <a href="gestionCategorias.jsp" class="btn-atras">Atrás</a>
+            <a href="categorias" class="btn-atras">Atrás</a>
         </div>
     </div>
 </div>

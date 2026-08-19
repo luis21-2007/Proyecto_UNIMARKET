@@ -133,10 +133,13 @@
                 </div>
             </c:otherwise>
         </c:choose>
-
     </div>
-
 </div>
+<nav class="d-flex justify-content-center mt-4" id="navPaginacion">
+    <ul class="pagination pagination-lg mb-0" id="paginacionContainer">
+
+    </ul>
+</nav>
 
 <!-- Modal de Confirmación Adaptativo (Activar/Desactivar) -->
 <div class="modal fade" id="confirmModalProducto" tabindex="-1" aria-hidden="true">
@@ -155,5 +158,6 @@
     </div>
 </div>
 
-<script src="assets/js/gestion-productos.js"></script>
+<script src="assets/js/gestion-productos.js"></script>ç
+<script src="assets/js/paginador-usuarios.js"></script>
 <%@ include file="layout/footer.jsp" %>

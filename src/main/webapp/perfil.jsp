@@ -142,9 +142,6 @@ MODAL: CONFIRMAR GUARDAR CAMBIOS
     </div>
 </div>
 
-<!-- ==========================================
-MODAL: ADVERTENCIA DAR DE BAJA CUENTA
-========================================== -->
 <div class="modal fade" id="modalBajaCuenta" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">

@@ -5,7 +5,8 @@
 <%@ include file="layout/header_admin.jsp" %>
 
 <div class="container py-4">
-    <h1 class="gestion-title">Gestion de Usuarios</h1>
+    <h1 class="gestion-title">Gestión de Usuarios</h1>
+
     <!-- Mensajes de Alerta / Feedback -->
     <c:if test="${not empty param.msg}">
         <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
@@ -23,17 +24,20 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </c:if>
+
+    <!-- Filtro de Búsqueda -->
     <div class="search-input-group d-flex align-items-center w-100 mb-3">
         <i class="bi bi-search text-secondary me-2 fs-5"></i>
         <input type="text" id="filtroUsuario" class="w-100" placeholder="Filtro de Usuarios">
     </div>
 
+    <!-- Contenedor de Usuarios -->
     <div class="users-container-card">
 
         <c:choose>
             <c:when test="${not empty listaUsuarios}">
                 <c:forEach var="user" items="${listaUsuarios}">
-                    <!-- Item de Usuario desde la Base de Datos -->
+                    <!-- Item de Usuario -->
                     <div class="user-item-card d-flex align-items-center justify-content-between mb-2">
 
                         <div class="d-flex align-items-center gap-3">
@@ -47,6 +51,7 @@
                                 <small class="text-muted fw-semibold">${user.correo}</small>
                             </div>
                         </div>
+
                         <div class="d-flex align-items-center gap-3">
                             <!-- Badge de Estado -->
                             <c:choose>
@@ -65,7 +70,6 @@
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow">
                                     <c:choose>
-                                        <%-- Si está Activo: Muestra la opción de Dar de baja --%>
                                         <c:when test="${user.activo == 1 || user.activo == null}">
                                             <li>
                                                 <a class="dropdown-item text-danger"
@@ -103,7 +107,11 @@
 
     </div>
 
-</div>
+    <nav class="d-flex justify-content-center mt-4" id="navPaginacion">
+        <ul class="pagination pagination-lg mb-0" id="paginacionContainer">
+
+        </ul>
+    </nav>
 
 <!-- Modal de Confirmación Adaptativo (Activar/Desactivar) -->
 <div class="modal fade" id="confirmModalUsuario" tabindex="-1" aria-hidden="true">
@@ -123,4 +131,6 @@
 </div>
 
 <script src="assets/js/gestion-usuarios.js"></script>
+<script src="assets/js/paginador-usuarios.js"></script>
+
 <%@ include file="layout/footer.jsp" %>

@@ -1,12 +1,22 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <%@ include file="layout/header_admin.jsp" %>
 
-<div class="container mt-4 mb-5">
+<div class="container py-4">
+
+    <!-- Título y Botón Nueva Categoría -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="gestion-title mb-0">Gestión de Categorías</h1>
+        <a href="agregarCategoria.jsp" class="btn btn-nueva-cat rounded-pill px-4 fw-bold shadow-sm">
+            <i class="bi bi-plus-lg me-1"></i> Nueva Categoría
+        </a>
+    </div>
 
     <!-- Mensajes de Alerta/Feedback -->
     <c:if test="${not empty param.msg}">
-        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+        <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
             <c:choose>
                 <c:when test="${param.msg == 'creada'}">Categoría creada exitosamente.</c:when>
                 <c:when test="${param.msg == 'actualizada'}">Categoría actualizada exitosamente.</c:when>
@@ -18,86 +28,107 @@
     </c:if>
 
     <c:if test="${not empty param.error}">
-        <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
             Ocurrió un error al procesar la solicitud.
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </c:if>
 
-    <!-- Título y Botón Nueva Categoría -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="page-title">Gestión de Categorías</h1>
-        <a href="agregarCategoria.jsp" class="btn btn-new-category">+ Nueva Categoría</a>
+    <!-- Filtro de Búsqueda -->
+    <div class="search-input-group d-flex align-items-center w-100 mb-3">
+        <i class="bi bi-search text-secondary me-2 fs-5"></i>
+        <input type="text" id="filtroCategoria" class="w-100" placeholder="Filtro de Categorías">
     </div>
 
-    <!-- Tabla de Categorías -->
-    <div class="table-container shadow-sm">
-        <div class="table-header-main">
-            Todas las Categorías
-        </div>
-        <table class="table custom-table">
-            <thead>
-            <tr>
-                <th style="width: 40%;">Nombre de Categoría</th>
-                <th style="width: 20%; text-align: center;">Estado</th>
-                <th style="width: 20%; text-align: center;">Productos</th>
-                <th style="width: 20%; text-align: center;">Acciones</th>
-            </tr>
-            </thead>
-            <tbody>
-            <c:choose>
-                <c:when test="${not empty listaCategorias}">
-                    <c:forEach var="cat" items="${listaCategorias}">
-                        <tr>
-                            <td>
-                                <i class="bi bi-grid-fill me-2"></i> ${cat.nombreCategoria}
-                            </td>
-                            <!-- Badge de Estado -->
-                            <td class="text-center">
-                                <c:choose>
-                                    <c:when test="${cat.estado}">
-                                        <span class="badge bg-success">Activa</span>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span class="badge bg-secondary">Inactiva</span>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td class="text-center fw-bold">
-                                    ${cat.totalProductos}
-                            </td>
-                            <td class="text-center">
-                                <!-- Botón Editar (Modal Editar) -->
-                                <button type="button" class="btn-edit-trigger border-0 bg-transparent p-0 me-2" title="Editar categoría" onclick="prepararModalEditar('${cat.idCategoria}', '${cat.nombreCategoria}')">
-                                    <i class="bi bi-pencil-square action-icon text-dark"></i>
+    <!-- Contenedor Amarillo Principal -->
+    <div class="users-container-card">
+
+        <c:choose>
+            <c:when test="${not empty listaCategorias}">
+                <c:forEach var="cat" items="${listaCategorias}">
+                    <!-- Tarjeta de Categoría -->
+                    <div class="user-item-card categoria-item-card d-flex align-items-center justify-content-between mb-2 p-3 bg-white rounded-3 shadow-sm"
+                         data-nombre="${fn:toLowerCase(cat.nombreCategoria)}">
+
+                        <!-- 1. ICONO Y NOMBRE DE CATEGORÍA (IZQUIERDA) -->
+                        <div class="d-flex align-items-center gap-3" style="flex: 1;">
+                            <div class="user-avatar" style="background-color: #e9ecef; border-color: #ced4da; color: #495057;">
+                                <i class="bi bi-grid-fill fs-5"></i>
+                            </div>
+
+                            <div>
+                                <h6 class="mb-0 fw-bold text-dark"><c:out value="${cat.nombreCategoria}"/></h6>
+                                <small class="text-muted fw-semibold">
+                                    Productos vinculados: <span class="badge bg-light text-dark border">${cat.totalProductos}</span>
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- 2. ESTADO Y OPCIONES (DERECHA) -->
+                        <div class="d-flex align-items-center justify-content-end gap-3" style="flex: 1;">
+                            <!-- Badge de Estado Activa/Inactiva -->
+                            <c:choose>
+                                <c:when test="${cat.estado}">
+                                    <span class="status-badge-active">Activa</span>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="status-badge-inactive">Inactiva</span>
+                                </c:otherwise>
+                            </c:choose>
+
+                            <!-- Menú Opciones (Tres Puntos) -->
+                            <div class="dropdown">
+                                <button class="btn-options" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-three-dots"></i>
                                 </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow">
+                                    <!-- Editar -->
+                                    <li>
+                                        <a class="dropdown-item" href="javascript:void(0)" onclick="prepararModalEditar('${cat.idCategoria}', '${fn:escapeXml(cat.nombreCategoria)}')">
+                                            <i class="bi bi-pencil-square me-2 text-primary"></i>Editar
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <!-- Activar / Deshabilitar -->
+                                    <c:choose>
+                                        <c:when test="${cat.estado}">
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="prepararModalEstado('${cat.idCategoria}', '${fn:escapeXml(cat.nombreCategoria)}', 'desactivar')">
+                                                    <i class="bi bi-slash-circle me-2"></i>Deshabilitar
+                                                </a>
+                                            </li>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <li>
+                                                <a class="dropdown-item text-success" href="javascript:void(0)" onclick="prepararModalEstado('${cat.idCategoria}', '${fn:escapeXml(cat.nombreCategoria)}', 'activar')">
+                                                    <i class="bi bi-check-circle me-2"></i>Activar
+                                                </a>
+                                            </li>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </ul>
+                            </div>
+                        </div>
 
-                                <!-- Botón Activar / Desactivar con onclick directo -->
-                                <c:choose>
-                                    <c:when test="${cat.estado}">
-                                        <button type="button" class="btn-delete-trigger border-0 bg-transparent p-0" title="Deshabilitar categoría" onclick="prepararModalEstado('${cat.idCategoria}', '${cat.nombreCategoria}', 'desactivar')">
-                                            <i class="bi bi-toggle-on text-success fs-5"></i>
-                                        </button>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <button type="button" class="btn-delete-trigger border-0 bg-transparent p-0" title="Activar categoría" onclick="prepararModalEstado('${cat.idCategoria}', '${cat.nombreCategoria}', 'activar')">
-                                            <i class="bi bi-toggle-off text-secondary fs-5"></i>
-                                        </button>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </c:when>
-                <c:otherwise>
-                    <tr>
-                        <td colspan="4" class="text-center py-4">No hay categorías registradas.</td>
-                    </tr>
-                </c:otherwise>
-            </c:choose>
-            </tbody>
-        </table>
+                    </div>
+                </c:forEach>
+            </c:when>
+
+            <c:otherwise>
+                <div class="text-center py-4 bg-white rounded-3">
+                    <i class="bi bi-grid-3x3-gap fs-1 text-muted"></i>
+                    <p class="text-muted fw-semibold mb-0 mt-2">No hay categorías registradas en la base de datos.</p>
+                </div>
+            </c:otherwise>
+        </c:choose>
+
     </div>
+
+    <!-- Paginación -->
+    <nav class="d-flex justify-content-center mt-4" id="navPaginacionCat">
+        <ul class="pagination pagination-lg mb-0" id="paginacionContainerCat">
+        </ul>
+    </nav>
 
 </div>
 
@@ -146,4 +177,6 @@
 </div>
 
 <script src="assets/js/gestion_categorias.js"></script>
+<script src="assets/js/paginador-categorias.js"></script>
+
 <%@ include file="layout/footer.jsp" %>

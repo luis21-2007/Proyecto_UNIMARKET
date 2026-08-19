@@ -276,7 +276,6 @@ public class UserDao implements Dao<User,Integer> {
         return null;
     }
     public boolean darDeBaja(int idUsuario) {
-        // Ajusta la columna si tu campo de baja lógica se llama 'activo', 'estatus', etc.
         String sql = "UPDATE usuario SET activo = 0, sesion_activa = 0 WHERE id_usuario = ?";
 
         try (Connection con = SQLConnector.getConnection();

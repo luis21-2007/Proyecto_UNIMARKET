@@ -27,7 +27,6 @@ public class DarDeBajaCuentaServlet extends HttpServlet {
 
             if (usuario != null) {
                 userDao.darDeBaja(usuario.getId());
-                // 2. Liberar la sesión activa en la BD (sesion_activa = 0)
                 userDao.actualizarSesionActiva(usuario.getId(), 0);
                 session.invalidate();
             }
