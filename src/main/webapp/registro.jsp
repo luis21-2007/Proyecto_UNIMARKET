@@ -84,24 +84,29 @@
                     </div>
                     <div class="custom-input-group mb-2">
                         <div class="input-addon">
-                              <i class="bi bi-envelope"></i>
+                            <i class="bi bi-envelope"></i>
                         </div>
                         <input type="email" value="${param.correo}" name="correo" class="custom-input" placeholder="ejemplo@utez.edu.mx"
                                pattern="^[a-zA-Z0-9._%+-]+@utez\.edu\.mx$" required>
                     </div>
 
-                    <div class="custom-input-group mb-2">
+                    <div class="custom-input-group mb-1 position-relative">
                         <div class="input-addon">
                             <i class="bi bi-lock"></i>
                         </div>
-                        <input type="password" name="contra1" class="custom-input" placeholder="Ingresa tu Contraseña" maxlength="12"  required>
+                        <input type="password" id="txtContra1" name="contra1" class="custom-input pe-5" placeholder="Ingresa tu Contraseña" minlength="8" maxlength="12" pattern="(?=.*[A-Z]).{8,12}" title="La contraseña debe tener al menos 8 caracteres y una letra mayúscula" required>
+                        <i class="bi bi-eye position-absolute top-50 end-0 translate-middle-y me-3" style="cursor: pointer; z-index: 10;" onclick="const input = document.getElementById('txtContra1'); input.type = input.type === 'password' ? 'text' : 'password'; this.classList.toggle('bi-eye'); this.classList.toggle('bi-eye-slash');"></i>
+                    </div>
+                    <div class="text-start mb-2 ps-1" style="font-size: 11px; color: #6c757d;">
+                        * Mínimo 8 caracteres y al menos una mayúscula.
                     </div>
 
-                    <div class="custom-input-group mb-2">
+                    <div class="custom-input-group mb-2 position-relative">
                         <div class="input-addon">
                             <i class="bi bi-lock"></i>
                         </div>
-                        <input type="password" name="contra2" class="custom-input" placeholder="Confirmar Contraseña" maxlength="12"  required>
+                        <input type="password" id="txtContra2" name="contra2" class="custom-input pe-5" placeholder="Confirmar Contraseña" minlength="8" maxlength="12" pattern="(?=.*[A-Z]).{8,12}" title="La contraseña debe tener al menos 8 caracteres y una letra mayúscula" required>
+                        <i class="bi bi-eye position-absolute top-50 end-0 translate-middle-y me-3" style="cursor: pointer; z-index: 10;" onclick="const input = document.getElementById('txtContra2'); input.type = input.type === 'password' ? 'text' : 'password'; this.classList.toggle('bi-eye'); this.classList.toggle('bi-eye-slash');"></i>
                     </div>
 
                     <div class="mb-3">
