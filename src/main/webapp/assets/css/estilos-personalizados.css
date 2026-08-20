@@ -94,3 +94,75 @@ body {
     margin-top: 4px;
     line-height: 1.1;
 }
+
+/*
+   MEDIA QUERY REFINADA (Logo más grande y diagonal centrada)
+ */
+@media (max-width: 768px) {
+
+    /* 1. Header flexible de 2 filas */
+    .custom-header {
+        flex-wrap: wrap !important;
+        padding: 10px 12px 12px 12px !important;
+        height: auto !important;
+        min-height: auto !important;
+    }
+
+    /* 2. Ampliar las diagonales para abrazar mejor al logo */
+    .custom-header::before {
+        width: 105px !important; /* Capa naranja oscuro */
+    }
+    .custom-header::after {
+        width: 90px !important;  /* Capa negra */
+    }
+
+    /* 3. Logo más grande y centrado dentro de la franja negra */
+    .logo-container {
+        order: 1 !important;
+        width: 65px !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+    .logo-img {
+        width: 48px !important; /* Subimos de 38px a 48px */
+        height: 48px !important;
+    }
+
+    /* 4. Íconos de acción (Fila 1 - Derecha) */
+    .custom-header > div:last-child {
+        order: 2 !important;
+        gap: 6px !important;
+    }
+    .icon-btn {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 1rem !important;
+    }
+    .icon-label {
+        display: none !important;
+    }
+    .icon-btn.mb-2 {
+        margin-bottom: 0 !important;
+    }
+
+    /* 5. Buscador (Fila 2 - Abajo a todo lo ancho) */
+    .search-container {
+        order: 3 !important;
+        flex: 0 0 100% !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 10px 0 0 0 !important;
+        position: relative !important;
+        z-index: 3 !important;
+    }
+
+    .search-container .form-control {
+        height: 38px !important;
+        font-size: 0.85rem !important;
+    }
+
+    .search-container .btn-search {
+        height: 38px !important;
+        padding: 0 12px !important;
+    }
+}

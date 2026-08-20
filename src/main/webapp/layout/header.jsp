@@ -10,10 +10,11 @@
     <link href="assets/css/bi/bootstrap-icons.min.css" rel="stylesheet">
     <link href="assets/css/estilos-personalizados.css" rel="stylesheet">
     <link href="assets/css/estilos-index.css" rel="stylesheet">
-    <link href="assets/css/detalles-productos.css" rel="stylesheet">
+    <link href="assets/css/estilos-personalizados.css?v=2.0" rel="stylesheet">
 </head>
 <body>
-<header class="custom-header d-flex align-items-center justify-content-between pe-4">
+<!-- Reducimos el padding derecho en celulares (pe-2) y lo mantenemos en PC (pe-4) -->
+<header class="custom-header d-flex align-items-center justify-content-between pe-2 pe-md-4">
 
     <!-- Logo del Marketplace (Apunta al Servlet 'inicio') -->
     <div class="logo-container d-flex align-items-center h-100">
@@ -23,7 +24,9 @@
     </div>
 
     <!-- Sección de Acciones -->
-    <div class="d-flex align-items-center gap-4">
+
+    <!-- Reducimos el espacio entre botones en celulares (gap-2) y lo mantenemos en PC (gap-4) -->
+    <div class="d-flex align-items-center gap-2 gap-md-4">
         <c:choose>
             <c:when test="${not empty sessionScope.usuario}">
                 <!-- Botón de Mis Productos-->
