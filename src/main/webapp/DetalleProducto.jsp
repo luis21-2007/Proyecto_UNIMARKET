@@ -5,6 +5,14 @@
 <fmt:setLocale value="en_US" />
 
 <%@ include file="layout/header.jsp" %>
+<%-- Alerta si la compra/transacción fue rechazada o cancelada --%>
+<c:if test="${transaccionCancelada}">
+    <div class="alert alert-warning alert-dismissible fade show rounded-3 shadow-sm mb-3" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        Tu solicitud de compra anterior fue cancelada o rechazada por el vendedor. El producto vuelve a estar disponible.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</c:if>
 
 <!-- ALERTA DE ÉXITO: OFERTA -->
 <c:if test="${param.msg == 'ofertaExitosa'}">
@@ -144,27 +152,26 @@
                     <fmt:formatNumber currencySymbol="$" value="${producto.precio}" type="currency"/>
                 </h2>
             </div>
-
-            <!-- BOTONES DE ACCIÓN (COMPRAR, OFERTAR O WHATSAPP) -->
+            <!-- BOTONES DE ACCIÓN -->
             <div>
                 <c:choose>
                     <%-- CASO 1: El usuario en sesión es el dueño del producto --%>
                     <c:when test="${not empty sessionScope.usuario and sessionScope.usuario.id == producto.idUsuario}">
-                        <button type="button" class="btn btn-secondary w-100 text-center fw-bold py-2" disabled style="cursor: not-allowed; opacity: 0.7; border-radius: 25px;">
+                        <button type="button" class="btn btn-secondary w-100 text-center fw-bold py-2" disabled style="border-radius: 25px;">
                             <i class="bi bi-person-check-fill me-1"></i> ES TU PUBLICACIÓN
                         </button>
                     </c:when>
 
-                    <%-- CASO 2: La oferta fue ACEPTADA (estadoOferta == 1) O realizó COMPRA DIRECTA (yaComproDirecto) --%>
-                    <c:when test="${estadoOferta == 1 or yaComproDirecto}">
+                    <%-- CASO 2: Compra activa PENDIENTE o COMPLETADA (yaComproDirecto es true SOLO si estado != 0) --%>
+                    <c:when test="${yaComproDirecto or estadoOferta == 1}">
                         <div class="d-flex flex-column gap-2">
-                            <span class="badge bg-success px-3 py-2 rounded-pill fs-6 text-center">
-                                <i class="bi bi-check-circle-fill me-1"></i>
-                                <c:choose>
-                                    <c:when test="${estadoOferta == 1}">Oferta Aceptada</c:when>
-                                    <c:otherwise>Compra Registrada</c:otherwise>
-                                </c:choose>
-                            </span>
+                <span class="badge bg-success px-3 py-2 rounded-pill fs-6 text-center">
+                    <i class="bi bi-check-circle-fill me-1"></i>
+                    <c:choose>
+                        <c:when test="${estadoOferta == 1}">Oferta Aceptada</c:when>
+                        <c:otherwise>Compra Registrada (En Proceso)</c:otherwise>
+                    </c:choose>
+                </span>
 
                             <a href="https://wa.me/${vendedor.telefono}?text=Hola%20${vendedor.nombre},%20me%20interesa%20coordinar%20la%20entrega%20de%20mi%20compra/oferta%20por%20${producto.nombre}."
                                target="_blank"
@@ -175,22 +182,26 @@
                         </div>
                     </c:when>
 
-                    <%-- CASO 3: El usuario envió oferta y está PENDIENTE (estado = 0) --%>
+                    <%-- CASO 3: El producto está reservado por ALGUIEN MÁS (estado == 3) --%>
+                    <c:when test="${producto.estado == 3}">
+                        <button type="button" class="btn btn-secondary text-white w-100 text-center fw-bold py-2" disabled style="border-radius: 25px;">
+                            <i class="bi bi-clock-history me-1"></i> PRODUCTO RESERVADO / EN PROCESO
+                        </button>
+                    </c:when>
+
+                    <%-- CASO 4: Oferta PENDIENTE --%>
                     <c:when test="${estadoOferta == 0}">
-                        <button type="button" class="btn btn-warning text-dark w-100 text-center fw-bold py-2" disabled style="cursor: not-allowed; opacity: 0.85; border-radius: 25px;">
+                        <button type="button" class="btn btn-warning text-dark w-100 text-center fw-bold py-2" disabled style="border-radius: 25px;">
                             <i class="bi bi-clock-history me-1"></i> OFERTA ENVIADA
                         </button>
                     </c:when>
 
-                    <%-- CASO 4: Comprador no ha ofertado ni comprado --%>
+                    <%-- CASO 5: Disponible para comprar/ofertar (Si se canceló, entra automáticamente aquí) --%>
                     <c:otherwise>
                         <div class="d-flex gap-2">
-                            <!-- BOTÓN COMPRAR -->
                             <button type="button" class="btn btn-comprar-detalle w-50 text-center fw-bold py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalComprar" style="border-radius: 25px;">
-                            <i class="bi bi-bag-check-fill me-1"></i> COMPRAR
-                             </button>
-
-                            <!-- BOTÓN OFERTAR -->
+                                <i class="bi bi-bag-check-fill me-1"></i> COMPRAR
+                            </button>
                             <button type="button" class="btn btn-comprar-detalle w-50 text-center fw-bold py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalOferta" style="border-radius: 25px;">
                                 <i class="bi bi-tag-fill me-1"></i> OFERTAR
                             </button>

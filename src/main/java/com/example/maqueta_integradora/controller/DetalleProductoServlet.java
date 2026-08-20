@@ -1,6 +1,7 @@
 package com.example.maqueta_integradora.controller;
 
 import com.example.maqueta_integradora.model.Producto;
+import com.example.maqueta_integradora.model.Transaccion;
 import com.example.maqueta_integradora.model.User;
 import com.example.maqueta_integradora.model.dao.CalificacionDao;
 import com.example.maqueta_integradora.model.dao.OfertaDao;
@@ -67,10 +68,17 @@ public class DetalleProductoServlet extends HttpServlet {
                 // 5. Estado de Oferta del Usuario (1 = Aceptada, 0 = Pendiente, etc.)
                 int estadoOferta = ofertaDao.getEstadoOfertaUsuario(usuario.getId(), idProducto);
 
-                // 6. Validar si ya existe una Transacción / Compra directa de este usuario para este producto
-                boolean yaComproDirecto = transaccionDao.getComprasByUsuario(usuario.getId())
-                        .stream()
-                        .anyMatch(t -> t.getIdProducto() == idProducto);
+                // 6. Validar Transacciones/Compras directas del usuario filtrando por estado
+                List<Transaccion> misCompras = transaccionDao.getComprasByUsuario(usuario.getId());
+
+                // Se considera compra activa solo si NO está cancelada (estado != 0)
+                boolean yaComproDirecto = misCompras.stream()
+                        .anyMatch(t -> t.getIdProducto() == idProducto && t.getEstado() != 0);
+
+                // Detecta si la transacción previa fue cancelada por el vendedor (estado == 0)
+                boolean transaccionCancelada = misCompras.stream()
+                        .filter(t -> t.getIdProducto() == idProducto)
+                        .anyMatch(t -> t.getEstado() == 0) && !yaComproDirecto;
 
                 // 7. Reputación del vendedor
                 int idVendedor = producto.getIdUsuario();
@@ -83,6 +91,7 @@ public class DetalleProductoServlet extends HttpServlet {
                 request.setAttribute("vendedor", vendedor);
                 request.setAttribute("estadoOferta", estadoOferta);
                 request.setAttribute("yaComproDirecto", yaComproDirecto);
+                request.setAttribute("transaccionCancelada", transaccionCancelada);
                 request.setAttribute("promedioVendedor", promedioVendedor);
                 request.setAttribute("totalResenasVendedor", totalResenasVendedor);
 
@@ -99,7 +108,6 @@ public class DetalleProductoServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 1. Validar Sesión
         HttpSession session = request.getSession(false);
         User usuario = (session != null) ? (User) session.getAttribute("usuario") : null;
 
@@ -108,7 +116,6 @@ public class DetalleProductoServlet extends HttpServlet {
             return;
         }
 
-        // 2. Parámetro de Producto
         String idProductoStr = request.getParameter("idProducto");
         if (idProductoStr == null || idProductoStr.isBlank()) {
             response.sendRedirect("inicio");
@@ -129,8 +136,6 @@ public class DetalleProductoServlet extends HttpServlet {
                 response.sendRedirect("detalleProducto?id=" + idProducto + "&error=auto_oferta");
                 return;
             }
-
-            // Registrar compra en estado pendiente (0)
             boolean registrado = transaccionDao.registrarCompraDirectaPendiente(
                     usuario.getId(),
                     producto.getIdUsuario(),
@@ -139,6 +144,9 @@ public class DetalleProductoServlet extends HttpServlet {
             );
 
             if (registrado) {
+                // Bajar el producto del catálogo cambiándolo a estado 3 (En Proceso / Reservado)
+                productoDao.proceso(idProducto);
+
                 response.sendRedirect("detalleProducto?id=" + idProducto + "&msg=compraExitosa");
             } else {
                 response.sendRedirect("detalleProducto?id=" + idProducto + "&error=compra_fallida");
