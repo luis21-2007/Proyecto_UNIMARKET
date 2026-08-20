@@ -45,7 +45,7 @@
                 <div class="category-scroll-container">
                     <c:forEach var="cat" items="${listaCategorias}">
                         <a href="javascript:void(0);" onclick="filtrarPorCategoria('${cat.idCategoria}')" class="category-card text-center">
-                            <img src="assets/img/categori.png" alt="${cat.nombreCategoria}">
+                            <img src="assets/img/Categoria_logo.png" alt="${cat.nombreCategoria}">
                             <div class="fw-bold small">${cat.nombreCategoria}</div>
                         </a>
                     </c:forEach>

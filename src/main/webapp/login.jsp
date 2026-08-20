@@ -49,11 +49,12 @@
                         <input type="email" value="${param.correo}" name="correo" class="custom-input" placeholder="Ingresa tu correo institucional" pattern="^[a-zA-Z0-9._%+-]+@utez\.edu\.mx$" required>
                     </div>
 
-                    <div class="custom-input-group mb-4">
+                    <div class="custom-input-group mb-4 position-relative">
                         <div class="input-addon">
                             <i class="bi bi-lock"></i>
                         </div>
-                        <input type="password" value="${param.contra}" name="contra" class="custom-input" placeholder="Ingresa tu Contraseña" maxlength="12" required>
+                        <input type="password" id="txtContra" value="${param.contra}" name="contra" class="custom-input pe-5" placeholder="Ingresa tu Contraseña" maxlength="12" required>
+                        <i class="bi bi-eye position-absolute top-50 end-0 translate-middle-y me-3" style="cursor: pointer; z-index: 10;" onclick="const input = document.getElementById('txtContra'); input.type = input.type === 'password' ? 'text' : 'password'; this.classList.toggle('bi-eye'); this.classList.toggle('bi-eye-slash');"></i>
                     </div>
 
                     <div class="mb-3">
