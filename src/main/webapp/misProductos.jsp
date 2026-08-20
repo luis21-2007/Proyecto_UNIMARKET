@@ -53,8 +53,8 @@
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h2 class="fw-bold text-dark">Mis Productos</h2>
-            <p class="welcome-banner  mb-0">
-                Gestiona tus publicaciones activas, revisa tu historial de ventas y consulta tus productos eliminados.
+            <p class="welcome-banner mb-0">
+                Gestiona tus publicaciones activas, revisa tus pedidos en proceso, historial de ventas y productos eliminados.
             </p>
         </div>
     </div>
@@ -68,6 +68,11 @@
                 </button>
             </li>
             <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold px-4 rounded-pill" id="proceso-tab" data-bs-toggle="pill" data-bs-target="#proceso" type="button" role="tab">
+                    <i class="bi bi-clock-history me-1"></i> En Proceso
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
                 <button class="nav-link fw-bold px-4 rounded-pill" id="vendidos-tab" data-bs-toggle="pill" data-bs-target="#vendidos" type="button" role="tab">
                     <i class="bi bi-check2-circle me-1"></i> Vendidos
                 </button>
@@ -78,8 +83,10 @@
                 </button>
             </li>
         </ul>
+
         <div class="tab-content" id="productosTabContent">
 
+            <!-- 1. PESTAÑA: PUBLICADOS (estado == 1) -->
             <div class="tab-pane fade show active" id="activos" role="tabpanel">
                 <c:set var="tieneActivos" value="false" />
                 <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-4">
@@ -117,7 +124,47 @@
                 </c:if>
             </div>
 
-            <!-- 2. PESTAÑA: PRODUCTOS VENDIDOS (estado == 2) -->
+            <!-- 2. PESTAÑA: EN PROCESO (estado == 3) -->
+            <div class="tab-pane fade" id="proceso" role="tabpanel">
+                <c:set var="tieneProceso" value="false" />
+                <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-4">
+                    <c:forEach var="prod" items="${listaProductos}">
+                        <c:if test="${prod.estado == 3}">
+                            <c:set var="tieneProceso" value="true" />
+                            <div class="col">
+                                <div class="product-card h-100 d-flex flex-column justify-content-between border-warning">
+                                    <div>
+                                        <div class="card-img-wrapper position-relative">
+                                            <img src="${not empty prod.imagenUrl ? prod.imagenUrl : 'assets/img/icono-integradora.jpeg'}" alt="${prod.nombre}">
+                                            <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-2">
+                                                <i class="bi bi-clock-history me-1"></i> En Proceso
+                                            </span>
+                                        </div>
+                                        <div class="product-title text-truncate mt-2" title="${prod.nombre}">${prod.nombre}</div>
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="product-price text-dark fw-bold">
+                                                <fmt:formatNumber value="${prod.precio}" type="currency" currencySymbol="$"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <a href="misVentas" class="btn btn-warning text-dark shadow-sm w-100 text-center mt-2 fw-semibold">
+                                        <i class="bi bi-bag-check me-1"></i> Ver Venta
+                                    </a>
+                                </div>
+                            </div>
+                        </c:if>
+                    </c:forEach>
+                </div>
+
+                <c:if test="${!tieneProceso}">
+                    <div class="text-center py-5">
+                        <i class="bi bi-clock-history display-1 text-muted opacity-50 d-block mb-3"></i>
+                        <p class="text-muted fs-5 fw-medium mb-0">No tienes productos en proceso de venta actualmente.</p>
+                    </div>
+                </c:if>
+            </div>
+
+            <!-- 3. PESTAÑA: PRODUCTOS VENDIDOS (estado == 2) -->
             <div class="tab-pane fade" id="vendidos" role="tabpanel">
                 <c:set var="tieneVendidos" value="false" />
                 <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-4">
@@ -155,7 +202,7 @@
                 </c:if>
             </div>
 
-            <!-- 3. PESTAÑA: PRODUCTOS ELIMINADOS (estado == 0) -->
+            <!-- 4. PESTAÑA: PRODUCTOS ELIMINADOS (estado == 0) -->
             <div class="tab-pane fade" id="eliminados" role="tabpanel">
                 <c:set var="tieneEliminados" value="false" />
                 <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-4">

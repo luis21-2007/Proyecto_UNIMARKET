@@ -11,7 +11,7 @@
     <div class="container">
 
         <!-- Mensajes de Feedback -->
-        <c:if test="${param.msg == 'ok'}">
+        <c:if test="${param.msg == 'ok' || param.msg == 'respuestaRegistrada'}">
             <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
                 Respuesta a la oferta registrada correctamente.
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -47,7 +47,7 @@
                         <a href="misOfertas" class="profile-menu-item">
                             <i class="bi bi-tag"></i> Mis ofertas enviadas
                         </a>
-                        <a href="misOfertasVendedor" class="profile-menu-item">
+                        <a href="misOfertasVendedor" class="profile-menu-item active">
                             <i class="bi bi-inbox"></i> Ofertas recibidas
                         </a>
                     </nav>
@@ -88,14 +88,29 @@
                                                 <%-- ESTADO 0: PENDIENTE -> MOSTRAR BOTONES DE ACCIÓN --%>
                                                 <c:when test="${oferta.estado == 0}">
                                                     <div class="d-flex gap-2">
-                                                        <a href="responderOferta?id=${oferta.idOferta}&accion=aceptar"
-                                                           class="btn btn-success btn-sm px-3 fw-bold">
-                                                            <i class="bi bi-check-lg me-1"></i> Aceptar
-                                                        </a>
-                                                        <a href="responderOferta?id=${oferta.idOferta}&accion=rechazar"
-                                                           class="btn btn-outline-danger btn-sm px-3 fw-bold">
-                                                            <i class="bi bi-x-lg me-1"></i> Rechazar
-                                                        </a>
+
+                                                        <!-- FORMULARIO PARA ACEPTAR -->
+                                                        <form action="misOfertasVendedor" method="POST" class="m-0">
+                                                            <input type="hidden" name="accion" value="aceptar">
+                                                            <input type="hidden" name="idOferta" value="${oferta.idOferta}">
+                                                            <input type="hidden" name="idProducto" value="${oferta.idProducto}">
+                                                            <input type="hidden" name="idComprador" value="${oferta.idUsuario}">
+                                                            <input type="hidden" name="monto" value="${oferta.montoOferta}">
+                                                            <button type="submit" class="btn btn-success btn-sm px-3 fw-bold">
+                                                                <i class="bi bi-check-lg me-1"></i> Aceptar
+                                                            </button>
+                                                        </form>
+
+                                                        <!-- FORMULARIO PARA RECHAZAR -->
+                                                        <form action="misOfertasVendedor" method="POST" class="m-0">
+                                                            <input type="hidden" name="accion" value="rechazar">
+                                                            <input type="hidden" name="idOferta" value="${oferta.idOferta}">
+                                                            <input type="hidden" name="idProducto" value="${oferta.idProducto}">
+                                                            <button type="submit" class="btn btn-outline-danger btn-sm px-3 fw-bold">
+                                                                <i class="bi bi-x-lg me-1"></i> Rechazar
+                                                            </button>
+                                                        </form>
+
                                                     </div>
                                                 </c:when>
 

@@ -90,115 +90,74 @@ public class TransaccionDao {
         }
         return lista;
     }
-/*
-    // CONSULTAR TRANSACCIÓN POR ID (NUEVO MÉTODO PARA REPORTES/ADMIN)
-    public Transaccion obtenerPorId(int idTransaccion) {
-        String sql = "SELECT t.id_transaccion, t.id_producto, t.id_comprador, t.id_vendedor, t.monto, " +
-                "t.fecha_transaccion, t.estado, " +
-                "COALESCE(p.nombre, 'Producto no disponible') AS nombre_producto, " +
-                "COALESCE(u1.nombre, 'Comprador') AS nombre_comprador, " +
-                "COALESCE(u2.nombre, 'Vendedor') AS nombre_vendedor " +
-                "FROM transaccion t " +
-                "LEFT JOIN producto p ON t.id_producto = p.id_producto " +
-                "LEFT JOIN usuario u1 ON t.id_comprador = u1.id_usuario " +
-                "LEFT JOIN usuario u2 ON t.id_vendedor = u2.id_usuario " +
-                "WHERE t.id_transaccion = ?";
+public boolean actualizarEstado(int idTransaccion, int nuevoEstado) {
+    String sqlUpdateTrans = "UPDATE transaccion SET estado = ? WHERE id_transaccion = ?";
+    String sqlGetProducto = "SELECT id_producto FROM transaccion WHERE id_transaccion = ?";
+    String sqlUpdateProducto = "UPDATE producto SET estado = ? WHERE id_producto = ?";
 
-        try (Connection con = SQLConnector.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+    Connection con = null;
+    try {
+        con = SQLConnector.getConnection();
+        con.setAutoCommit(false); // Transacción JDBC (Todo o Nada)
 
-            ps.setInt(1, idTransaccion);
-            try (ResultSet rs = ps.executeQuery()) {
+        // 1. Cambiar el estado de la transacción
+        try (PreparedStatement ps = con.prepareStatement(sqlUpdateTrans)) {
+            ps.setInt(1, nuevoEstado);
+            ps.setInt(2, idTransaccion);
+            int filasAfectadas = ps.executeUpdate();
+
+            if (filasAfectadas == 0) {
+                con.rollback();
+                return false;
+            }
+        }
+
+        // 2. Obtener el ID del producto asociado a esta transacción
+        int idProducto = 0;
+        try (PreparedStatement psGetProd = con.prepareStatement(sqlGetProducto)) {
+            psGetProd.setInt(1, idTransaccion);
+            try (ResultSet rs = psGetProd.executeQuery()) {
                 if (rs.next()) {
-                    Transaccion t = new Transaccion();
-                    t.setIdTransaccion(rs.getInt("id_transaccion"));
-                    t.setIdProducto(rs.getInt("id_producto"));
-                    t.setIdComprador(rs.getInt("id_comprador"));
-                    t.setIdVendedor(rs.getInt("id_vendedor"));
-                    t.setMonto(rs.getDouble("monto"));
-                    t.setFechaTransaccion(rs.getTimestamp("fecha_transaccion"));
-                    t.setEstado(rs.getInt("estado"));
-                    t.setNombreProducto(rs.getString("nombre_producto"));
-                    t.setNombreComprador(rs.getString("nombre_comprador"));
-                    t.setNombreVendedor(rs.getString("nombre_vendedor"));
-                    return t;
+                    idProducto = rs.getInt("id_producto");
                 }
             }
-        } catch (SQLException e) {
-            System.err.println("Error al obtener transacción por ID: " + e.getMessage());
         }
-        return null;
-    }
 
- */
-    // ACTUALIZAR ESTADO DE TRANSACCIÓN Y DAR DE BAJA LÓGICA AL PRODUCTO SI SE COMPLETA
-    public boolean actualizarEstado(int idTransaccion, int nuevoEstado) {
-        String sqlUpdateTrans = "UPDATE transaccion SET estado = ? WHERE id_transaccion = ?";
-        String sqlGetProducto = "SELECT id_producto FROM transaccion WHERE id_transaccion = ?";
-        String sqlDesactivarProducto = "UPDATE producto SET estado = 2 WHERE id_producto = ?";
+        // 3. Actualizar estado del producto según la decisión del vendedor
+        if (idProducto > 0) {
+            int nuevoEstadoProducto = -1;
 
-        Connection con = null;
-        try {
-            con = SQLConnector.getConnection();
-            con.setAutoCommit(false); // Iniciar transacción (Todo o Nada)
-
-            // 1. Cambiar el estado de la transacción
-            try (PreparedStatement ps = con.prepareStatement(sqlUpdateTrans)) {
-                ps.setInt(1, nuevoEstado);
-                ps.setInt(2, idTransaccion);
-                int filasAfectadas = ps.executeUpdate();
-
-                if (filasAfectadas == 0) {
-                    con.rollback();
-                    return false;
-                }
-            }
-
-            // 2. Si el nuevo estado es 1 (Vendido / Completada), hacemos la BAJA LÓGICA del producto
             if (nuevoEstado == 1) {
-                int idProducto = 0;
-
-                // Obtener el ID del producto asociado a esta transacción
-                try (PreparedStatement psGetProd = con.prepareStatement(sqlGetProducto)) {
-                    psGetProd.setInt(1, idTransaccion);
-                    try (ResultSet rs = psGetProd.executeQuery()) {
-                        if (rs.next()) {
-                            idProducto = rs.getInt("id_producto");
-                        }
-                    }
-                }
-
-                // Desactivar el producto (estado = 0)
-                if (idProducto > 0) {
-                    try (PreparedStatement psDesactivar = con.prepareStatement(sqlDesactivarProducto)) {
-                        psDesactivar.setInt(1, idProducto);
-                        psDesactivar.executeUpdate();
-                    }
-                }
+                nuevoEstadoProducto = 2; // VENDIDO: Pasa a estado 2
+            } else if (nuevoEstado == 0) {
+                nuevoEstadoProducto = 1; // CANCELADO: Vuelve a estar activo en el marketplace (estado 1)
             }
-            con.commit();
-            return true;
-        } catch (SQLException e) {
-            if (con != null) {
-                try {
-                    con.rollback();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            }
-            e.printStackTrace();
-            return false;
-        } finally {
-            if (con != null) {
-                try {
-                    con.setAutoCommit(true);
-                    con.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
+
+            // Si aplica un cambio de estado al producto, lo ejecutamos
+            if (nuevoEstadoProducto != -1) {
+                try (PreparedStatement psProd = con.prepareStatement(sqlUpdateProducto)) {
+                    psProd.setInt(1, nuevoEstadoProducto);
+                    psProd.setInt(2, idProducto);
+                    psProd.executeUpdate();
                 }
             }
         }
+
+        con.commit();
+        return true;
+
+    } catch (SQLException e) {
+        if (con != null) {
+            try { con.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+        }
+        e.printStackTrace();
+        return false;
+    } finally {
+        if (con != null) {
+            try { con.setAutoCommit(true); con.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
     }
+}
     public boolean registrarCompraDirectaPendiente(int idComprador, int idVendedor, int idProducto, double monto) {
         String sql = "INSERT INTO transaccion (id_comprador, id_vendedor, id_producto, monto, fecha_transaccion, estado) " +
                 "VALUES (?, ?, ?, ?, CURRENT_DATE, 2)"; // Estado 2 = en proceso o pendiente
@@ -219,5 +178,62 @@ public class TransaccionDao {
             e.printStackTrace();
             return false;
         }
+    }
+    public boolean cancelarTransaccion(int idTransaccion, int idProducto) {
+        String sqlTx = "UPDATE transaccion SET estado_transaccion = 'CANCELADA' WHERE id_transaccion = ?";
+        String sqlProducto = "UPDATE producto SET estado = 1 WHERE id_producto = ?";
+
+        Connection con = null;
+        try {
+            con = SQLConnector.getConnection();
+            con.setAutoCommit(false); // Iniciar transacción
+
+            // 1. Cancelar la transacción
+            try (PreparedStatement psTx = con.prepareStatement(sqlTx)) {
+                psTx.setInt(1, idTransaccion);
+                psTx.executeUpdate();
+            }
+
+            // 2. Volver a poner disponible el producto (estado = 1)
+            try (PreparedStatement psProd = con.prepareStatement(sqlProducto)) {
+                psProd.setInt(1, idProducto);
+                psProd.executeUpdate();
+            }
+
+            con.commit(); // Confirmar cambios
+            return true;
+
+        } catch (SQLException e) {
+            if (con != null) {
+                try { con.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            }
+            e.printStackTrace();
+            return false;
+
+        } finally {
+            if (con != null) {
+                try { con.setAutoCommit(true); con.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+        }
+    }
+    public boolean usuarioYaComproDirecto(int idUsuario, int idProducto) {
+        // FILTRO CLAVE: AND estado != 0 (Para ignorar compras rechazadas/canceladas)
+        String sql = "SELECT COUNT(*) FROM transaccion WHERE id_comprador = ? AND id_producto = ? AND estado != 0";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idUsuario);
+            ps.setInt(2, idProducto);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

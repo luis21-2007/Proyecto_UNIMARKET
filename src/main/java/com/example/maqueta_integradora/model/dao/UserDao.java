@@ -447,18 +447,51 @@ public class UserDao implements Dao<User,Integer> {
         return false;
     }
     public boolean desactivarUsuario(int idUsuario) {
-        String sql = "UPDATE usuario SET activo = 0 WHERE id_usuario = ?";
-        try (Connection con = SQLConnector.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        String sqlUsuario = "UPDATE usuario SET activo = 0 WHERE id_usuario = ?";
+        String sqlProductos = "UPDATE producto SET estado = 0 WHERE id_usuario = ? AND estado = 1";
 
-            ps.setInt(1, idUsuario);
-            return ps.executeUpdate() > 0;
+        Connection con = null;
+        try {
+            con = SQLConnector.getConnection();
+            con.setAutoCommit(false);
+
+            // 1. Dar de baja al usuario
+            try (PreparedStatement psUser = con.prepareStatement(sqlUsuario)) {
+                psUser.setInt(1, idUsuario);
+                psUser.executeUpdate();
+            }
+
+            // 2. Ocultar únicamente los productos que están activos (estado = 1)
+            try (PreparedStatement psProd = con.prepareStatement(sqlProductos)) {
+                psProd.setInt(1, idUsuario);
+                psProd.executeUpdate();
+            }
+
+            con.commit();
+            return true;
 
         } catch (SQLException e) {
-            System.err.println("Error al dar de baja al usuario con ID: " + idUsuario);
+            if (con != null) {
+                try {
+                    con.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            System.err.println("Error al desactivar al usuario ID " + idUsuario + " y sus productos activos.");
             e.printStackTrace();
+            return false;
+
+        } finally {
+            if (con != null) {
+                try {
+                    con.setAutoCommit(true);
+                    con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        return false;
     }
     public boolean activarUsuario(int idUsuario) {
         String sql = "UPDATE usuario SET activo = 1 WHERE id_usuario = ?";

@@ -34,9 +34,6 @@ public class ProductoDao implements Dao<Producto, Integer> {
 
     public List<Producto> getAll() {
         List<Producto> lista = new ArrayList<>();
-
-        // Consulta general del catálogo público: solo productos activos (p.estado = 1)
-        // y pertenecientes a usuarios activos (u.activo = 1)
         String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, " +
                 "(SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal " +
                 "FROM producto p " +
@@ -207,8 +204,6 @@ public class ProductoDao implements Dao<Producto, Integer> {
 
     public List<Producto> obtenerProductosPorUsuario(int idUsuario) {
         List<Producto> lista = new ArrayList<>();
-
-        // Se elimina "AND p.estado = 1" para obtener activos (1), vendidos (2) y eliminados (0)
         String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, " +
                 "p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, " +
                 "(SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal " +
@@ -243,8 +238,6 @@ public class ProductoDao implements Dao<Producto, Integer> {
 
     public List<Producto> obtenerProductosPorUsuarioYCategoria(int idUsuario, int idCategoria) {
         List<Producto> lista = new ArrayList<>();
-
-        // Se elimina "AND p.estado = 1" para incluir todos los estados filtrados por categoría
         String sql = "SELECT p.id_producto, p.nombre, p.precio, p.descripcion, " +
                 "p.fecha_publicacion, p.estado, p.id_categoria, p.id_usuario, " +
                 "(SELECT img.imagen_url FROM imagen_producto img WHERE img.id_producto = p.id_producto FETCH FIRST 1 ROWS ONLY) AS imagen_principal " +
@@ -397,4 +390,20 @@ public class ProductoDao implements Dao<Producto, Integer> {
             return false;
         }
     }
+    public boolean proceso(int idProducto) {
+        String sql = "UPDATE producto SET estado = 3 WHERE id_producto = ?";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idProducto);
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error al desactivar producto ID " + idProducto + ": " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

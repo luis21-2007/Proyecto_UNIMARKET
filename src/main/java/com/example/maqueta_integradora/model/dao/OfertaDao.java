@@ -88,13 +88,14 @@ public class OfertaDao {
     public List<Oferta> getOfertasByVendedor(int idVendedor) {
         List<Oferta> lista = new ArrayList<>();
 
-        String sql = "SELECT o.id_oferta, o.monto_oferta, o.estado, o.fecha_oferta, " +
+        // Se agregaron o.id_producto y o.id_usuario a la consulta SQL
+        String sql = "SELECT o.id_oferta, o.id_producto, o.id_usuario, o.monto_oferta, o.estado, o.fecha_oferta, " +
                 "p.nombre AS nombre_producto, " +
                 "u.nombre AS nombre_comprador " +
                 "FROM oferta o " +
                 "INNER JOIN producto p ON o.id_producto = p.id_producto " +
-                "INNER JOIN usuario u ON o.id_usuario = u.id_usuario " + // JOIN al COMPRADOR
-                "WHERE p.id_usuario = ? " + // ID del VENDEDOR (dueño del producto)
+                "INNER JOIN usuario u ON o.id_usuario = u.id_usuario " +
+                "WHERE p.id_usuario = ? " +
                 "ORDER BY o.fecha_oferta DESC";
 
         try (Connection con = SQLConnector.getConnection();
@@ -105,11 +106,13 @@ public class OfertaDao {
                 while (rs.next()) {
                     Oferta o = new Oferta();
                     o.setIdOferta(rs.getInt("id_oferta"));
+                    o.setIdProducto(rs.getInt("id_producto"));
+                    o.setIdUsuario(rs.getInt("id_usuario"));
                     o.setMontoOferta(rs.getDouble("monto_oferta"));
                     o.setEstado(rs.getInt("estado"));
                     o.setFechaOferta(rs.getTimestamp("fecha_oferta"));
                     o.setNombreProducto(rs.getString("nombre_producto"));
-                    o.setNombreComprador(rs.getString("nombre_comprador")); // Recuerda agregar este atributo en Oferta.java
+                    o.setNombreComprador(rs.getString("nombre_comprador"));
 
                     lista.add(o);
                 }
@@ -257,5 +260,50 @@ public class OfertaDao {
             e.printStackTrace();
         }
         return lista;
+    }
+    public boolean aceptarOfertaYActualizarProducto(int idOferta, int idProducto, int idComprador, int idVendedor, double monto) {
+        String sqlActualizarOfertas = "UPDATE oferta SET estado = CASE WHEN id_oferta = ? THEN 1 ELSE 2 END " +
+                "WHERE id_producto = ? AND (estado = 0 OR id_oferta = ?)";
+        String sqlActualizarProducto = "UPDATE producto SET estado = 3 WHERE id_producto = ?";
+        String sqlCrearTransaccion = "INSERT INTO transaccion (id_producto, id_comprador, id_vendedor, monto, estado, fecha_transaccion) " +
+                "VALUES (?, ?, ?, ?, 2, CURRENT_TIMESTAMP)";
+
+        Connection conn = null;
+        try {
+            conn = SQLConnector.getConnection();
+            conn.setAutoCommit(false); // Inicia transacción
+
+            try (PreparedStatement ps1 = conn.prepareStatement(sqlActualizarOfertas)) {
+                ps1.setInt(1, idOferta);
+                ps1.setInt(2, idProducto);
+                ps1.setInt(3, idOferta);
+                ps1.executeUpdate();
+            }
+            try (PreparedStatement ps2 = conn.prepareStatement(sqlActualizarProducto)) {
+                ps2.setInt(1, idProducto);
+                ps2.executeUpdate();
+            }
+
+            try (PreparedStatement ps3 = conn.prepareStatement(sqlCrearTransaccion)) {
+                ps3.setInt(1, idProducto);
+                ps3.setInt(2, idComprador);
+                ps3.setInt(3, idVendedor);
+                ps3.setDouble(4, monto);
+                ps3.executeUpdate();
+            }
+
+            conn.commit();
+            return true;
+
+        } catch (Exception e) {
+            if (conn != null) {
+                try { conn.rollback(); } catch (Exception ex) { ex.printStackTrace(); }
+            }
+            return false;
+        } finally {
+            if (conn != null) {
+                try { conn.setAutoCommit(true); conn.close(); } catch (Exception e) { e.printStackTrace(); }
+            }
+        }
     }
 }
