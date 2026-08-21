@@ -96,4 +96,41 @@ public class ReporteDao {
             return false;
         }
     }
+    public int obtenerCantidadSancionesPorUsuario(int idUsuario) {
+        int total = 0;
+        // Estado 2 representa "Sancionado/Aprobado" en el sistema de reportes
+        String sql = "SELECT COUNT(*) FROM reporte_usuario WHERE id_reportado = ? AND estado = 2";
+
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idUsuario);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    total = rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return total;
+    }
+    public boolean yaReportoVendedor(int idUsuario, int idVendedor) {
+        String sql = "SELECT COUNT(*) FROM reporte_usuario WHERE id_reportador = ? AND id_reportado = ?";
+        try (Connection con = SQLConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idUsuario);
+            ps.setInt(2, idVendedor);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

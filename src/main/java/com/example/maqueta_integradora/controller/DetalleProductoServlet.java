@@ -6,6 +6,7 @@ import com.example.maqueta_integradora.model.User;
 import com.example.maqueta_integradora.model.dao.CalificacionDao;
 import com.example.maqueta_integradora.model.dao.OfertaDao;
 import com.example.maqueta_integradora.model.dao.ProductoDao;
+import com.example.maqueta_integradora.model.dao.ReporteDao;
 import com.example.maqueta_integradora.model.dao.TransaccionDao;
 import com.example.maqueta_integradora.model.dao.UserDao;
 
@@ -24,6 +25,7 @@ public class DetalleProductoServlet extends HttpServlet {
     private OfertaDao ofertaDao;
     private CalificacionDao calificacionDao;
     private TransaccionDao transaccionDao;
+    private ReporteDao reporteDao;
 
     @Override
     public void init() throws ServletException {
@@ -32,6 +34,7 @@ public class DetalleProductoServlet extends HttpServlet {
         ofertaDao = new OfertaDao();
         calificacionDao = new CalificacionDao();
         transaccionDao = new TransaccionDao();
+        reporteDao = new ReporteDao();
     }
 
     @Override
@@ -62,8 +65,9 @@ public class DetalleProductoServlet extends HttpServlet {
             List<String> listaImagenes = productoDao.getImagenesByProductoId(idProducto);
 
             if (producto != null) {
-                // 4. Datos del vendedor
+                // 4. Datos del vendedor y verificación de autoría
                 User vendedor = userDao.getById(producto.getIdUsuario());
+                boolean esDuenoProducto = (usuario.getId() == producto.getIdUsuario());
 
                 // 5. Estado de Oferta del Usuario (1 = Aceptada, 0 = Pendiente, etc.)
                 int estadoOferta = ofertaDao.getEstadoOfertaUsuario(usuario.getId(), idProducto);
@@ -85,15 +89,26 @@ public class DetalleProductoServlet extends HttpServlet {
                 double promedioVendedor = calificacionDao.obtenerPromedioCalificaciones(idVendedor);
                 int totalResenasVendedor = calificacionDao.obtenerResenasPorVendedor(idVendedor).size();
 
-                // 8. Atributos a la vista
+                // 8. Cantidad de reportes sancionados y verificación de reporte previo al VENDEDOR
+                int cantidadReportesSancionados = reporteDao.obtenerCantidadSancionesPorUsuario(idVendedor);
+
+                // NUEVO: Validar si el usuario actual ya reportó previamente a este vendedor
+                boolean yaReportoVendedor = reporteDao.yaReportoVendedor(usuario.getId(), idVendedor);
+
+                // 9. Atributos a la vista
                 request.setAttribute("producto", producto);
                 request.setAttribute("listaImagenes", listaImagenes);
                 request.setAttribute("vendedor", vendedor);
+                request.setAttribute("esDuenoProducto", esDuenoProducto);
                 request.setAttribute("estadoOferta", estadoOferta);
                 request.setAttribute("yaComproDirecto", yaComproDirecto);
                 request.setAttribute("transaccionCancelada", transaccionCancelada);
                 request.setAttribute("promedioVendedor", promedioVendedor);
                 request.setAttribute("totalResenasVendedor", totalResenasVendedor);
+                request.setAttribute("cantidadReportesSancionados", cantidadReportesSancionados);
+
+                // Atributo enviado al JSP para ocultar/deshabilitar el botón de reportar
+                request.setAttribute("yaReportoVendedor", yaReportoVendedor);
 
                 request.getRequestDispatcher("DetalleProducto.jsp").forward(request, response);
             } else {
@@ -131,25 +146,26 @@ public class DetalleProductoServlet extends HttpServlet {
                 return;
             }
 
-            // Evitar auto-compra
+            // 1. Evitar auto-compra
             if (usuario.getId() == producto.getIdUsuario()) {
                 response.sendRedirect("detalleProducto?id=" + idProducto + "&error=auto_oferta");
                 return;
             }
-            boolean registrado = transaccionDao.registrarCompraDirectaPendiente(
+
+            // 2. Procesar compra con bloqueo pesimista atómico
+            boolean registrado = productoDao.procesarCompraDirecta(
+                    idProducto,
                     usuario.getId(),
                     producto.getIdUsuario(),
-                    idProducto,
                     producto.getPrecio()
             );
 
+            // 3. Responder según el resultado de la transacción
             if (registrado) {
-                // Bajar el producto del catálogo cambiándolo a estado 3 (En Proceso / Reservado)
-                productoDao.proceso(idProducto);
-
                 response.sendRedirect("detalleProducto?id=" + idProducto + "&msg=compraExitosa");
             } else {
-                response.sendRedirect("detalleProducto?id=" + idProducto + "&error=compra_fallida");
+                // Si el producto ya fue ganado por otro hilo o ya no está disponible
+                response.sendRedirect("detalleProducto?id=" + idProducto + "&error=ya_vendido");
             }
 
         } catch (NumberFormatException e) {

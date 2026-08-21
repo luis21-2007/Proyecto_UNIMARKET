@@ -7,10 +7,38 @@
 <div class="container-fluid py-4 profile-main-container">
     <div class="container">
 
-        <!-- Mensajes de Feedback -->
+        <!-- MENSAJES DE FEEDBACK Y ERRORES -->
         <c:if test="${param.msg == 'actualizado'}">
             <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
-                ¡Información actualizada correctamente!
+                <i class="bi bi-check-circle-fill me-2"></i> ¡Información actualizada correctamente!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </c:if>
+
+        <c:if test="${param.error == 'nombreInvalido'}">
+            <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> El nombre de usuario no puede estar vacío ni contener solo espacios.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </c:if>
+
+        <c:if test="${param.error == 'telefonoInvalido'}">
+            <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> El número de teléfono debe contener exactamente 10 dígitos numéricos.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </c:if>
+
+        <c:if test="${param.error == 'correoInvalido'}">
+            <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> El correo debe ser institucional con terminación <strong>@utez.edu.mx</strong>.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </c:if>
+
+        <c:if test="${param.error == '1'}">
+            <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                <i class="bi bi-x-circle-fill me-2"></i> Ocurrió un error al intentar actualizar los datos en la base de datos.
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         </c:if>
@@ -23,7 +51,7 @@
                     <div class="profile-sidebar-title ms-2">Perfil</div>
 
                     <nav class="d-flex flex-column">
-                        <a href="perfil" class="profile-menu-item">
+                        <a href="perfil" class="profile-menu-item active">
                             <i class="bi bi-person"></i> Ajustes
                         </a>
                         <a href="misVentas" class="profile-menu-item">
@@ -64,7 +92,7 @@
                             <label for="inputUsuario" class="profile-field-label">Nombre de Usuario</label>
                             <div class="profile-input-group">
                                 <input type="text" id="inputUsuario" name="nombre" class="form-control profile-input"
-                                       value="${not empty sessionScope.usuario ? sessionScope.usuario.nombre : 'Kex'}" required>
+                                       value="${not empty sessionScope.usuario ? sessionScope.usuario.nombre : 'Kex'}" maxlength="20" required>
                             </div>
                         </div>
 
@@ -86,8 +114,12 @@
                         <div>
                             <label for="inputTelefono" class="profile-field-label">Número</label>
                             <div class="profile-input-group">
-                                <input type="text" id="inputTelefono" name="telefono" class="form-control profile-input"
-                                       value="${not empty sessionScope.usuario.telefono ? sessionScope.usuario.telefono : '+52 *** *** ** 63'}">
+                                <input type="tel" id="inputTelefono" name="telefono" class="form-control profile-input"
+                                       value="${not empty sessionScope.usuario.telefono ? sessionScope.usuario.telefono : ''}"
+                                       placeholder="Ingresa tu Celular / WhatsApp (10 dígitos)"
+                                       maxlength="10" pattern="^[0-9]{10}$"
+                                       onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                       required autocomplete="off">
                             </div>
                         </div>
                     </div>
@@ -119,9 +151,7 @@
     </div>
 </div>
 
-<!-- ==========================================
-MODAL: CONFIRMAR GUARDAR CAMBIOS
-========================================== -->
+<!-- MODAL GUARDAR CAMBIOS -->
 <div class="modal fade" id="modalGuardarCambios" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
@@ -142,6 +172,7 @@ MODAL: CONFIRMAR GUARDAR CAMBIOS
     </div>
 </div>
 
+<!-- MODAL BAJA DE CUENTA -->
 <div class="modal fade" id="modalBajaCuenta" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">

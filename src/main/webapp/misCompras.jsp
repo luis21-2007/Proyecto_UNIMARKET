@@ -97,7 +97,7 @@
                                             </small>
                                         </div>
 
-                                        <!-- Estado + Menú Desplegable (Tres Puntos) -->
+                                        <!-- Estado + Menú Desplegable -->
                                         <div class="d-flex align-items-center justify-content-end gap-2">
 
                                             <!-- BADGE DINÁMICO DE ESTADO DE COMPRA -->
@@ -121,58 +121,58 @@
                                                 </c:choose>
                                             </div>
 
-                                            <!-- MENÚ DE TRES PUNTOS -->
-                                            <div class="dropdown">
-                                                <button class="btn btn-light btn-sm rounded-circle p-2 border-0 shadow-none"
-                                                        type="button"
-                                                        data-bs-toggle="dropdown"
-                                                        aria-expanded="false"
-                                                        style="width: 38px; height: 38px;">
-                                                    <i class="bi bi-three-dots-vertical fs-6"></i>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
+                                            <!-- MENÚ DE TRES PUNTOS (Solo visible para compras NO canceladas) -->
+                                            <c:if test="${compra.estado == 1 or compra.estado == 2}">
+                                                <div class="dropdown">
+                                                    <button class="btn btn-light btn-sm rounded-circle p-2 border-0 shadow-none"
+                                                            type="button"
+                                                            data-bs-toggle="dropdown"
+                                                            aria-expanded="false"
+                                                            style="width: 38px; height: 38px;">
+                                                        <i class="bi bi-three-dots-vertical fs-6"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
 
-                                                    <!-- Solo si la compra está completada (estado == 1) -->
-                                                    <c:if test="${compra.estado == 1}">
-                                                        <c:choose>
-                                                            <%-- Caso A: YA FUE CALIFICADO --%>
-                                                            <c:when test="${compra.yaCalificado}">
-                                                                <li>
-                                                                    <button class="dropdown-item d-flex align-items-center gap-2 text-muted py-2 disabled"
-                                                                            type="button" disabled>
-                                                                        <i class="bi bi-check-circle-fill text-success"></i> Vendedor Calificado
-                                                                    </button>
-                                                                </li>
-                                                            </c:when>
+                                                        <!-- Solo si la compra está completada (estado == 1) -->
+                                                        <c:if test="${compra.estado == 1}">
+                                                            <c:choose>
+                                                                <c:when test="${compra.yaCalificado}">
+                                                                    <li>
+                                                                        <button class="dropdown-item d-flex align-items-center gap-2 text-muted py-2 disabled"
+                                                                                type="button" disabled>
+                                                                            <i class="bi bi-check-circle-fill text-success"></i> Vendedor Calificado
+                                                                        </button>
+                                                                    </li>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <li>
+                                                                        <button class="dropdown-item d-flex align-items-center gap-2 text-dark py-2"
+                                                                                type="button"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#modalCalificar"
+                                                                                onclick="prepararCalificacion('${compra.idVendedor}', '${compra.nombreVendedor}', '${compra.idTransaccion}')">
+                                                                            <i class="bi bi-star-fill text-warning"></i> Calificar Vendedor
+                                                                        </button>
+                                                                    </li>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                            <li><hr class="dropdown-divider my-1"></li>
+                                                        </c:if>
 
-                                                            <%-- Caso B: AÚN NO HA SIDO CALIFICADO --%>
-                                                            <c:otherwise>
-                                                                <li>
-                                                                    <button class="dropdown-item d-flex align-items-center gap-2 text-dark py-2"
-                                                                            type="button"
-                                                                            data-bs-toggle="modal"
-                                                                            data-bs-target="#modalCalificar"
-                                                                            onclick="prepararCalificacion('${compra.idVendedor}', '${compra.nombreVendedor}', '${compra.idTransaccion}')">
-                                                                        <i class="bi bi-star-fill text-warning"></i> Calificar Vendedor
-                                                                    </button>
-                                                                </li>
-                                                            </c:otherwise>
-                                                        </c:choose>
-                                                        <li><hr class="dropdown-divider my-1"></li>
-                                                    </c:if>
+                                                        <!-- Reportar Vendedor -->
+                                                        <li>
+                                                            <button class="dropdown-item d-flex align-items-center gap-2 text-danger py-2"
+                                                                    type="button"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#modalReportar"
+                                                                    onclick="prepararReporte('${compra.idVendedor}', '${compra.nombreVendedor}', '${compra.idTransaccion}')">
+                                                                <i class="bi bi-exclamation-triangle-fill"></i> Reportar Vendedor
+                                                            </button>
+                                                        </li>
 
-                                                    <!-- Opción de Reportar Vendedor (Pasa también idTransaccion) -->
-                                                    <li>
-                                                        <button class="dropdown-item d-flex align-items-center gap-2 text-danger py-2"
-                                                                type="button"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#modalReportar"
-                                                                onclick="prepararReporte('${compra.idVendedor}', '${compra.nombreVendedor}', '${compra.idTransaccion}')">
-                                                            <i class="bi bi-exclamation-triangle-fill"></i> Reportar Vendedor
-                                                        </button>
-                                                    </li>
-                                                </ul>
-                                            </div>
+                                                    </ul>
+                                                </div>
+                                            </c:if>
 
                                         </div>
                                     </div>
@@ -213,16 +213,15 @@
                         ¿Cómo fue tu experiencia comprando a <strong id="calif_nombreVendedor" class="text-dark"></strong>?
                     </p>
 
-                    <!-- Puntuación -->
                     <div class="mb-3 text-center">
                         <label class="form-label d-block fw-semibold text-muted mb-2">Puntuación</label>
                         <div class="d-flex justify-content-center gap-2 fs-3 text-warning">
                             <select name="puntuacion" class="form-select text-center fw-bold" required style="max-width: 180px;">
-                                <option value="5" selected>⭐⭐⭐⭐⭐ (5/5)</option>
-                                <option value="4">⭐⭐⭐⭐ (4/5)</option>
-                                <option value="3">⭐⭐⭐ (3/5)</option>
-                                <option value="2">⭐⭐ (2/5)</option>
-                                <option value="1">⭐ (1/5)</option>
+                                <option value="5" selected>⭐⭐⭐⭐⭐ 5</option>
+                                <option value="4">⭐⭐⭐⭐ 4</option>
+                                <option value="3">⭐⭐⭐ 3</option>
+                                <option value="2">⭐⭐ 2</option>
+                                <option value="1">⭐ 1</option>
                             </select>
                         </div>
                     </div>
@@ -253,7 +252,6 @@
             </div>
             <form action="guardarReporte" method="POST">
                 <div class="modal-body">
-                    <!-- INPUTS OCULTOS DE REPORTADO E ID TRANSACCIÓN -->
                     <input type="hidden" name="idReportado" id="rep_idVendedor">
                     <input type="hidden" name="idTransaccion" id="rep_idTransaccion">
 
@@ -261,7 +259,6 @@
                         Estás a punto de enviar una denuncia sobre <strong id="rep_nombreVendedor" class="text-dark"></strong> a los administradores.
                     </p>
 
-                    <!-- Motivo -->
                     <div class="mb-3">
                         <label for="motivoReporte" class="form-label fw-semibold text-secondary small">Motivo de la denuncia</label>
                         <select class="form-select" id="motivoReporte" name="motivo" required>
@@ -274,7 +271,6 @@
                         </select>
                     </div>
 
-                    <!-- Detalles -->
                     <div class="mb-2">
                         <label for="descripcionReporte" class="form-label fw-semibold text-secondary small">Detalles del reporte</label>
                         <textarea class="form-control" id="descripcionReporte" name="descripcion" rows="3" placeholder="Explica lo sucedido con el mayor detalle posible..." required></textarea>

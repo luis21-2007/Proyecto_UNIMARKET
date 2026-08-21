@@ -405,5 +405,74 @@ public class ProductoDao implements Dao<Producto, Integer> {
             return false;
         }
     }
+    public boolean procesarCompraDirecta(int idProducto, int idComprador, int idVendedor, double monto) {
+        // 1. Bloquea el registro del producto con FOR UPDATE para evitar la condición de carrera
+        String sqlCheck = "SELECT estado FROM producto WHERE id_producto = ? FOR UPDATE";
 
+        // 2. Cambia el estado a 3 ("En Proceso" / Vendido) solo si sigue estando disponible (estado = 1)
+        String sqlUpdateProducto = "UPDATE producto SET estado = 3 WHERE id_producto = ? AND estado = 1";
+
+        // 3. Registra la transacción con la fecha actual de Oracle
+        String sqlInsertTransaccion = "INSERT INTO transaccion (id_producto, id_comprador, id_vendedor, monto, estado, fecha_transaccion) " +
+                "VALUES (?, ?, ?, ?, 2, CURRENT_TIMESTAMP)";
+
+        Connection conn = null;
+        try {
+            conn = SQLConnector.getConnection();
+            conn.setAutoCommit(false); // Iniciar transacción manual
+
+            // A. Validar y Bloquear Producto
+            try (PreparedStatement psCheck = conn.prepareStatement(sqlCheck)) {
+                psCheck.setInt(1, idProducto);
+                try (ResultSet rs = psCheck.executeQuery()) {
+                    if (rs.next()) {
+                        int estadoActual = rs.getInt("estado");
+                        if (estadoActual != 1) { // Si ya no está disponible (ej. alguien lo ganó milisegundos antes)
+                            conn.rollback();
+                            return false;
+                        }
+                    } else {
+                        conn.rollback();
+                        return false;
+                    }
+                }
+            }
+
+            // B. Actualizar Estado del Producto
+            int filasAfectadas = 0;
+            try (PreparedStatement psUp = conn.prepareStatement(sqlUpdateProducto)) {
+                psUp.setInt(1, idProducto);
+                filasAfectadas = psUp.executeUpdate();
+            }
+
+            if (filasAfectadas == 0) { // No se pudo actualizar porque cambió su estado en paralelo
+                conn.rollback();
+                return false;
+            }
+
+            // C. Crear la Transacción
+            try (PreparedStatement psIns = conn.prepareStatement(sqlInsertTransaccion)) {
+                psIns.setInt(1, idProducto);
+                psIns.setInt(2, idComprador);
+                psIns.setInt(3, idVendedor);
+                psIns.setDouble(4, monto);
+                psIns.executeUpdate();
+            }
+
+            conn.commit(); // Confirmar la compra si todo salió bien
+            return true;
+
+        } catch (SQLException e) {
+            if (conn != null) {
+                try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            }
+            System.err.println("Error en transacción procesarCompraDirecta: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (conn != null) {
+                try { conn.setAutoCommit(true); conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+        }
+    }
 }

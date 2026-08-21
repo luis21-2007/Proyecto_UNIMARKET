@@ -1,8 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.example.maqueta_integradora.model.User" %>
+<%
+    User userAdmin = (User) session.getAttribute("usuario");
+    if (userAdmin == null || !"ADMIN".equals(userAdmin.getRol())) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="layout/header_admin.jsp" %>
 
-<!-- CONTENIDO PRINCIPAL -->
+
 <div class="container-fluid px-4 px-md-5 mb-5">
     <h1 class="page-title">Administrador</h1>
 

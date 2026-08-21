@@ -41,7 +41,6 @@ public class ProductoServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 1. Validar sesión del usuario
         HttpSession session = request.getSession(false);
         User usuarioLogueado = (session != null) ? (User) session.getAttribute("usuario") : null;
 
@@ -50,11 +49,9 @@ public class ProductoServlet extends HttpServlet {
             return;
         }
 
-        // 2. Cargar categorías activas para el select
         List<Categoria> listaCategorias = categoriaDao.getAll();
         request.setAttribute("listaCategorias", listaCategorias);
 
-        // 3. Reenviar al JSP
         request.getRequestDispatcher("subir_productos.jsp").forward(request, response);
     }
 
@@ -64,7 +61,6 @@ public class ProductoServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
 
-        // 1. Validar Sesión del Usuario
         HttpSession session = request.getSession(false);
         User usuarioLogueado = (session != null) ? (User) session.getAttribute("usuario") : null;
 
@@ -73,21 +69,17 @@ public class ProductoServlet extends HttpServlet {
             return;
         }
 
-        // Recuperar parámetros del formulario
         String nombre = request.getParameter("nombre_producto");
         String categoriaStr = request.getParameter("categoria");
         String precioStr = request.getParameter("precio");
         String descripcion = request.getParameter("descripcion");
 
-        // ==========================================
-        // RESTRICCIÓN 1: CAMPOS OBLIGATORIOS Y VACÍOS
-        // ==========================================
         if (nombre == null || nombre.isBlank() ||
                 categoriaStr == null || categoriaStr.isBlank() ||
                 precioStr == null || precioStr.isBlank() ||
                 descripcion == null || descripcion.isBlank()) {
 
-            request.setAttribute("error", "Por favor, completa todos los campos son obligatorios.");
+            request.setAttribute("error", "Por favor, completa todos los campos del formulario.");
             request.setAttribute("nombre_producto", nombre);
             request.setAttribute("categoria", categoriaStr);
             request.setAttribute("precio", precioStr);
@@ -99,9 +91,6 @@ public class ProductoServlet extends HttpServlet {
         double precio = 0;
         int idCategoria = 0;
 
-        // ==========================================
-        // RESTRICCIÓN 2: VALIDACIÓN FORMATO NUMÉRICO Y VALORES VÁLIDOS
-        // ==========================================
         try {
             precio = Double.parseDouble(precioStr.trim());
             idCategoria = Integer.parseInt(categoriaStr.trim());
@@ -123,9 +112,7 @@ public class ProductoServlet extends HttpServlet {
             return;
         }
 
-        // ==========================================
-        // RESTRICCIÓN 3: VALIDACIÓN DE EXACTAMENTE 3 IMÁGENES
-        // ==========================================
+        // VALIDACIÓN DE IMÁGENES
         List<Part> partesImagenes = new ArrayList<>();
 
         for (Part part : request.getParts()) {
@@ -133,7 +120,6 @@ public class ProductoServlet extends HttpServlet {
                 String fileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
                 if (fileName != null && !fileName.trim().isEmpty()) {
 
-                    // Verificar extensión válida
                     String lowerName = fileName.toLowerCase();
                     if (lowerName.endsWith(".jpg") || lowerName.endsWith(".jpeg") ||
                             lowerName.endsWith(".png") || lowerName.endsWith(".webp")) {
@@ -151,8 +137,16 @@ public class ProductoServlet extends HttpServlet {
             }
         }
 
-        // REGLA CLAVE: Deben ser EXACTAMENTE 3 imágenes
-        if (partesImagenes.size() != 3) {
+        // EVALUAR CANTIDAD DE IMÁGENES
+        if (partesImagenes.isEmpty()) {
+            request.setAttribute("error", "Hace falta adjuntar las imágenes del producto.");
+            request.setAttribute("nombre_producto", nombre);
+            request.setAttribute("categoria", categoriaStr);
+            request.setAttribute("precio", precioStr);
+            request.setAttribute("descripcion", descripcion);
+            doGet(request, response);
+            return;
+        } else if (partesImagenes.size() != 3) {
             request.setAttribute("error", "Es obligatorio adjuntar exactamente 3 imágenes del producto.");
             request.setAttribute("nombre_producto", nombre);
             request.setAttribute("categoria", categoriaStr);
@@ -162,11 +156,7 @@ public class ProductoServlet extends HttpServlet {
             return;
         }
 
-        // ==========================================
-        // INSERCIÓN EN LA BASE DE DATOS Y GUARDADO
-        // ==========================================
         try {
-            // Mapear datos en el objeto Producto
             Producto producto = new Producto();
             producto.setNombre(nombre.trim());
             producto.setPrecio(precio);
@@ -174,7 +164,6 @@ public class ProductoServlet extends HttpServlet {
             producto.setIdCategoria(idCategoria);
             producto.setIdUsuario(usuarioLogueado.getId());
 
-            // 1. Insertar Producto en BD y obtener su ID asignado
             int idProductoGenerado = productoDao.createAndGetId(producto);
 
             if (idProductoGenerado > 0) {
@@ -185,26 +174,21 @@ public class ProductoServlet extends HttpServlet {
                     uploadDir.mkdir();
                 }
 
-                // 2. Guardar físicamente e insertar en la tabla 'imagen_producto' las 3 fotos
                 for (int i = 0; i < partesImagenes.size(); i++) {
                     Part part = partesImagenes.get(i);
                     String fileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
                     String fileExtension = fileName.substring(fileName.lastIndexOf("."));
                     String newFileName = System.currentTimeMillis() + "_" + i + fileExtension;
 
-                    // Guardar en servidor
                     File file = new File(uploadDir, newFileName);
                     try (InputStream input = part.getInputStream()) {
                         Files.copy(input, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
                     }
 
                     String relativePath = "uploads/" + newFileName;
-
-                    // Guardar en la tabla 'imagen_producto'
                     productoDao.guardarImagenProducto(idProductoGenerado, relativePath);
                 }
 
-                // Redireccionar o notificar éxito
                 response.sendRedirect("inicio?msg=exito");
             } else {
                 request.setAttribute("error", "No se pudo registrar el producto en la base de datos.");

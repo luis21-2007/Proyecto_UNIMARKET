@@ -1,11 +1,32 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%-- FORZA EL USO DE PUNTO (.) PARA DECIMALES EN LUGAR DE COMA (,) --%>
 <fmt:setLocale value="en_US" />
 
 <%@ include file="layout/header.jsp" %>
-<%-- Alerta si la compra/transacción fue rechazada o cancelada --%>
+
+<!-- ALERTAS DE SISTEMA Y REPORTES -->
+<c:if test="${param.msg == 'reporteExitoso'}">
+    <div class="alert alert-info alert-dismissible fade show mt-3 shadow-sm" role="alert" style="border-radius: 10px;">
+        <i class="bi bi-shield-check me-2"></i> Tu reporte ha sido enviado. Los administradores revisarán la publicación a la brevedad.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</c:if>
+
+<c:if test="${param.error == 'autoReporte'}">
+    <div class="alert alert-warning alert-dismissible fade show mt-3 shadow-sm" role="alert" style="border-radius: 10px;">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> No puedes reportar tu propio producto o perfil.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</c:if>
+
+<c:if test="${param.error == 'ya_vendido' or param.error == 'compra_fallida'}">
+    <div class="alert alert-danger alert-dismissible fade show mt-3 shadow-sm" role="alert" style="border-radius: 10px;">
+        <i class="bi bi-x-circle-fill me-2"></i> Lo sentimos, este producto acaba de ser adquirido o reservado por otro usuario.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</c:if>
+
 <c:if test="${transaccionCancelada}">
     <div class="alert alert-warning alert-dismissible fade show rounded-3 shadow-sm mb-3" role="alert">
         <i class="bi bi-exclamation-triangle-fill me-2"></i>
@@ -78,12 +99,17 @@
             <h1 class="product-detail-title mb-2">${producto.nombre}</h1>
 
             <!-- VENDEDOR DEL PRODUCTO -->
-            <div class="d-flex align-items-center mb-2 text-secondary fs-6">
-                <i class="bi bi-person-circle text-warning fs-5 me-2"></i>
+            <div class="d-flex align-items-center flex-wrap gap-2 mb-2 text-secondary fs-6">
+                <i class="bi bi-person-circle text-warning fs-5"></i>
                 <span>Vendido por:
                     <strong class="text-dark">
                         ${not empty vendedor ? vendedor.nombre : (not empty producto.nombreUsuario ? producto.nombreUsuario : 'Usuario UTEZ')}
                     </strong>
+                </span>
+
+                <!-- MUESTRA LA CANTIDAD DE REPORTES SANCIONADOS DEL VENDEDOR -->
+                <span class="badge bg-danger rounded-pill px-2 py-1" style="font-size: 0.75rem;" title="Cantidad de reportes procedentes/sancionados recibidos">
+                    <i class="bi bi-shield-exclamation me-1"></i>reportes = ${not empty cantidadReportesSancionados ? cantidadReportesSancionados : 0}
                 </span>
             </div>
 
@@ -92,7 +118,6 @@
                 <c:choose>
                     <c:when test="${not empty promedioVendedor and promedioVendedor > 0}">
                         <div class="d-flex align-items-center bg-light px-3 py-1 rounded-pill border">
-                            <!-- Estrellas Dinámicas -->
                             <div class="text-warning fs-6 me-2">
                                 <c:forEach var="i" begin="1" end="5">
                                     <c:choose>
@@ -109,7 +134,6 @@
                                 </c:forEach>
                             </div>
 
-                            <!-- Valor numérico del Promedio y Cantidad de Reseñas -->
                             <span class="fw-bold text-dark me-1" style="font-size: 0.9rem;">
                                 <fmt:formatNumber value="${promedioVendedor}" maxFractionDigits="1" minFractionDigits="1" />
                             </span>
@@ -126,6 +150,24 @@
                     </c:otherwise>
                 </c:choose>
             </div>
+
+            <!-- BOTÓN / ESTADO DE REPORTE DEL VENDEDOR -->
+            <c:if test="${not esDuenoProducto}">
+                <div class="mb-3 text-end">
+                    <c:choose>
+                        <c:when test="${yaReportoVendedor}">
+                            <span class="text-muted small fw-semibold">
+                                <i class="bi bi-check-circle-fill text-success me-1"></i> Vendedor reportado
+                            </span>
+                        </c:when>
+                        <c:otherwise>
+                            <button type="button" class="btn btn-link text-danger text-decoration-none p-0 small fw-semibold" data-bs-toggle="modal" data-bs-target="#modalReportar">
+                                <i class="bi bi-flag-fill me-1"></i> Reportar vendedor por producto
+                            </button>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+            </c:if>
 
             <!-- TARJETA DE DESCRIPCIÓN -->
             <div class="description-card mb-4">
@@ -152,26 +194,25 @@
                     <fmt:formatNumber currencySymbol="$" value="${producto.precio}" type="currency"/>
                 </h2>
             </div>
+
             <!-- BOTONES DE ACCIÓN -->
             <div>
                 <c:choose>
-                    <%-- CASO 1: El usuario en sesión es el dueño del producto --%>
                     <c:when test="${not empty sessionScope.usuario and sessionScope.usuario.id == producto.idUsuario}">
                         <button type="button" class="btn btn-secondary w-100 text-center fw-bold py-2" disabled style="border-radius: 25px;">
                             <i class="bi bi-person-check-fill me-1"></i> ES TU PUBLICACIÓN
                         </button>
                     </c:when>
 
-                    <%-- CASO 2: Compra activa PENDIENTE o COMPLETADA (yaComproDirecto es true SOLO si estado != 0) --%>
                     <c:when test="${yaComproDirecto or estadoOferta == 1}">
                         <div class="d-flex flex-column gap-2">
-                <span class="badge bg-success px-3 py-2 rounded-pill fs-6 text-center">
-                    <i class="bi bi-check-circle-fill me-1"></i>
-                    <c:choose>
-                        <c:when test="${estadoOferta == 1}">Oferta Aceptada</c:when>
-                        <c:otherwise>Compra Registrada (En Proceso)</c:otherwise>
-                    </c:choose>
-                </span>
+                            <span class="badge bg-success px-3 py-2 rounded-pill fs-6 text-center">
+                                <i class="bi bi-check-circle-fill me-1"></i>
+                                <c:choose>
+                                    <c:when test="${estadoOferta == 1}">Oferta Aceptada</c:when>
+                                    <c:otherwise>Compra Registrada (En Proceso)</c:otherwise>
+                                </c:choose>
+                            </span>
 
                             <a href="https://wa.me/${vendedor.telefono}?text=Hola%20${vendedor.nombre},%20me%20interesa%20coordinar%20la%20entrega%20de%20mi%20compra/oferta%20por%20${producto.nombre}."
                                target="_blank"
@@ -182,21 +223,18 @@
                         </div>
                     </c:when>
 
-                    <%-- CASO 3: El producto está reservado por ALGUIEN MÁS (estado == 3) --%>
                     <c:when test="${producto.estado == 3}">
                         <button type="button" class="btn btn-secondary text-white w-100 text-center fw-bold py-2" disabled style="border-radius: 25px;">
                             <i class="bi bi-clock-history me-1"></i> PRODUCTO RESERVADO / EN PROCESO
                         </button>
                     </c:when>
 
-                    <%-- CASO 4: Oferta PENDIENTE --%>
                     <c:when test="${estadoOferta == 0}">
                         <button type="button" class="btn btn-warning text-dark w-100 text-center fw-bold py-2" disabled style="border-radius: 25px;">
                             <i class="bi bi-clock-history me-1"></i> OFERTA ENVIADA
                         </button>
                     </c:when>
 
-                    <%-- CASO 5: Disponible para comprar/ofertar (Si se canceló, entra automáticamente aquí) --%>
                     <c:otherwise>
                         <div class="d-flex gap-2">
                             <button type="button" class="btn btn-comprar-detalle w-50 text-center fw-bold py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalComprar" style="border-radius: 25px;">
@@ -212,6 +250,7 @@
         </div>
     </div>
 
+    <!-- MODAL DE COMPRA -->
     <div class="modal fade" id="modalComprar" tabindex="-1" aria-labelledby="modalComprarLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="border-radius: 15px;">
@@ -223,7 +262,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <!-- FORMULARIO DE COMPRA -->
                 <form id="formComprarProducto" action="comprarProducto" method="POST">
                     <div class="modal-body text-center py-4">
                         <input type="hidden" name="idProducto" value="${producto.idProducto}">
@@ -266,16 +304,13 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <!-- FORMULARIO DE OFERTA -->
                 <form id="formEnviarOferta" action="enviarOferta" method="POST">
                     <div class="modal-body">
-                        <!-- ID Oculto del Producto -->
                         <input type="hidden" name="idProducto" value="${producto.idProducto}">
 
                         <div class="mb-3">
                             <label for="montoOferta" class="form-label fw-medium text-secondary">¿Cuánto deseas ofrecer por este producto?</label>
 
-                            <!-- Input numérico con símbolo de pesos ($) -->
                             <div class="input-group">
                                 <span class="input-group-text bg-light fw-bold text-secondary" style="border-radius: 10px 0 0 10px;">$</span>
                                 <input type="number" step="0.01" min="1" max="${producto.precio}" class="form-control form-control-lg fw-bold" id="montoOferta" name="montoOferta" placeholder="0.00" required style="border-radius: 0 10px 10px 0; color: #8B0000;">
@@ -299,6 +334,59 @@
             </div>
         </div>
     </div>
+
+    <!-- MODAL DE REPORTE -->
+    <div class="modal fade" id="modalReportar" tabindex="-1" aria-labelledby="modalReportarLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px;">
+
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-danger" id="modalReportarLabel">
+                        <i class="bi bi-exclamation-octagon-fill me-2"></i>Reportar Publicación / Vendedor
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form id="formReportar" action="guardarReporte" method="POST">
+                    <div class="modal-body">
+                        <!-- Campos Ocultos para Control y Redirección -->
+                        <input type="hidden" name="origen" value="detalleProducto">
+                        <input type="hidden" name="idProducto" value="${producto.idProducto}">
+                        <input type="hidden" name="idReportado" value="${producto.idUsuario}">
+                        <input type="hidden" name="idTransaccion" value="">
+
+                        <div class="mb-3 text-start">
+                            <label for="motivo" class="form-label fw-medium text-secondary">Motivo del reporte:</label>
+                            <select class="form-select" id="motivo" name="motivo" required style="border-radius: 10px;">
+                                <option value="" selected disabled>Selecciona un motivo</option>
+                                <option value="Contenido Inapropiado / Ofensivo">Contenido inapropiado u ofensivo</option>
+                                <option value="Producto Prohibido">Producto no permitido o prohibido</option>
+                                <option value="Posible Estafa / Fraude">Posible estafa o fraude</option>
+                                <option value="Informacion Falsa / Enganosa">Información falsa o engañosa</option>
+                                <option value="Otro">Otro motivo</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3 text-start">
+                            <label for="descripcionReporte" class="form-label fw-medium text-secondary">Detalles del reporte:</label>
+                            <textarea class="form-control" id="descripcionReporte" name="descripcion" rows="3" placeholder="Describe brevemente el motivo..." required style="border-radius: 10px;"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer border-0 pt-0 justify-content-end gap-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill" data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-danger btn-sm px-4 fw-bold rounded-pill">
+                            Enviar Reporte
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script src="assets/js/detalles-productos.js"></script>
