@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isErrorPage="true" %>
 <%
     // Aseguramos que la respuesta HTTP sea 404
-    response.setStatus(500);
+    response.setStatus(404);
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -39,7 +39,7 @@
         </p>
 
         <!-- Botón de regreso -->
-        <a href="index.jsp" class="btn btn-warning rounded-pill px-4 py-2 fw-bold text-white shadow-sm">
+        <a href="inicio" class="btn btn-warning rounded-pill px-4 py-2 fw-bold text-white shadow-sm">
             Regresar a la Página Principal
         </a>
 

@@ -1,6 +1,5 @@
 /* ==========================================================
-   ESTILOS ESPECÍFICOS: Gestión de Categorías
-   Usado por: gestionCategoria.jsp
+   1. ESTILOS GENERALES Y TABLA DE CATEGORÍAS
    ========================================================== */
 
 body {
@@ -26,10 +25,12 @@ body {
     padding: 10px 20px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     transition: all 0.2s;
+    white-space: nowrap;
 }
 .btn-new-category:hover {
     background-color: #d4900f !important;
     color: #000 !important;
+    transform: translateY(-2px);
 }
 
 /* Contenedor de la Tabla */
@@ -40,7 +41,7 @@ body {
     background-color: #fff;
 }
 
-/* Encabezado */
+/* Encabezado y Filas de la Tabla */
 .table-header-main {
     background-color: #F0A515;
     color: #000;
@@ -49,7 +50,6 @@ body {
     font-size: 1.1rem;
 }
 
-/* Tabla */
 .custom-table {
     margin-bottom: 0;
 }
@@ -69,7 +69,7 @@ body {
     border-bottom: none;
 }
 
-/* Botón que dispara el modal de edición  */
+/* Botón e Íconos de Acción */
 .btn-edit-trigger {
     background: none;
     border: none;
@@ -77,7 +77,6 @@ body {
     line-height: 1;
 }
 
-/* Iconos de Acción */
 .action-icon {
     font-size: 1.3rem;
     color: #555;
@@ -113,42 +112,48 @@ body {
     border-radius: 4px;
 }
 
-/* Modal de Confirmación */
-.custom-modal-content {
-    border-radius: 15px;
-    border: none;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-    text-align: center;
-    padding: 20px;
-}
-.modal-text {
-    font-weight: bold;
-    font-size: 1.1rem;
-    margin-bottom: 20px;
-}
-.btn-cancelar {
-    background-color: #8B0000 !important;
-    color: white !important;
-    border-radius: 8px;
-    font-weight: bold;
-    padding: 6px 20px;
-    border: none !important;
-}
-.btn-confirmar {
-    background-color: #F0A515 !important;
-    color: black !important;
-    border-radius: 8px;
-    font-weight: bold;
-    padding: 6px 20px;
-    border: none !important;
+
+/* ==========================================================
+   2. GALERÍA DE FOTOS Y DETALLE DEL PRODUCTO (RESPONSIVO)
+   ========================================================== */
+
+/* Imagen Principal */
+.main-detail-img {
+    width: 100%;
+    max-width: 100%;
+    height: 380px;
+    object-fit: cover;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* ---------- Modal de Editar Categoría ---------- */
+/* Miniaturas en Escritorio */
+.thumb-img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 15px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.thumb-img:hover,
+.thumb-img.active-thumb {
+    border-color: #8B0000;
+    transform: scale(1.04);
+}
+
+
+/* ==========================================================
+   3. FORMULARIOS, CAMPOS Y MODALES DE EDICIÓN
+   ========================================================== */
 
 .edit-modal-content {
     border-radius: 20px;
     border: 2px solid #000;
     padding: 35px 30px;
+    background-color: #fff;
 }
 
 .edit-modal-title {
@@ -175,8 +180,8 @@ body {
 }
 
 .edit-input {
-    border: none;
-    outline: none;
+    border: none !important;
+    outline: none !important;
     padding: 12px 15px;
     width: 100%;
     font-weight: bold;
@@ -184,47 +189,38 @@ body {
     color: #000;
 }
 
-/* Grupo del icono: botón de subida + nombre de archivo */
-.icon-upload-group {
-    display: flex;
-    align-items: stretch;
-    border: 1px solid #F0A515;
-    border-radius: 12px;
-    overflow: hidden;
-    background-color: #fff;
+/* Modales de Confirmación */
+.custom-modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    text-align: center;
+    padding: 20px;
 }
-.icon-upload-btn {
-    background-color: #E89546;
-    color: #000;
-    width: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-    cursor: pointer;
-    margin: 0;
-    flex-shrink: 0;
-}
-.icon-upload-filename {
-    padding: 12px 15px;
+.modal-text {
     font-weight: bold;
-    color: #000;
-    display: flex;
-    align-items: center;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
 }
 
-/* Botones del modal de edición */
-.btn-cancelar-edit {
-    background-color: #8B0000 !important;
-    color: #fff !important;
-    border-radius: 25px;
-    font-weight: bold;
-    padding: 10px 35px;
-    border: none !important;
+
+/* ==========================================================
+   4. EFECTOS HOVER Y BOTONES DE ESTA VISTA
+   ========================================================== */
+
+/* Botón ELIMINAR PRODUCTO */
+.btn-outline-danger {
+    transition: all 0.25s ease-in-out !important;
 }
-.btn-cancelar-edit:hover {
-    background-color: #660000 !important;
+
+.btn-outline-danger:not(:disabled):hover {
+    background-color: #dc3545 !important;
+    color: #ffffff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.35);
 }
+
+/* Botón GUARDAR CAMBIOS */
 .btn-guardar-edit {
     background-color: #F0A515 !important;
     color: #000 !important;
@@ -232,14 +228,211 @@ body {
     font-weight: bold;
     padding: 10px 35px;
     border: none !important;
+    transition: all 0.25s ease-in-out !important;
 }
-.btn-guardar-edit:hover {
+
+.btn-guardar-edit:not(:disabled):hover {
     background-color: #d4900f !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(240, 165, 21, 0.35);
+    cursor: pointer;
 }
+
 .btn-guardar-edit:disabled {
     background-color: #cccccc !important;
     border-color: #cccccc !important;
     color: #666666 !important;
     cursor: not-allowed !important;
     opacity: 0.65;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+/* Botones en Modales */
+.btn-cancelar {
+    background-color: #8B0000 !important;
+    color: white !important;
+    border-radius: 8px;
+    font-weight: bold;
+    padding: 6px 20px;
+    border: none !important;
+    transition: all 0.2s ease;
+}
+.btn-cancelar:hover {
+    background-color: #660000 !important;
+}
+
+.btn-confirmar {
+    background-color: #F0A515 !important;
+    color: black !important;
+    border-radius: 8px;
+    font-weight: bold;
+    padding: 6px 20px;
+    border: none !important;
+    transition: all 0.2s ease;
+}
+.btn-confirmar:hover {
+    background-color: #d4900f !important;
+}
+
+/* Botones ACEPTAR y RECHAZAR en Ofertas Recibidas */
+.btn-success {
+    transition: all 0.2s ease;
+}
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(25, 135, 84, 0.3);
+}
+
+
+/* ==========================================================
+   5. DESPLIEGUE DE MENÚ Y RESPONSIVIDAD: CATEGORÍAS
+   ========================================================== */
+
+/* Visibilidad de los menús de tres puntos fuera del contenedor */
+.category-container-card,
+.category-item-card,
+.users-container-card,
+.user-item-card {
+    overflow: visible !important;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    z-index: 1050 !important;
+}
+
+/* Truncar textos en tarjetas para no romper el layout */
+.category-item-card h6,
+.category-item-card small,
+.category-item-card span {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* Badges de Estado */
+.status-badge-active,
+.status-badge-inactive {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+}
+
+
+/* ==========================================================
+   6. MEDIA QUERIES GENERALES PARA CELULAR (< 768px)
+   ========================================================== */
+@media (max-width: 768px) {
+    /* Ajustes Galería de Producto */
+    .d-flex.flex-row.flex-md-column {
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+    }
+
+    .position-relative.d-inline-block {
+        max-width: 75px !important;
+    }
+
+    .thumb-img {
+        width: 70px !important;
+        height: 70px !important;
+    }
+
+    .main-detail-img {
+        height: 250px !important;
+        margin-top: 10px;
+    }
+
+    /* Ajustes Encabezado Categorías: Título y Botón "+ Nueva Categoría" */
+    .d-flex.justify-content-between.align-items-center {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px;
+    }
+
+    .btn-new-category {
+        width: 100% !important;
+        text-align: center;
+    }
+
+    .page-title {
+        font-size: 1.6rem !important;
+    }
+
+    /* Tarjetas compactas en móvil */
+    .category-item-card,
+    .user-item-card {
+        padding: 8px 12px !important;
+    }
+
+    .category-item-card h6 {
+        font-size: 0.88rem !important;
+    }
+
+    .category-item-card small {
+        font-size: 0.72rem !important;
+    }
+
+    /* Paginación adaptable */
+    .pagination {
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 3px !important;
+    }
+
+    .pagination .page-item .page-link {
+        padding: 5px 9px !important;
+        font-size: 0.8rem !important;
+    }
+    /* ==========================================================
+   AJUSTE DE TARJETAS Y MENÚ DESPLEGABLE DE 3 PUNTOS
+   ========================================================== */
+    /* Permite que el menú flotante salga de la tarjeta sin ser cortado */
+    .users-container-card,
+    .user-item-card,
+    .categoria-item-card {
+        overflow: visible !important;
+    }
+
+    /* Forzar prioridad visual para el menú desplegable */
+    .dropdown-menu {
+        z-index: 1060 !important;
+    }
+
+    .dropdown-menu.show {
+        display: block !important;
+        position: absolute !important;
+    }
+
+    @media (max-width: 576px) {
+        .categoria-item-card,
+        .user-item-card {
+            padding: 8px 10px !important;
+            gap: 6px !important;
+        }
+
+        /* Truncar textos muy largos para evitar desbordes */
+        .categoria-item-card h6,
+        .user-item-card h6 {
+            font-size: 0.88rem !important;
+            max-width: 130px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .categoria-item-card small,
+        .user-item-card small {
+            font-size: 0.72rem !important;
+        }
+
+        .status-badge-active,
+        .status-badge-inactive {
+            padding: 3px 8px !important;
+            font-size: 0.72rem !important;
+        }
+    }
 }

@@ -4,7 +4,7 @@
 <fmt:setLocale value="en_US" />
 
 <%@ include file="layout/header.jsp" %>
-<link href="${pageContext.request.contextPath}/assets/css/estilos-gestionCategorias.css?v=1.0" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/assets/css/estilos-gestionCategorias.css?v=2.0" rel="stylesheet">
 
 <div class="container py-5">
 

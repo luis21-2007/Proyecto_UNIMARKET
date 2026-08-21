@@ -4,6 +4,12 @@ body {
 }
 
 /* --- Estilos del Contenido --- */
+.custom-header .logo-img {
+    width: 75px;
+    height: 75px;
+    transition: all 0.3s ease; /* Le da un efecto suave al cambiar de tamaño */
+}
+
 .page-title {
     font-weight: bold;
     font-size: 1.8rem;
@@ -252,4 +258,39 @@ body {
 .btn-nueva-cat:hover {
     background-color: #e0a500 !important;
     color: #000000 !important;
+}
+/* ==========================================================
+   AJUSTE RESPONSIVO DEL HEADER SUPERIOR (CELULARES)
+   ========================================================== */
+@media (max-width: 768px) {
+    .custom-header {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        height: auto !important;
+        min-height: 65px;
+    }
+
+    /* Ocultar etiquetas de texto para que los 5 botones quepan alineados */
+    .custom-header .icon-label {
+        display: none !important;
+    }
+
+    /* Reducir el espacio entre botones */
+    .custom-header .d-flex.gap-4 {
+        gap: 6px !important;
+    }
+
+    /* Tamaño compacto para los botones de navegación */
+    .custom-header .icon-btn {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 1.1rem !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* Tamaño compacto del logo */
+    .custom-header .logo-img {
+        width: 42px !important;
+        height: 42px !important;
+    }
 }

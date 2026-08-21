@@ -165,4 +165,33 @@ body {
         height: 38px !important;
         padding: 0 12px !important;
     }
+
+    /* ==========================================================
+       AJUSTE DEL HEADER PARA MÓVILES (Evita que se salgan los botones)
+       ========================================================== */
+    @media (max-width: 768px) {
+
+        /* 1. Reduce el espacio gigante entre los botones */
+        .custom-header .gap-4 {
+            gap: 8px !important;
+        }
+
+        /* 2. Oculta las letras debajo de los iconos para ahorrar espacio */
+        .custom-header .icon-label {
+            display: none !important;
+        }
+
+        /* 3. Hace los círculos de los botones ligeramente más compactos */
+        .custom-header .icon-btn {
+            width: 38px !important;
+            height: 38px !important;
+            font-size: 1.1rem !important;
+            margin-bottom: 0 !important; /* Quita el espacio de abajo porque ya no hay letras */
+        }
+
+        /* 4. Reduce el margen derecho del header para aprovechar la pantalla */
+        .custom-header.pe-4 {
+            padding-right: 15px !important;
+        }
+    }
 }

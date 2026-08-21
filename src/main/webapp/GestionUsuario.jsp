@@ -5,7 +5,11 @@
 <%@ include file="layout/header_admin.jsp" %>
 
 <div class="container py-4">
-    <h1 class="gestion-title">Gestión de Usuarios</h1>
+
+    <!-- Título con contenedor aislado -->
+    <div class="gestion-header-bar mb-3">
+        <h1 class="gestion-title mb-0">Gestión de Usuarios</h1>
+    </div>
 
     <!-- Mensajes de Alerta / Feedback -->
     <c:if test="${not empty param.msg}">
@@ -109,9 +113,10 @@
 
     <nav class="d-flex justify-content-center mt-4" id="navPaginacion">
         <ul class="pagination pagination-lg mb-0" id="paginacionContainer">
-
         </ul>
     </nav>
+
+</div>
 
 <!-- Modal de Confirmación Adaptativo (Activar/Desactivar) -->
 <div class="modal fade" id="confirmModalUsuario" tabindex="-1" aria-hidden="true">

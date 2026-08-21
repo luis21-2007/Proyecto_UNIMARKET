@@ -4,6 +4,8 @@
 <%-- FORZA EL USO DE PUNTO (.) PARA DECIMALES EN LUGAR DE COMA (,) --%>
 <fmt:setLocale value="en_US" />
 
+<link href="${pageContext.request.contextPath}/assets/css/detalles-productos.css?v=3.0" rel="stylesheet">
+
 <%@ include file="layout/header.jsp" %>
 <%-- Alerta si la compra/transacción fue rechazada o cancelada --%>
 <c:if test="${transaccionCancelada}">

@@ -6,10 +6,10 @@
 
 <div class="container py-4">
 
-    <!-- Título y Botón Nueva Categoría -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <!-- Título y Botón Nueva Categoría con clase aislada -->
+    <div class="gestion-header-bar d-flex justify-content-between align-items-center mb-3">
         <h1 class="gestion-title mb-0">Gestión de Categorías</h1>
-        <a href="agregarCategoria.jsp" class="btn btn-nueva-cat rounded-pill px-4 fw-bold shadow-sm">
+        <a href="agregarCategoria.jsp" class="btn btn-new-category rounded-pill px-4 fw-bold shadow-sm">
             <i class="bi bi-plus-lg me-1"></i> Nueva Categoría
         </a>
     </div>
@@ -51,21 +51,21 @@
                          data-nombre="${fn:toLowerCase(cat.nombreCategoria)}">
 
                         <!-- 1. ICONO Y NOMBRE DE CATEGORÍA (IZQUIERDA) -->
-                        <div class="d-flex align-items-center gap-3" style="flex: 1;">
+                        <div class="d-flex align-items-center gap-2 flex-grow-1 overflow-hidden">
                             <div class="user-avatar" style="background-color: #e9ecef; border-color: #ced4da; color: #495057;">
                                 <i class="bi bi-grid-fill fs-5"></i>
                             </div>
 
-                            <div>
-                                <h6 class="mb-0 fw-bold text-dark"><c:out value="${cat.nombreCategoria}"/></h6>
+                            <div class="text-truncate">
+                                <h6 class="mb-0 fw-bold text-dark text-truncate"><c:out value="${cat.nombreCategoria}"/></h6>
                                 <small class="text-muted fw-semibold">
-                                    Productos vinculados: <span class="badge bg-light text-dark border">${cat.totalProductos}</span>
+                                    Productos: <span class="badge bg-light text-dark border">${cat.totalProductos}</span>
                                 </small>
                             </div>
                         </div>
 
                         <!-- 2. ESTADO Y OPCIONES (DERECHA) -->
-                        <div class="d-flex align-items-center justify-content-end gap-3" style="flex: 1;">
+                        <div class="d-flex align-items-center justify-content-end gap-2 ms-auto">
                             <!-- Badge de Estado Activa/Inactiva -->
                             <c:choose>
                                 <c:when test="${cat.estado}">
@@ -82,14 +82,12 @@
                                     <i class="bi bi-three-dots"></i>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow">
-                                    <!-- Editar -->
                                     <li>
                                         <a class="dropdown-item" href="javascript:void(0)" onclick="prepararModalEditar('${cat.idCategoria}', '${fn:escapeXml(cat.nombreCategoria)}')">
                                             <i class="bi bi-pencil-square me-2 text-primary"></i>Editar
                                         </a>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <!-- Activar / Deshabilitar -->
                                     <c:choose>
                                         <c:when test="${cat.estado}">
                                             <li>

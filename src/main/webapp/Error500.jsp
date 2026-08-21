@@ -23,7 +23,7 @@
 <main class="flex-grow-1 d-flex flex-column align-items-center justify-content-center text-center p-4">
     <div class="container d-flex flex-column align-items-center">
 
-        <img src="assets/img/Error500.jpg" alt="Error 500 Conejitto" class="img-fluid mb-4" style="max-width: 240px;">
+        <img src="assets/img/Error500.png" alt="Error 500 Conejitto" class="img-fluid mb-4" style="max-width: 240px;">
 
         <!-- Mensaje principal -->
         <h1 class="fw-bolder text-dark mb-3">
@@ -39,7 +39,7 @@
         </p>
 
         <!-- Botón de regreso -->
-        <a href="index.jsp" class="btn btn-warning rounded-pill px-4 py-2 fw-bold text-white shadow-sm">
+        <a href="inicio" class="btn btn-warning rounded-pill px-4 py-2 fw-bold text-white shadow-sm">
             Regresar a la Página Principal
         </a>
 
