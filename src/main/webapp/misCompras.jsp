@@ -273,7 +273,7 @@
 
                     <div class="mb-2">
                         <label for="descripcionReporte" class="form-label fw-semibold text-secondary small">Detalles del reporte</label>
-                        <textarea class="form-control" id="descripcionReporte" name="descripcion" rows="3" placeholder="Explica lo sucedido con el mayor detalle posible..." required></textarea>
+                        <textarea class="form-control" id="descripcionReporte" name="descripcion" rows="3" placeholder="Explica lo sucedido con el mayor detalle posible - longitud maxima de 80" maxlength="80" required style="border-radius: 10px;"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0">

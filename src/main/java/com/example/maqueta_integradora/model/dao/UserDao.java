@@ -30,8 +30,12 @@ public class UserDao implements Dao<User,Integer> {
 
             String contraEncriptada = HashUtil.hashSHA256(entidad.getContrasena());
 
-            psUsuario.setString(1, entidad.getNombre());
-            psUsuario.setString(2, entidad.getApellido());
+            // Limpieza de espacios al inicio y al final con .trim()
+            String nombreLimpio = (entidad.getNombre() != null) ? entidad.getNombre().trim() : null;
+            String apellidoLimpio = (entidad.getApellido() != null) ? entidad.getApellido().trim() : null;
+
+            psUsuario.setString(1, nombreLimpio);
+            psUsuario.setString(2, apellidoLimpio);
             psUsuario.setString(3, entidad.getCorreo());
             psUsuario.setString(4, contraEncriptada);
             psUsuario.setString(5, entidad.getCarrera());
@@ -55,7 +59,7 @@ public class UserDao implements Dao<User,Integer> {
 
             entidad.setToken(token8Digitos);
 
-            // 5. El token expirará en 24 horas a partir de ahora
+            // 5. El token expirará en 15 minutos a partir de ahora
             LocalDateTime fechaExpiracion = LocalDateTime.now().plusMinutes(15);
 
             // 6. Insertamos el token en la tabla tokens_verificacion

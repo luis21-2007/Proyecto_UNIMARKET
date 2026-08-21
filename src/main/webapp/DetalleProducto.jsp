@@ -371,7 +371,7 @@
 
                         <div class="mb-3 text-start">
                             <label for="descripcionReporte" class="form-label fw-medium text-secondary">Detalles del reporte:</label>
-                            <textarea class="form-control" id="descripcionReporte" name="descripcion" rows="3" placeholder="Describe brevemente el motivo..." required style="border-radius: 10px;"></textarea>
+                            <textarea class="form-control" id="descripcionReporte" name="descripcion" rows="3" placeholder="Describe brevemente el motivo - longitud maxima de 60" maxlength="60" required style="border-radius: 10px;"></textarea>
                         </div>
                     </div>
 
