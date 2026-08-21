@@ -1,23 +1,43 @@
-// Variable global para almacenar y manipular los archivos seleccionados
 let selectedFiles = [];
 
+// Mostrar alerta visual en el contenedor Bootstrap
+function mostrarAlerta(mensaje) {
+    const alertaBox = document.getElementById('alertaJS');
+    const mensajeBox = document.getElementById('mensajeAlertaJS');
+
+    if (alertaBox && mensajeBox) {
+        mensajeBox.textContent = mensaje;
+        alertaBox.classList.remove('d-none');
+        alertaBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+}
+
+// Ocultar alerta visual
+function ocultarAlerta() {
+    const alertaBox = document.getElementById('alertaJS');
+    if (alertaBox) {
+        alertaBox.classList.add('d-none');
+    }
+}
 function previewImages(event) {
     const input = event.target;
     const newFiles = Array.from(input.files);
 
-    // Limitar selección a un máximo de 3 imágenes
-    if (newFiles.length > 3) {
-        alert("Solo puedes seleccionar un máximo de 3 imágenes.");
-        input.value = "";
-        selectedFiles = [];
-        renderPreviews();
+    if (newFiles.length === 0) return;
+
+    // Validar que la suma de las fotos anteriores + las nuevas no supere las 3 imágenes
+    if (selectedFiles.length + newFiles.length > 3) {
+        mostrarAlerta("Solo puedes subir un máximo de 3 imágenes en total.");
+        input.value = ""; // Limpia la selección parcial
         return;
     }
 
-    selectedFiles = newFiles;
+    // Acumular los nuevos archivos en el arreglo global
+    selectedFiles = selectedFiles.concat(newFiles);
+
+    ocultarAlerta();
     renderPreviews();
 }
-
 function renderPreviews() {
     const container = document.getElementById('preview-container');
     const fileCountText = document.getElementById('file-count');
@@ -63,12 +83,11 @@ function renderPreviews() {
 }
 
 function removeSingleImage(indexToRemove) {
-    // Quitar del arreglo local y reconstruir vista/input
     selectedFiles.splice(indexToRemove, 1);
     renderPreviews();
 }
 
-// Lógica de validación y prevención de doble submit en el formulario
+// Lógica de validación del formulario
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('formSubirProducto');
     const btnSubir = document.getElementById('btnSubirProducto');
@@ -76,26 +95,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (form && btnSubir) {
         form.addEventListener('submit', function (e) {
-            // Verificar si los campos requeridos son válidos
-            if (!form.checkValidity()) {
-                return; // Si el formulario no es válido, permite que el navegador muestre los errores
+
+            // 1. Validar si está vacío
+            if (selectedFiles.length === 0) {
+                e.preventDefault();
+                mostrarAlerta("Hace falta adjuntar las imágenes del producto.");
+                return false;
             }
 
-            // Si ya se inició el envío, prevenimos cualquier submit adicional
+            // 2. Validar que sean exactamente 3 imágenes
+            if (selectedFiles.length !== 3) {
+                e.preventDefault();
+                mostrarAlerta("Es obligatorio subir exactamente 3 imágenes del producto.");
+                return false;
+            }
+
+            // 3. Validar los inputs de texto HTML5
+            if (!form.checkValidity()) {
+                return;
+            }
+
+            // 4. Prevenir envíos dobles
             if (enviando) {
                 e.preventDefault();
                 return false;
             }
 
-            // Marcar como enviado inmediatamente para bloquear clics instantáneos
+            ocultarAlerta();
             enviando = true;
-
-            // Aplicar puntero inactivo e indicador en el botón de forma inmediata
             btnSubir.style.pointerEvents = 'none';
             btnSubir.style.opacity = '0.7';
             btnSubir.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Subiendo...';
 
-            // Deshabilitar formalmente en el ciclo siguiente para asegurar que la petición HTTP/Multipart ya zarpó
             setTimeout(() => {
                 btnSubir.disabled = true;
             }, 0);

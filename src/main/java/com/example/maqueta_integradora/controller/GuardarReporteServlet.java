@@ -23,7 +23,6 @@ public class GuardarReporteServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 1. Validar sesión del usuario denunciante
         HttpSession session = request.getSession(false);
         User reportador = (session != null) ? (User) session.getAttribute("usuario") : null;
 
@@ -32,37 +31,52 @@ public class GuardarReporteServlet extends HttpServlet {
             return;
         }
 
+        // Obtener el origen y el idProducto para construir la redirección correcta
+        String origen = request.getParameter("origen"); // p. ej. "detalleProducto" o "misCompras"
+        String idProducto = request.getParameter("idProducto");
+
         try {
-            // 2. Obtener parámetros del formulario
             int idReportado = Integer.parseInt(request.getParameter("idReportado"));
             String motivo = request.getParameter("motivo");
             String descripcion = request.getParameter("descripcion");
 
-            // 3. Obtener idTransaccion opcional (maneja valores vacíos o nulos)
+            // Evitar autoreporte
+            if (reportador.getId() == idReportado) {
+                redirigir(response, origen, idProducto, "error=autoReporte");
+                return;
+            }
+
             String idTransStr = request.getParameter("idTransaccion");
             Integer idTransaccion = null;
             if (idTransStr != null && !idTransStr.isBlank()) {
                 idTransaccion = Integer.parseInt(idTransStr);
             }
 
-            // Validar que los campos requeridos no lleguen vacíos
             if (motivo == null || motivo.isBlank() || descripcion == null || descripcion.isBlank()) {
-                response.sendRedirect("misCompras?error=camposVacios");
+                redirigir(response, origen, idProducto, "error=camposVacios");
                 return;
             }
 
-            // 4. Guardar el reporte pasando idTransaccion
             boolean guardado = reporteDao.guardarReporte(reportador.getId(), idReportado, idTransaccion, motivo, descripcion);
 
             if (guardado) {
-                response.sendRedirect("misCompras?msg=reporteExitoso");
+                redirigir(response, origen, idProducto, "msg=reporteExitoso");
             } else {
-                response.sendRedirect("misCompras?error=errorReporte");
+                redirigir(response, origen, idProducto, "error=errorReporte");
             }
 
         } catch (NumberFormatException e) {
             System.err.println("Error en formato de parámetros al reportar: " + e.getMessage());
-            response.sendRedirect("misCompras?error=datosInvalidos");
+            redirigir(response, origen, idProducto, "error=datosInvalidos");
+        }
+    }
+
+    // Método auxiliar para responder hacia la vista de origen
+    private void redirigir(HttpServletResponse response, String origen, String idProducto, String param) throws IOException {
+        if ("detalleProducto".equals(origen) && idProducto != null && !idProducto.isBlank()) {
+            response.sendRedirect("detalleProducto?id=" + idProducto + "&" + param);
+        } else {
+            response.sendRedirect("misCompras?" + param);
         }
     }
 }

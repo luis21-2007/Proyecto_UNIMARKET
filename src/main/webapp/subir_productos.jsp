@@ -30,7 +30,11 @@
         </div>
         <div class="col-12 col-md-6">
             <div class="login-card shadow-sm">
-
+                <!-- CONTENEDOR PARA ALERTAS DINÁMICAS DE JAVASCRIPT -->
+                <div id="alertaJS" class="alert alert-danger py-2 px-3 mb-3 text-start d-none" style="font-size: 15px; border-radius: 8px;">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <span id="mensajeAlertaJS"></span>
+                </div>
                 <!-- ALERTA DE ERROR SI VIENE DEL SERVLET -->
                 <c:if test="${not empty error}">
                     <div class="alert alert-danger py-2 px-3 mb-3 text-start" style="font-size: 15px; border-radius: 8px;">
@@ -41,10 +45,10 @@
                 <form action="subirProducto" method="POST" enctype="multipart/form-data" id="formSubirProducto" class="text-center">
                     <div class="mb-3">
                         <label for="input-file" class="btn btn-iniciar" style="cursor: pointer; padding: 6px 20px; font-size: 14px;">
-                            <i class="bi bi-plus-lg me-1"></i> Subir imágenes (Máx 3)
+                            <i class="bi bi-plus-lg me-1"></i> Subir 3 imágenes
                         </label>
                         <%-- Mantener los id tal cual para la sincronización con JS --%>
-                        <input type="file" id="input-file" name="imagenes" accept="image/png, image/jpeg, image/jpg, image/webp" multiple style="display: none;" required onchange="previewImages(event)">
+                        <input type="file" id="input-file" name="imagenes" accept="image/png, image/jpeg, image/jpg, image/webp" multiple style="display: none;"  onchange="previewImages(event)">
                         <p id="file-count" class="footer-text mt-2 mb-2" style="font-weight: bold; color: #8B0000;"></p>
 
                         <%-- Se agrega flex-wrap para que se acomoden correctamente en celulares --%>

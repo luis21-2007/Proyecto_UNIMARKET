@@ -1,5 +1,6 @@
 package com.example.maqueta_integradora.controller;
 
+import com.example.maqueta_integradora.model.User;
 import com.example.maqueta_integradora.model.dao.ProductoDao;
 import com.example.maqueta_integradora.model.dao.UserDao;
 
@@ -24,15 +25,25 @@ public class AdminDashboardServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 1. Obtener los conteos desde la base de datos
-        int totalUsuarios = userDao.getAll().size();     // O usa userDao.contarUsuarios() si lo creaste
-        int totalProductos = productoDao.getAll().size(); // O usa productoDao.contarProductos() si lo creaste
+        // 1. Validar Sesión y Rol de Administrador
+        HttpSession session = request.getSession(false);
+        User usuario = (session != null) ? (User) session.getAttribute("usuario") : null;
 
-        // 2. Pasar las variables a la vista (JSP)
+        // Si no está logueado O su rol no es 1 (Admin), se deniega el acceso
+        if (usuario == null || !"ADMIN".equals(usuario.getRol())) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        // 2. Obtener los conteos desde la base de datos
+        int totalUsuarios = userDao.getAll().size();
+        int totalProductos = productoDao.getAll().size();
+
+        // 3. Pasar las variables a la vista (JSP)
         request.setAttribute("totalUsuarios", totalUsuarios);
         request.setAttribute("totalProductos", totalProductos);
 
-        // 3. Redirigir la petición al JSP de la vista de administrador
+        // 4. Redirigir la petición al JSP de administrador
         request.getRequestDispatcher("index_admin.jsp").forward(request, response);
     }
 }

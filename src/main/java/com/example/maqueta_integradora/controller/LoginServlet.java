@@ -51,13 +51,8 @@ public class LoginServlet extends HttpServlet {
                 return;
             }
 
-            // 5. Marcar la sesión como activa (1) en la Base de Datos
             dao.actualizarSesionActiva(usuarioLogueado.getId(), 1);
-
-            // Actualizamos la propiedad en el objeto que guardamos en sesión
             usuarioLogueado.setSesionActiva(1);
-
-            // 6. Crear la sesión en el servidor
             HttpSession session = request.getSession(true);
             session.setAttribute("usuario", usuarioLogueado);
 
