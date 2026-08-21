@@ -59,7 +59,7 @@
                         <div class="input-addon">
                             <i class="bi bi-lock"></i>
                         </div>
-                        <input type="password" id="txtContra1" name="contra1" class="custom-input pe-5" placeholder="Nueva contraseña" minlength="8" maxlength="12" pattern="(?=.*[A-Z]).{8,12}" title="La contraseña debe tener al menos 8 caracteres y una letra mayúscula" required>
+                        <input type="password" id="txtContra1" name="contra1" class="custom-input pe-5" placeholder="Nueva contraseña" minlength="8" maxlength="12" pattern="(?=.*[A-Z]).{8,12}"  required>
                         <i class="bi bi-eye position-absolute top-50 end-0 translate-middle-y me-3" style="cursor: pointer; z-index: 10;" onclick="const input = document.getElementById('txtContra1'); input.type = input.type === 'password' ? 'text' : 'password'; this.classList.toggle('bi-eye'); this.classList.toggle('bi-eye-slash');"></i>
                     </div>
 
@@ -70,7 +70,7 @@
                         <div class="input-addon">
                             <i class="bi bi-lock-fill"></i>
                         </div>
-                        <input type="password" id="txtContra2" name="contra2" class="custom-input pe-5" placeholder="Confirmar contraseña" minlength="8" maxlength="12" pattern="(?=.*[A-Z]).{8,12}" title="La contraseña debe tener al menos 8 caracteres y una letra mayúscula" required>
+                        <input type="password" id="txtContra2" name="contra2" class="custom-input pe-5" placeholder="Confirmar contraseña" minlength="8" maxlength="12" pattern="(?=.*[A-Z]).{8,12}" required>
                         <i class="bi bi-eye position-absolute top-50 end-0 translate-middle-y me-3" style="cursor: pointer; z-index: 10;" onclick="const input = document.getElementById('txtContra2'); input.type = input.type === 'password' ? 'text' : 'password'; this.classList.toggle('bi-eye'); this.classList.toggle('bi-eye-slash');"></i>
                     </div>
 
