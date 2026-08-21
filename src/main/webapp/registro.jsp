@@ -55,27 +55,26 @@
                         </div>
                         <input value="${param.apellido}" type="text" name="apellido" class="custom-input" placeholder="Ingresa tu Apellido" maxlength="25" pattern="[a-zA-ZÁÉÍÓÚáéíóúÑñ\s]{1,50}" required>
                     </div>
-
                     <div class="custom-input-group mb-2">
                         <div class="input-addon">
                             <i class="bi bi-mortarboard"></i>
                         </div>
-                        <input type="text" value="${param.carrera}" name="carrera" class="custom-input" placeholder="Elige tu carrera" list="lista-carreras" required autocomplete="off" onkeydown="return ['Backspace', 'Delete', 'Tab', 'Escape'].includes(event.key);" onpaste="return false;">
+                        <select name="carrera" class="custom-input" required>
+                            <option value="" disabled ${empty param.carrera ? 'selected' : ''}>Elige tu carrera</option>
+                            <option value="Licenciatura en Negocios y Mercadotecnia" ${param.carrera == 'Licenciatura en Negocios y Mercadotecnia' ? 'selected' : ''}>Licenciatura en Negocios y Mercadotecnia</option>
+                            <option value="Licenciatura en Diseño Digital y Producción Audiovisual" ${param.carrera == 'Licenciatura en Diseño Digital y Producción Audiovisual' ? 'selected' : ''}>Licenciatura en Diseño Digital y Producción Audiovisual</option>
+                            <option value="Licenciatura en Contaduría" ${param.carrera == 'Licenciatura en Contaduría' ? 'selected' : ''}>Licenciatura en Contaduría</option>
+                            <option value="Licenciatura en Administración" ${param.carrera == 'Licenciatura en Administración' ? 'selected' : ''}>Licenciatura en Administración</option>
+                            <option value="Licenciatura en Gestión del Bienestar" ${param.carrera == 'Licenciatura en Gestión del Bienestar' ? 'selected' : ''}>Licenciatura en Gestión del Bienestar</option>
+                            <option value="Licenciatura en Terapia Física" ${param.carrera == 'Licenciatura en Terapia Física' ? 'selected' : ''}>Licenciatura en Terapia Física</option>
+                            <option value="Ingeniería en Tecnologías de la Información" ${param.carrera == 'Ingeniería en Tecnologías de la Información' ? 'selected' : ''}>Ingeniería en Tecnologías de la Información</option>
+                            <option value="Ingeniería en Diseño Textil y Moda" ${param.carrera == 'Ingeniería en Diseño Textil y Moda' ? 'selected' : ''}>Ingeniería en Diseño Textil y Moda</option>
+                            <option value="Ingeniería Industrial" ${param.carrera == 'Ingeniería Industrial' ? 'selected' : ''}>Ingeniería Industrial</option>
+                            <option value="Ingeniería Mecatrónica" ${param.carrera == 'Ingeniería Mecatrónica' ? 'selected' : ''}>Ingeniería Mecatrónica</option>
+                            <option value="Ingeniería en Mantenimiento Industrial" ${param.carrera == 'Ingeniería en Mantenimiento Industrial' ? 'selected' : ''}>Ingeniería en Mantenimiento Industrial</option>
+                            <option value="Ingeniería en Nanotecnología" ${param.carrera == 'Ingeniería en Nanotecnología' ? 'selected' : ''}>Ingeniería en Nanotecnología</option>
+                        </select>
                     </div>
-                    <datalist id="lista-carreras">
-                        <option value="Licenciatura en Negocios y Mercadotecnia">
-                        <option value="Licenciatura en Diseño Digital y Producción Audiovisual">
-                        <option value="Licenciatura en Contaduría">
-                        <option value="Licenciatura en Administración">
-                        <option value="Licenciatura en Gestión del Bienestar">
-                        <option value="Licenciatura en Terapia Física">
-                        <option value="Ingeniería en Tecnologías de la Información">
-                        <option value="Ingeniería en Diseño Textil y Moda">
-                        <option value="Ingeniería Industrial">
-                        <option value="Ingeniería Mecatrónica">
-                        <option value="Ingeniería en Mantenimiento Industrial">
-                        <option value="Ingeniería en Nanotecnología">
-                    </datalist>
                     <div class="custom-input-group mb-2">
                         <div class="input-addon">
                             <i class="bi bi-phone"></i>
