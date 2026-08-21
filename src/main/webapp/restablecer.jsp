@@ -40,9 +40,6 @@
                     <p class="text-muted mb-4 px-2" style="font-size: 13px;">
                         Ingresa el código que te enviamos junto con tu nueva contraseña para actualizar tu cuenta.
                     </p>
-                    <p class="text-muted mb-4 px-2" style="font-size: 13px;">
-                        La nueva contraseña debe contener mínimo 8 caracteres y al menos una mayúscula.
-                    </p>
                     <% if (request.getAttribute("error") != null) { %>
                     <div class="alert alert-danger py-2 px-3 mb-3 text-start" style="font-size: 15px; border-radius: 8px;">
                         <i class="bi bi-exclamation-triangle-fill me-2"></i> <%= request.getAttribute("error") %>
@@ -59,7 +56,7 @@
                         <div class="input-addon">
                             <i class="bi bi-lock"></i>
                         </div>
-                        <input type="password" id="txtContra1" name="contra1" class="custom-input pe-5" placeholder="Nueva contraseña" minlength="8" maxlength="12" pattern="(?=.*[A-Z]).{8,12}"  required>
+                        <input type="password" id="txtContra1" name="contra1" class="custom-input pe-5" placeholder="Nueva contraseña" minlength="8" maxlength="12" pattern="(?=.*[A-Z]).{8,12}" title="La contraseña debe tener al menos 8 caracteres y una letra mayúscula" required>
                         <i class="bi bi-eye position-absolute top-50 end-0 translate-middle-y me-3" style="cursor: pointer; z-index: 10;" onclick="const input = document.getElementById('txtContra1'); input.type = input.type === 'password' ? 'text' : 'password'; this.classList.toggle('bi-eye'); this.classList.toggle('bi-eye-slash');"></i>
                     </div>
 
@@ -70,7 +67,7 @@
                         <div class="input-addon">
                             <i class="bi bi-lock-fill"></i>
                         </div>
-                        <input type="password" id="txtContra2" name="contra2" class="custom-input pe-5" placeholder="Confirmar contraseña" minlength="8" maxlength="12" pattern="(?=.*[A-Z]).{8,12}" required>
+                        <input type="password" id="txtContra2" name="contra2" class="custom-input pe-5" placeholder="Confirmar contraseña" minlength="8" maxlength="12" pattern="(?=.*[A-Z]).{8,12}" title="La contraseña debe tener al menos 8 caracteres y una letra mayúscula" required>
                         <i class="bi bi-eye position-absolute top-50 end-0 translate-middle-y me-3" style="cursor: pointer; z-index: 10;" onclick="const input = document.getElementById('txtContra2'); input.type = input.type === 'password' ? 'text' : 'password'; this.classList.toggle('bi-eye'); this.classList.toggle('bi-eye-slash');"></i>
                     </div>
 
