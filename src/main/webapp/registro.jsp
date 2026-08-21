@@ -35,7 +35,7 @@
                     <i class="bi bi-exclamation-triangle-fill me-2"></i> <%= request.getAttribute("error") %>
                 </div>
                 <% } %>
-                <form action="register" method="POST" id="formRegistro" class="text-center" novalidate>
+                <form action="register" method="POST" id="formRegistro" class="text-center">
 
                     <div class="mb-2">
                         <i class="bi bi-person-circle avatar-icon"></i>
@@ -110,7 +110,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <button type="submit" class="btn btn-iniciar shadow-sm">Crear</button>
+                        <button type="submit" id="btnSubmit" class="btn btn-iniciar shadow-sm">Crear</button>
                     </div>
                     <p class="footer-text mb-0">¿Ya tienes cuenta? <a href="login.jsp">Iniciar Sesion</a>
                     </p>
@@ -123,5 +123,7 @@
 </div>
 <script src="assets/js/bootstrap.js"></script>
 <script src="assets/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/registro.js"></script>
+
 </body>
 </html>
