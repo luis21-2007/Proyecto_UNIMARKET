@@ -228,7 +228,7 @@
 
                     <div class="mb-2">
                         <label for="comentarioCalificacion" class="form-label fw-semibold text-secondary small">Comentario (Opcional)</label>
-                        <textarea class="form-control" id="comentarioCalificacion" name="comentario" rows="3" placeholder="Escribe un breve comentario sobre el vendedor..."></textarea>
+                        <textarea class="form-control" id="comentarioCalificacion" name="comentario" rows="3" placeholder="Escribe un breve comentario sobre el vendedor - limite 80 caracteres" maxlength="80"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0">
