@@ -73,143 +73,98 @@ public class CategoriaServlet extends HttpServlet {
         request.getRequestDispatcher("gestionCategorias.jsp").forward(request, response);
     }
 
-    // POST: Procesar formularios de creación y edición
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 1. Validar sesión de Admin
         HttpSession session = request.getSession(false);
         User admin = (session != null) ? (User) session.getAttribute("usuario") : null;
 
         if (admin == null || !"ADMIN".equalsIgnoreCase(admin.getRol())) {
-            response.sendRedirect("login.jsp");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
         String action = request.getParameter("action");
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
 
         if ("create".equalsIgnoreCase(action)) {
-            crearCategoria(request, response, admin.getId());
+            crearCategoriaJson(request, response, admin.getId());
         } else if ("update".equalsIgnoreCase(action)) {
-            actualizarCategoria(request, response, admin.getId());
-        } else {
-            response.sendRedirect("categorias");
+            actualizarCategoriaJson(request, response, admin.getId());
+        } else if ("desactivar".equalsIgnoreCase(action)) {
+            desactivarCategoriaJson(request, response);
+        } else if ("activar".equalsIgnoreCase(action)) {
+            activarCategoriaJson(request, response);
         }
     }
 
-    // --- MÉTODOS AUXILIARES ---
+// MÉTODOS AUXILIARES NATIVOS (Sin Gson ni librerías)
 
-    private void listarCategorias(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        List<Categoria> listaCategorias = categoriaDao.getAllAdmin();
-        request.setAttribute("listaCategorias", listaCategorias);
-        request.getRequestDispatcher("gestionCategorias.jsp").forward(request, response);
-    }
-
-    private void crearCategoria(HttpServletRequest request, HttpServletResponse response, int idAdmin)
-            throws IOException, ServletException {
-
+    private void crearCategoriaJson(HttpServletRequest request, HttpServletResponse response, int idAdmin) throws IOException {
         String nombre = request.getParameter("nombreCategoria");
 
         if (nombre == null || nombre.trim().isEmpty()) {
-            request.setAttribute("error", "El nombre de la categoría no puede estar vacío.");
-            request.getRequestDispatcher("agregarCategoria.jsp").forward(request, response);
+            response.getWriter().write("{\"success\": false, \"message\": \"El nombre no puede estar vacío\"}");
             return;
         }
 
         nombre = nombre.trim();
-
         if (categoriaDao.existeNombre(nombre)) {
-            request.setAttribute("error", "La categoría '" + nombre + "' ya existe.");
-            request.setAttribute("nombreCategoria", nombre);
-            request.getRequestDispatcher("agregarCategoria.jsp").forward(request, response);
+            response.getWriter().write("{\"success\": false, \"message\": \"La categoría ya existe\"}");
             return;
         }
 
-        Categoria nuevaCategoria = new Categoria();
-        nuevaCategoria.setNombreCategoria(nombre);
-        nuevaCategoria.setIdAdminCreo(idAdmin);
+        Categoria nueva = new Categoria();
+        nueva.setNombreCategoria(nombre);
+        nueva.setIdAdminCreo(idAdmin);
 
-        boolean creada = categoriaDao.create(nuevaCategoria);
-
-        if (creada) {
-            response.sendRedirect("categorias?msg=creada");
-        } else {
-            request.setAttribute("error", "Ocurrió un error al guardar la categoría en la base de datos.");
-            request.setAttribute("nombreCategoria", nombre);
-            request.getRequestDispatcher("agregarCategoria.jsp").forward(request, response);
-        }
+        boolean creada = categoriaDao.create(nueva);
+        response.getWriter().write("{\"success\": " + creada + ", \"message\": \"" + (creada ? "Creada con éxito" : "Error al crear") + "\"}");
     }
 
-    private void actualizarCategoria(HttpServletRequest request, HttpServletResponse response, int idAdmin)
-            throws IOException {
+    private void actualizarCategoriaJson(HttpServletRequest request, HttpServletResponse response, int idAdmin) throws IOException {
         String idStr = request.getParameter("categoriaId");
         String nombre = request.getParameter("nombre");
-
-        if (nombre == null || nombre.trim().isEmpty()) {
-            response.sendRedirect("categorias?error=nombre_vacio");
-            return;
-        }
 
         try {
             int idCategoria = Integer.parseInt(idStr);
 
             if (categoriaDao.existeNombreExcluyendoId(nombre, idCategoria)) {
-                response.sendRedirect("categorias?error=nombre_duplicado");
+                response.getWriter().write("{\"success\": false, \"message\": \"El nombre ya está en uso\"}");
                 return;
             }
 
-            Categoria categoria = new Categoria();
-            categoria.setIdCategoria(idCategoria);
-            categoria.setNombreCategoria(nombre);
-            categoria.setIdAdminModifico(idAdmin);
+            Categoria cat = new Categoria();
+            cat.setIdCategoria(idCategoria);
+            cat.setNombreCategoria(nombre);
+            cat.setIdAdminModifico(idAdmin);
 
-            boolean actualizada = categoriaDao.update(categoria);
-
-            if (actualizada) {
-                response.sendRedirect("categorias?msg=actualizada");
-            } else {
-                response.sendRedirect("categorias?error=no_actualizada");
-            }
+            boolean actualizada = categoriaDao.update(cat);
+            response.getWriter().write("{\"success\": " + actualizada + ", \"message\": \"" + (actualizada ? "Actualizada" : "Error al actualizar") + "\"}");
         } catch (NumberFormatException e) {
-            response.sendRedirect("categorias?error=id_invalido");
+            response.getWriter().write("{\"success\": false, \"message\": \"ID inválido\"}");
         }
     }
 
-    private void desactivarCategoria(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-        String idStr = request.getParameter("id");
-
+    private void desactivarCategoriaJson(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            int idCategoria = Integer.parseInt(idStr);
-            boolean desactivada = categoriaDao.desactivar(idCategoria); // O categoriaDao.delete(idCategoria); según tu DAO
-
-            if (desactivada) {
-                response.sendRedirect("categorias?msg=desactivada");
-            } else {
-                response.sendRedirect("categorias?error=no_desactivada");
-            }
-        } catch (NumberFormatException e) {
-            response.sendRedirect("categorias?error=id_invalido");
+            int id = Integer.parseInt(request.getParameter("id"));
+            boolean ok = categoriaDao.desactivar(id);
+            response.getWriter().write("{\"success\": " + ok + ", \"message\": \"" + (ok ? "Desactivada" : "Error") + "\"}");
+        } catch (Exception e) {
+            response.getWriter().write("{\"success\": false, \"message\": \"Error al desactivar\"}");
         }
     }
 
-    private void activarCategoria(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-        String idStr = request.getParameter("id");
-
+    private void activarCategoriaJson(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            int idCategoria = Integer.parseInt(idStr);
-            boolean activada = categoriaDao.activar(idCategoria);
-
-            if (activada) {
-                response.sendRedirect("categorias?msg=activada");
-            } else {
-                response.sendRedirect("categorias?error=no_activada");
-            }
-        } catch (NumberFormatException e) {
-            response.sendRedirect("categorias?error=id_invalido");
+            int id = Integer.parseInt(request.getParameter("id"));
+            boolean ok = categoriaDao.activar(id);
+            response.getWriter().write("{\"success\": " + ok + ", \"message\": \"" + (ok ? "Activada" : "Error") + "\"}");
+        } catch (Exception e) {
+            response.getWriter().write("{\"success\": false, \"message\": \"Error al activar\"}");
         }
     }
 }

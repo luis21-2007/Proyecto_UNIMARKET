@@ -40,7 +40,7 @@
         <input type="text" id="filtroCategoria" class="w-100" placeholder="Filtro de Categorías">
     </div>
 
-    <!-- Contenedor Amarillo Principal -->
+    <!-- Contenedor Principal -->
     <div class="users-container-card">
 
         <c:choose>
@@ -142,7 +142,8 @@
                 </p>
                 <div class="d-flex justify-content-between mt-4 px-2">
                     <button type="button" class="btn btn-cancelar" data-bs-dismiss="modal">Cancelar</button>
-                    <a href="#" id="btnConfirmAction" class="btn btn-confirmar">Confirmar</a>
+                    <!-- CAMBIO: Se sustituyó la etiqueta <a> por un <button> controlado por JS -->
+                    <button type="button" id="btnConfirmAction" class="btn btn-confirmar">Confirmar</button>
                 </div>
             </div>
         </div>
@@ -156,8 +157,8 @@
             <div class="modal-body p-4">
                 <h4 class="edit-modal-title mb-4">Editar Categoría</h4>
 
-                <form id="editCategoriaForm" action="categorias" method="POST">
-                    <input type="hidden" name="action" value="update">
+                <!-- CAMBIO: Se retiraron action="categorias" y method="POST" para procesar via Fetch JSON -->
+                <form id="editCategoriaForm">
                     <input type="hidden" id="editCategoriaId" name="categoriaId">
 
                     <div class="mb-3 text-start">
