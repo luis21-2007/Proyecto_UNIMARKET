@@ -40,6 +40,9 @@
                     <p class="text-muted mb-4 px-2" style="font-size: 13px;">
                         Ingresa el código que te enviamos junto con tu nueva contraseña para actualizar tu cuenta.
                     </p>
+                    <p class="text-muted mb-4 px-2" style="font-size: 13px;">
+                        La nueva contraseña debe contener mínimo 8 caracteres y al menos una mayúscula.
+                    </p>
                     <% if (request.getAttribute("error") != null) { %>
                     <div class="alert alert-danger py-2 px-3 mb-3 text-start" style="font-size: 15px; border-radius: 8px;">
                         <i class="bi bi-exclamation-triangle-fill me-2"></i> <%= request.getAttribute("error") %>

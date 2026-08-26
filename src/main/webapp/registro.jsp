@@ -97,6 +97,7 @@
                         <i class="bi bi-eye position-absolute top-50 end-0 translate-middle-y me-3" style="cursor: pointer; z-index: 10;" onclick="const input = document.getElementById('txtContra1'); input.type = input.type === 'password' ? 'text' : 'password'; this.classList.toggle('bi-eye'); this.classList.toggle('bi-eye-slash');"></i>
                     </div>
                     <div class="text-start mb-2 ps-1" style="font-size: 11px; color: #6c757d;">
+                        * Mínimo 8 caracteres y al menos una mayúscula.
                     </div>
 
                     <div class="custom-input-group mb-2 position-relative">
