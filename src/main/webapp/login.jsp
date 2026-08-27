@@ -63,6 +63,7 @@
                     <p class="footer-text mb-0">No te acuerdas de tu contraseña? <a href="recuperar.jsp">Recupera tu contraseña</a>
                     <p class="footer-text mb-0">No Tienes Cuenta? <a href="registro.jsp">Crear cuenta</a>
                     </p>
+                    <p class="footer-text mb-0">Si, creaste tu cuenta pero no la verificaste<br> ingresa tus datos y te rediccionaremos a tu verificacion</p>
 
                 </form>
             </div>

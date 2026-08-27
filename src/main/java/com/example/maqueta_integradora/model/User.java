@@ -11,6 +11,15 @@ public class User {
     private String rol;
     private  Integer activo;
     private int sesionActiva;
+    private int esVerificado;
+
+    public int getEsVerificado() {
+        return esVerificado;
+    }
+
+    public void setEsVerificado(int esVerificado) {
+        this.esVerificado = esVerificado;
+    }
 
     public int getSesionActiva() {
         return sesionActiva;

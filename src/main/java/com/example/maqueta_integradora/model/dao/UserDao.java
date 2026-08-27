@@ -13,8 +13,8 @@ public class UserDao implements Dao<User,Integer> {
 
     @Override
     public boolean create(User entidad) {
-        // 1. Sentencias SQL corregidas (el orden de los ? ahora coincide con tus sets)
-        String sqlUsuario = "INSERT INTO usuario(nombre, apellido, correo, contrasena, carrera , telefono) VALUES(?, ?, ?, ?, ?, ?)";
+        // 1. Sentencias SQL (Se agrega activo = 1 y es_verificado = 0 explícitamente)
+        String sqlUsuario = "INSERT INTO usuario(nombre, apellido, correo, contrasena, carrera, telefono, activo, es_verificado) VALUES(?, ?, ?, ?, ?, ?, 1, 0)";
         String sqlToken = "INSERT INTO tokens_verificacion(token, id_usuario, fecha_expiracion) VALUES(?, ?, ?)";
         Connection con = null;
         PreparedStatement psUsuario = null;
@@ -22,15 +22,12 @@ public class UserDao implements Dao<User,Integer> {
         ResultSet rsKeys = null;
         try {
             con = SQLConnector.getConnection();
-            // Desactivamos el auto-commit para manejar la transacción manualmente
             con.setAutoCommit(false);
 
-            // 2. Preparamos la inserción del usuario pidiendo que retorne la llave generada (id_usuario)
             psUsuario = con.prepareStatement(sqlUsuario, new String[]{"id_usuario"});
 
             String contraEncriptada = HashUtil.hashSHA256(entidad.getContrasena());
 
-            // Limpieza de espacios al inicio y al final con .trim()
             String nombreLimpio = (entidad.getNombre() != null) ? entidad.getNombre().trim() : null;
             String apellidoLimpio = (entidad.getApellido() != null) ? entidad.getApellido().trim() : null;
 
@@ -43,7 +40,7 @@ public class UserDao implements Dao<User,Integer> {
 
             psUsuario.executeUpdate();
 
-            // 3. Obtenemos el id_usuario recién generado por Oracle
+            // Obtenemos el id_usuario recién generado por Oracle
             long idUsuarioGenerado = -1;
             rsKeys = psUsuario.getGeneratedKeys();
             if (rsKeys.next()) {
@@ -52,34 +49,28 @@ public class UserDao implements Dao<User,Integer> {
                 throw new SQLException("No se pudo obtener el id_usuario generado.");
             }
 
-            // 4. Generamos el token seguro de 8 números
+            // Generamos token seguro de 8 dígitos
             SecureRandom random = new SecureRandom();
             int numeroToken = 10000000 + random.nextInt(90000000);
             String token8Digitos = String.valueOf(numeroToken);
 
             entidad.setToken(token8Digitos);
 
-            // 5. El token expirará en 15 minutos a partir de ahora
             LocalDateTime fechaExpiracion = LocalDateTime.now().plusMinutes(15);
 
-            // 6. Insertamos el token en la tabla tokens_verificacion
             psToken = con.prepareStatement(sqlToken);
             psToken.setString(1, token8Digitos);
-            psToken.setLong(2, idUsuarioGenerado); // Usamos la ID que recuperamos en el paso 3
+            psToken.setLong(2, idUsuarioGenerado);
             psToken.setTimestamp(3, Timestamp.valueOf(fechaExpiracion));
             psToken.executeUpdate();
 
-            // 7. Si todo salió bien, confirmamos la transacción en la BD
             con.commit();
-
-            // Opcional: Aquí puedes enviar el correo con el 'token8Digitos'
             System.out.println("Token de 8 dígitos generado para " + entidad.getCorreo() + ": " + token8Digitos);
 
             return true;
 
         } catch (SQLException e) {
             e.printStackTrace();
-            // Si algo falló, revertimos todo para no dejar datos corruptos o incompletos
             if (con != null) {
                 try {
                     con.rollback();
@@ -89,13 +80,12 @@ public class UserDao implements Dao<User,Integer> {
             }
             return false;
         } finally {
-            // Cerramos todos los recursos para liberar memoria en el orden correcto
             try {
                 if (rsKeys != null) rsKeys.close();
                 if (psUsuario != null) psUsuario.close();
                 if (psToken != null) psToken.close();
                 if (con != null) {
-                    con.setAutoCommit(true); // Siempre regresamos la conexión a su estado normal
+                    con.setAutoCommit(true);
                     con.close();
                 }
             } catch (SQLException e) {
@@ -103,6 +93,7 @@ public class UserDao implements Dao<User,Integer> {
             }
         }
     }
+
     public boolean actualizarSesionActiva(int idUsuario, int estadoSesion) {
         String sql = "UPDATE usuario SET sesion_activa = ? WHERE id_usuario = ?";
         try (Connection con = SQLConnector.getConnection();
@@ -117,11 +108,11 @@ public class UserDao implements Dao<User,Integer> {
             return false;
         }
     }
+
     @Override
     public List<User> getAll() {
         List<User> listaUsuarios = new java.util.ArrayList<>();
-        // Puedes agregar "WHERE activo = 1" si solo deseas listar los usuarios activos
-        String sql = "SELECT id_usuario, nombre, apellido, correo, carrera, telefono, rol, activo FROM usuario ORDER BY id_usuario DESC";
+        String sql = "SELECT id_usuario, nombre, apellido, correo, carrera, telefono, rol, activo, es_verificado FROM usuario ORDER BY id_usuario DESC";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
@@ -137,6 +128,7 @@ public class UserDao implements Dao<User,Integer> {
                 u.setTelefono(rs.getLong("telefono"));
                 u.setRol(rs.getString("rol"));
                 u.setActivo(rs.getInt("activo"));
+                u.setEsVerificado(rs.getInt("es_verificado"));
 
                 listaUsuarios.add(u);
             }
@@ -154,7 +146,7 @@ public class UserDao implements Dao<User,Integer> {
         if (id == null) {
             return null;
         }
-        String sql = "SELECT id_usuario, nombre, apellido, correo, carrera, telefono, rol FROM usuario WHERE id_usuario = ?";
+        String sql = "SELECT id_usuario, nombre, apellido, correo, carrera, telefono, rol, activo, es_verificado FROM usuario WHERE id_usuario = ?";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -171,6 +163,8 @@ public class UserDao implements Dao<User,Integer> {
                     u.setCarrera(rs.getString("carrera"));
                     u.setTelefono(rs.getLong("telefono"));
                     u.setRol(rs.getString("rol"));
+                    u.setActivo(rs.getInt("activo"));
+                    u.setEsVerificado(rs.getInt("es_verificado"));
                     return u;
                 }
             }
@@ -184,7 +178,7 @@ public class UserDao implements Dao<User,Integer> {
 
     @Override
     public boolean update(User entidad) {
-        String sql = "UPDATE usuario SET nombre = ?, apellido = ?, correo = ?, carrera = ?, telefono = ?, rol = ?, activo = ? WHERE id_usuario = ?";
+        String sql = "UPDATE usuario SET nombre = ?, apellido = ?, correo = ?, carrera = ?, telefono = ?, rol = ?, activo = ?, es_verificado = ? WHERE id_usuario = ?";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -194,7 +188,6 @@ public class UserDao implements Dao<User,Integer> {
             ps.setString(3, entidad.getCorreo());
             ps.setString(4, entidad.getCarrera() != null ? entidad.getCarrera() : "");
 
-            // Manejo de teléfono compatible con SQL (Oracle / MySQL)
             if (entidad.getTelefono() > 0) {
                 ps.setLong(5, entidad.getTelefono());
             } else {
@@ -203,9 +196,8 @@ public class UserDao implements Dao<User,Integer> {
 
             ps.setString(6, entidad.getRol() != null ? entidad.getRol() : "USUARIO");
             ps.setInt(7, entidad.getActivo());
-
-            // ID del usuario para el WHERE
-            ps.setInt(8, entidad.getId());
+            ps.setInt(8, entidad.getEsVerificado());
+            ps.setInt(9, entidad.getId());
 
             int filasAfectadas = ps.executeUpdate();
             return filasAfectadas > 0;
@@ -216,31 +208,28 @@ public class UserDao implements Dao<User,Integer> {
             return false;
         }
     }
+
     @Override
     public boolean delete(Integer id) {
         return false;
     }
 
     public boolean login(String correo, String contrasena) {
-        // Usamos LOWER() en el correo para evitar problemas de mayúsculas
-        String sql = "SELECT COUNT(*) FROM usuario WHERE LOWER(correo) = LOWER(?) AND contrasena = ? AND activo = 1";
+        String sql = "SELECT COUNT(*) FROM usuario WHERE LOWER(correo) = LOWER(?) AND contrasena = ?";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
 
             if (correo == null || contrasena == null) {
                 return false;
             }
             String contrasenaHash = HashUtil.hashSHA256(contrasena);
 
-            // 2. Pasamos el correo limpio y la contraseña YA ENCRIPTADA a la consulta
             ps.setString(1, correo.trim());
             ps.setString(2, contrasenaHash);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    // Retorna true si coincide el correo, el hash de la contraseña y activo = 1
                     return rs.getInt(1) > 0;
                 }
             }
@@ -249,8 +238,10 @@ public class UserDao implements Dao<User,Integer> {
             e.printStackTrace();
         }
         return false;
-    }public User obtenerPorCorreo(String correo) {
-        String sql = "SELECT id_usuario, nombre, apellido, correo, carrera, telefono, rol, sesion_activa FROM usuario WHERE LOWER(correo) = LOWER(?)";
+    }
+
+    public User obtenerPorCorreo(String correo) {
+        String sql = "SELECT id_usuario, nombre, apellido, correo, carrera, telefono, rol, sesion_activa, activo, es_verificado FROM usuario WHERE LOWER(correo) = LOWER(?)";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -267,9 +258,9 @@ public class UserDao implements Dao<User,Integer> {
                     u.setCarrera(rs.getString("carrera"));
                     u.setTelefono(rs.getLong("telefono"));
                     u.setRol(rs.getString("rol"));
-
-                    // 2. Mapeamos la nueva bandera de sesión activa
                     u.setSesionActiva(rs.getInt("sesion_activa"));
+                    u.setActivo(rs.getInt("activo"));
+                    u.setEsVerificado(rs.getInt("es_verificado"));
 
                     return u;
                 }
@@ -279,6 +270,7 @@ public class UserDao implements Dao<User,Integer> {
         }
         return null;
     }
+
     public boolean darDeBaja(int idUsuario) {
         String sql = "UPDATE usuario SET activo = 0, sesion_activa = 0 WHERE id_usuario = ?";
 
@@ -293,19 +285,16 @@ public class UserDao implements Dao<User,Integer> {
         }
         return false;
     }
+
     public boolean verificarTokenYActivarUsuario(String correo, String token) {
-        // 1. Buscamos si el token coincide con el correo del usuario y no ha expirado
         String sqlBuscarToken =
                 "SELECT t.id, u.id_usuario " +
                         "FROM tokens_verificacion t " +
                         "JOIN usuario u ON t.id_usuario = u.id_usuario " +
-                        "WHERE t.token = ? AND u.correo = ? AND t.fecha_expiracion > CURRENT_TIMESTAMP";
+                        "WHERE t.token = ? AND LOWER(u.correo) = LOWER(?) AND t.fecha_expiracion > CURRENT_TIMESTAMP";
 
-        // 2. Activamos al usuario (asumiendo que tienes una columna 'activo' o 'estado')
-        // Ajusta 'activo = 1' según cómo tengas definida esta columna en tu tabla 'usuario'
-        String sqlActivarUsuario = "UPDATE usuario SET activo = 1 WHERE id_usuario = ?";
-
-        // 3. Eliminamos el token para que no pueda ser reutilizado
+        // Ahora actualiza es_verificado a 1 en lugar de activo
+        String sqlActivarUsuario = "UPDATE usuario SET es_verificado = 1 WHERE id_usuario = ?";
         String sqlEliminarToken = "DELETE FROM tokens_verificacion WHERE id = ?";
 
         Connection con = null;
@@ -316,31 +305,28 @@ public class UserDao implements Dao<User,Integer> {
 
         try {
             con = SQLConnector.getConnection();
-            con.setAutoCommit(false); // Transacción para asegurar consistencia
+            con.setAutoCommit(false);
 
             psBuscar = con.prepareStatement(sqlBuscarToken);
             psBuscar.setString(1, token);
-            psBuscar.setString(2, correo);
+            psBuscar.setString(2, correo.trim());
             rs = psBuscar.executeQuery();
 
             if (rs.next()) {
                 long tokenId = rs.getLong("id");
                 long idUsuario = rs.getLong("id_usuario");
 
-                // Paso A: Activar el usuario
                 psActivar = con.prepareStatement(sqlActivarUsuario);
                 psActivar.setLong(1, idUsuario);
                 psActivar.executeUpdate();
 
-                // Paso B: Eliminar el token usado
                 psEliminar = con.prepareStatement(sqlEliminarToken);
                 psEliminar.setLong(1, tokenId);
                 psEliminar.executeUpdate();
 
-                con.commit(); // Todo bien, guardamos cambios
+                con.commit();
                 return true;
             } else {
-                // Token inválido, expirado o correo incorrecto
                 return false;
             }
 
@@ -365,13 +351,13 @@ public class UserDao implements Dao<User,Integer> {
             }
         }
     }
+
     public boolean existeCorreo(String correo) {
         String sql = "SELECT COUNT(*) FROM usuario WHERE LOWER(correo) = LOWER(?)";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            // Verificamos que no venga nulo antes de hacer el trim
             if (correo != null) {
                 ps.setString(1, correo.trim());
                 try (ResultSet rs = ps.executeQuery()) {
@@ -385,9 +371,9 @@ public class UserDao implements Dao<User,Integer> {
         }
         return false;
     }
-    // Guarda el código de recuperación en la BD (expira en 15 minutos)
+
     public boolean guardarCodigoRecuperacion(String correo, String codigo) {
-        String sql = "UPDATE usuario SET codigo_recuperacion = ?, limite_recuperacion = ? WHERE correo = ?";
+        String sql = "UPDATE usuario SET codigo_recuperacion = ?, limite_recuperacion = ? WHERE LOWER(correo) = LOWER(?)";
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
@@ -402,9 +388,8 @@ public class UserDao implements Dao<User,Integer> {
         return false;
     }
 
-    // Valida que el código sea correcto y no haya expirado
     public boolean validarCodigoYObtenerUsuario(String correo, String codigo) {
-        String sql = "SELECT COUNT(*) FROM usuario WHERE correo = ? AND codigo_recuperacion = ? AND limite_recuperacion > CURRENT_TIMESTAMP";
+        String sql = "SELECT COUNT(*) FROM usuario WHERE LOWER(correo) = LOWER(?) AND codigo_recuperacion = ? AND limite_recuperacion > CURRENT_TIMESTAMP";
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, correo.trim());
@@ -418,9 +403,8 @@ public class UserDao implements Dao<User,Integer> {
         return false;
     }
 
-    // Actualiza la contraseña y limpia el código de recuperación
     public boolean actualizarContrasena(String correo, String nuevaContra) {
-        String sql = "UPDATE usuario SET contrasena = ?, codigo_recuperacion = NULL, limite_recuperacion = NULL WHERE correo = ?";
+        String sql = "UPDATE usuario SET contrasena = ?, codigo_recuperacion = NULL, limite_recuperacion = NULL WHERE LOWER(correo) = LOWER(?)";
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             String contraHash = HashUtil.hashSHA256(nuevaContra);
@@ -432,9 +416,9 @@ public class UserDao implements Dao<User,Integer> {
         }
         return false;
     }
+
     public boolean actualizarTokenPorCorreo(String correo, String nuevoToken) {
-        // Actualizamos la tabla tokens_verificacion buscando al usuario por su correo
-        String sql = "UPDATE tokens_verificacion SET token = ?,  fecha_expiracion = SYSDATE + INTERVAL '15' MINUTE WHERE id_usuario = (SELECT id_usuario FROM usuario WHERE LOWER(correo) = LOWER(?))";
+        String sql = "UPDATE tokens_verificacion SET token = ?, fecha_expiracion = SYSDATE + INTERVAL '15' MINUTE WHERE id_usuario = (SELECT id_usuario FROM usuario WHERE LOWER(correo) = LOWER(?))";
 
         try (Connection con = SQLConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -443,15 +427,46 @@ public class UserDao implements Dao<User,Integer> {
             ps.setString(2, correo.trim());
 
             int filasAfectadas = ps.executeUpdate();
-            return filasAfectadas > 0; // Si retorna true, significa que encontró el id_usuario y actualizó el token
+            return filasAfectadas > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
+
+    public String reagenerarToken(int idUsuario) {
+        SecureRandom random = new SecureRandom();
+        int numeroToken = 10000000 + random.nextInt(90000000);
+        String nuevoToken = String.valueOf(numeroToken);
+
+        // Intenta actualizar token existente o insertar si no existe en la tabla de tokens
+        String sqlUpdate = "UPDATE tokens_verificacion SET token = ?, fecha_expiracion = SYSDATE + INTERVAL '15' MINUTE WHERE id_usuario = ?";
+        String sqlInsert = "INSERT INTO tokens_verificacion (token, id_usuario, fecha_expiracion) VALUES (?, ?, SYSDATE + INTERVAL '15' MINUTE)";
+
+        try (Connection con = SQLConnector.getConnection()) {
+            try (PreparedStatement psUp = con.prepareStatement(sqlUpdate)) {
+                psUp.setString(1, nuevoToken);
+                psUp.setInt(2, idUsuario);
+                int filas = psUp.executeUpdate();
+
+                if (filas == 0) {
+                    try (PreparedStatement psIns = con.prepareStatement(sqlInsert)) {
+                        psIns.setString(1, nuevoToken);
+                        psIns.setInt(2, idUsuario);
+                        psIns.executeUpdate();
+                    }
+                }
+            }
+            return nuevoToken;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public boolean desactivarUsuario(int idUsuario) {
-        String sqlUsuario = "UPDATE usuario SET activo = 0 WHERE id_usuario = ?";
+        String sqlUsuario = "UPDATE usuario SET activo = 0, sesion_activa = 0 WHERE id_usuario = ?";
         String sqlProductos = "UPDATE producto SET estado = 0 WHERE id_usuario = ? AND estado = 1";
 
         Connection con = null;
@@ -459,13 +474,11 @@ public class UserDao implements Dao<User,Integer> {
             con = SQLConnector.getConnection();
             con.setAutoCommit(false);
 
-            // 1. Dar de baja al usuario
             try (PreparedStatement psUser = con.prepareStatement(sqlUsuario)) {
                 psUser.setInt(1, idUsuario);
                 psUser.executeUpdate();
             }
 
-            // 2. Ocultar únicamente los productos que están activos (estado = 1)
             try (PreparedStatement psProd = con.prepareStatement(sqlProductos)) {
                 psProd.setInt(1, idUsuario);
                 psProd.executeUpdate();
@@ -497,6 +510,7 @@ public class UserDao implements Dao<User,Integer> {
             }
         }
     }
+
     public boolean activarUsuario(int idUsuario) {
         String sql = "UPDATE usuario SET activo = 1 WHERE id_usuario = ?";
 
@@ -514,6 +528,7 @@ public class UserDao implements Dao<User,Integer> {
             return false;
         }
     }
+
     public boolean updatePerfil(int idUsuario, String nombre, long telefono) {
         String sql = "UPDATE usuario SET nombre = ?, telefono = ? WHERE id_usuario = ?";
 
@@ -525,7 +540,7 @@ public class UserDao implements Dao<User,Integer> {
             if (telefono > 0) {
                 ps.setLong(2, telefono);
             } else {
-                ps.setNull(2, Types.NUMERIC );
+                ps.setNull(2, Types.NUMERIC);
             }
             ps.setInt(3, idUsuario);
             int filasAfectadas = ps.executeUpdate();
@@ -537,6 +552,4 @@ public class UserDao implements Dao<User,Integer> {
             return false;
         }
     }
-
 }
-
